@@ -1,3 +1,5 @@
+Simulating the phase offset between 2 cavities for tunable proton therapy.
+
 Creating the GPT input file in phia_test_EMod_spreadBragg.m
   relies on the E and H field and linaciris files
 Using sim_auto.bat to run GPT and write output files for all the different phase offset values.
