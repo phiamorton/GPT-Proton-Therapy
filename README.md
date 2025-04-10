@@ -5,9 +5,10 @@ Creating the GPT input file in phia_test_EMod_spreadBragg.m,
   
 Using sim_auto.bat to run GPT and write output files for all the different phase offset values. "bash sim_auto.bat"
 
-Energy distribution vs simulated particles in plots_automated.m or as Bragg curve (not scaled) in Bragg_curve.m
+Energy distribution vs simulated particles in plots_automated.m or as Bragg curve (not scaled) in EnergyDensity_BraggCruve.m, takes 
+'comparison_noE = readtable(sprintf('phia_simulationsEnergyMod_phi0.00_0.03Espread_nominalhist.txt'));' as a reference beam with RF into the cavities
 
-Automated image creation (phantom water sample) pulling data from the GPT output files created from EnergyDensity_BraggCurve.m,
+Automated image creation (phantom water sample) pulling data from the histogram GPT output files created from phia_test_EMod_spreadBragg.m,
   'data = readtable(sprintf('phia_simulationsEnergyMod_phi%.2fhist.txt',phase));'
   
 Image energy reconstruction from the output photos in ImageEnergyReconstruction.m, right now the lateral size of the beam in the images is set arbitrarily and off axis beams have not been tested.
