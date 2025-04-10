@@ -197,13 +197,15 @@ for pp = 1:length(phioffsets)
     %figure('WindowStyle','docked', 'Name', sprintf('Phase %.2f', phase), 'NumberTitle', 'off')
     subplot(2,1,2)
     E_spec=938.272*(G-1);
-    histogram(E_spec, 100)
-    %xlim([100 380]);
+    hh=histogram(E, 100);
     xlabel('Energy [MeV]');
     ylabel('Simulated Particles')
+    bincounts= hh.BinCounts
+    ylim([0,max(bincounts)])
     yyaxis right 
     ylabel('Particles')
-    ylim([0, max(E_spec)*sim_particles_scaling])
+    bincounts_scaled=hh.BinCounts*sim_particles_scaling
+    ylim([0,max(bincounts_scaled)])
     title(sprintf('phase offset is %.2f radians', phase));
     shg
 end

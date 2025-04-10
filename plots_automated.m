@@ -19,13 +19,15 @@ for pp = 1:length(phioffsets)
 
     %% Create a plot
     figure('WindowStyle','docked', 'Name', sprintf('Energy Spectrum at Phase %.2f', phase), 'NumberTitle', 'off')
-    histogram(E, 100)
+    hh=histogram(E, 100);
     xlabel('Energy [MeV]');
     ylabel('Simulated Particles')
-
+    bincounts= hh.BinCounts
+    ylim([0,max(bincounts)])
     yyaxis right 
     ylabel('Particles')
-    ylim([0, max(E)*sim_particles_scaling])
+    bincounts_scaled=hh.BinCounts*sim_particles_scaling
+    ylim([0,max(bincounts_scaled)])
     title(sprintf('phase offset is %.2f radians', phase));
     % % grid on;
 end
