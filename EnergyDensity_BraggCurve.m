@@ -1,5 +1,5 @@
 % Read the data from the text file using readtable
-phioffsets = [6.28] %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
+phioffsets = [0.00] %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
  %[0.33]; %3.4; %in rad, 0-2pi
 %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98        3.31        3.64        3.97         4.3        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
 
@@ -20,7 +20,12 @@ const = 4*pi*n*re^2*mec2*q^2;  %MeV/cm %4 * pi * NA * re^2 * mec2  * Z * q^2 / T
 rad_beam = 0.5/2; %cm - 5mm beam diameter
 A_beam= pi*rad_beam^2; %cm^2
 
+%scaling between simlated and actual number of particles
+Qtot0 = 4.2e-15; %from phia_test_Emod_spreadBragg.m, going to assume this is in C
+Qproton =1.6e-19; %C
+sim_particles_scaling= Qtot0/Qproton;
 %%Functions and arrays
+
 
 
 % Function to calculate beta^2
@@ -63,6 +68,7 @@ dx = material_length / numsteps;
 x_values = linspace(0, material_length, numsteps); %cm
 %plotbrowser
 
+%the no RF case
 comparison_noE = readtable(sprintf('phia_simulationsEnergyMod_phi0.00_0.03Espread_nominalhist.txt'));
 G_comp =comparison_noE.G;
 G_comp=G_comp(~isnan(G_comp));
@@ -101,12 +107,10 @@ for proton = 1:length(G_comp)
         meandEdX_comp(ii) = meandEdX_comp(ii)+ dEdX_new_comp;
         dose_comp(ii) = dose_comp(ii) +1/rho*dEdX_new_comp*1/A_beam; %MeV/cm *cm^3/g *1/cm^2 = MeV/g
 
-
-
     end
 end
 
-
+%the RF case for each phase
 max_Egain=zeros(1, length(phioffsets));
 for pp = 1:length(phioffsets)
     phase = phioffsets(pp);
@@ -162,12 +166,16 @@ for pp = 1:length(phioffsets)
     %% Create a plot
     figure(gcf)
     
+    %scale up from sim particles to real particles
+    scaled_dose_comp= dose_comp * sim_particles_scaling;  
+    scaled_dose_vals= dose_vals * sim_particles_scaling ; 
+
     subplot(2,1,1)
     %plot(x_values(1:numsteps), meandEdX(1:numsteps), 'b', 'LineWidth', 2,'Color',"#0072BD", 'DisplayName', 'With RF, 0.03% energy spread');
-    plot(x_values(1:numsteps), dose_vals(1:numsteps), 'b', 'LineWidth', 2,'Color',"#0072BD", 'DisplayName', 'With RF, 0.03% energy spread');
+    plot(x_values(1:numsteps), scaled_dose_vals(1:numsteps), 'b', 'LineWidth', 2,'Color',"#0072BD", 'DisplayName', 'With RF, 0.03% energy spread');
     hold on;
     %plot(x_values(1:numsteps), meandEdX_comp(1:numsteps), 'b', 'LineWidth', 2,'LineStyle',':', 'Color',"#7E2F8E",'DisplayName','No RF');
-    plot(x_values(1:numsteps), dose_comp(1:numsteps), 'b', 'LineWidth', 2,'LineStyle',':', 'Color',"#7E2F8E",'DisplayName','No RF');
+    plot(x_values(1:numsteps), scaled_dose_comp(1:numsteps), 'b', 'LineWidth', 2,'LineStyle',':', 'Color',"#7E2F8E",'DisplayName','No RF, 0.03% energy spread');
     
     hold off;
     % hold on;
@@ -192,6 +200,9 @@ for pp = 1:length(phioffsets)
     %xlim([100 380]);
     xlabel('Energy [MeV]');
     ylabel('Simulated Particles')
+    yyaxis right 
+    ylabel('Particles')
+    ylim([0, max(E_spec)*sim_particles_scaling])
     title(sprintf('phase offset is %.2f radians', phase));
     shg
 end
