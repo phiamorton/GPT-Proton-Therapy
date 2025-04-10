@@ -1,5 +1,7 @@
 Simulating the phase offset between 2 cavities for tunable proton therapy.
 
+Introductory materials about proton therapy and some of the equations used: https://gray.mgh.harvard.edu/media/com_dpattachments/attachments/com_content.article/Techniques-of-Proton-Radiotherapy-04-Basics.pdf 
+
 Creating the GPT input file in phia_test_EMod_spreadBragg.m,
   relies on the E and H field and linaciris gdf files
   
