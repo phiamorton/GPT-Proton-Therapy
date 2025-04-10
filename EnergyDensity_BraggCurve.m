@@ -57,7 +57,7 @@ function dEdX = calc_stoppingpower(E_val, A, I, e_0, rho, const, Z, mec2, TA)
     else
         beta2 = calcbeta2(E_val, A, e_0);
         % Stopping power formula with an increased dEdX near Bragg peak
-        dEdX = const / (beta2) * (log(W_max_new /(I)) - beta2);
+        dEdX = const / (beta2) * (log(W_max_new /(I)) - beta2); %MeV/cm
     end
 end
 
@@ -94,7 +94,7 @@ for proton = 1:length(G_comp)
         dEdX_comp = calc_stoppingpower(E_new, A, I, e_0, rho, const, Z, mec2, TA);
 
         % Energy loss at each step
-        E_loss = dEdX_comp * dx;
+        E_loss = dEdX_comp * dx; %MeV
 
         % Update proton's energy (E decreases)
         E_new = E_new - E_loss;
@@ -105,7 +105,8 @@ for proton = 1:length(G_comp)
         %dEdX_values(proton, ii) = dEdX_new;
 
         meandEdX_comp(ii) = meandEdX_comp(ii)+ dEdX_new_comp;
-        dose_comp(ii) = dose_comp(ii) +1/rho*dEdX_new_comp*1/A_beam; %MeV/cm *cm^3/g *1/cm^2 = MeV/g
+        dose_comp(ii) = dose_comp(ii) +1/rho*dEdX_new_comp*1/A_beam; %MeV/cm *cm^3/g *1/cm^2 = MeV/g, 
+        %rho is g/cm^3, 1g/cc for water, A is beam lateral size in cm^2
 
     end
 end
@@ -145,16 +146,16 @@ for pp = 1:length(phioffsets)
             dEdX = calc_stoppingpower(E_new, A, I, e_0, rho, const, Z, mec2, TA);
 
             % Energy loss at each step
-            E_loss = dEdX * dx;
+            E_loss = dEdX * dx; %MeV
 
             % Update proton's energy (E decreases)
             E_new = E_new - E_loss;
 
             % Store the new stopping power value at the current step
-            dEdX_new=calc_stoppingpower(E_new, A, I, e_0, rho, const, Z, mec2, TA);
+            dEdX_new=calc_stoppingpower(E_new, A, I, e_0, rho, const, Z, mec2, TA); %MeV/cm
             %dEdX_values(proton, ii) = dEdX_new;
 
-            meandEdX(ii) = meandEdX(ii)+ dEdX_new;
+            meandEdX(ii) = meandEdX(ii)+ dEdX_new; 
             dose_vals(ii)= dose_vals(ii) + 1/rho*dEdX_new*1/A_beam; 
 
 
