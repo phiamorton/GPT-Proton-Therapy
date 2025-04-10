@@ -5,7 +5,7 @@ clearvars
 
 %%
 %phioffsets = [0.00 1/4*3.14 3.14/2 3/4*3.14 3.14 3/2*3.14 6.28]; %3.4; %in rad, 0-2pi
-phioffsets =  [0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28];  %linspace(0, 2*pi,30)
+phioffsets =  [0.00] %[0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28];  %linspace(0, 2*pi,30)
 
 rounded = round(phioffsets,2);
 %format bank
@@ -50,7 +50,7 @@ for pp = 1:length(phioffsets)
     xrms0 = .0001; %.00345;
     yrms0 = .0001; %.0035;
     c = 2.998e8;
-    t_bunch= 4.5*10^(-6); %4.5 us
+    t_bunch= 2*10^(-6); %2 us
     %zlen0 = t_bunch*c*beta0 %
     zlen0= 4*c/freq*beta0; % will set to three RF cycles for now, actual bunch length will be 50 us long
     divangx0 = 0; %.58;
@@ -138,44 +138,3 @@ for pp = 1:length(phioffsets)
     end
     fclose(fileID); 
 end
-
-% [~,~] = system(['"' 'gpt.exe" -o resfull_' date '.gdf ' masterfilename ' GPTLICENSE=1329126328']);
-% [~,~] = system(['"' 'gdfa" -o avgfull_' date '.gdf resfull_' date '.gdf time avgz stdx stdy stdz nemizrms nemixrms nemiyrms nemirrms avgx avgy avgG numpar stdG avgBx avgBy avgBz avgfEy GPTLICENSE=1329126328']);
-% [~,~] = system(['"' 'gdf2a" -w 16 -o avgfull_' date '.txt avgfull_' date '.gdf time avgz stdx stdy stdz nemizrms nemixrms nemiyrms nemirrms avgx avgy avgG numpar stdG avgBx avgBy avgBz avgfEy GPTLICENSE=1329126328']);
-% simavg = readtable(['avgfull_' date '.txt']);
-% avg = table2struct(simavg,'ToScalar',true);
-% 
-% toutlist = unique(avg.time)
-% tmargin = diff(toutlist(1:2))/2;
-% tgrab = toutlist(round(linspace(1,length(toutlist),35))); %[toutlist(1) toutlist(end)];
-% for kk = 1:length(tgrab)
-%     num2str(tgrab(kk)-tmargin)
-%     num2str(tgrab(kk)+tmargin)
-% end
-
-%simres = readtable(['resfull_' date '.txt']);
-
-% Need this plus run bash script 'bash fieldgradfiles.bat'
-% 
-% gpt -o resfull_6_27_2024.gdf phia_simulationsEnergyMod_phi0.00.in
-% gdfa -o avgfull_6_27_2024.gdf resfull_6_27_2024.gdf  time avgz stdx stdy stdz nemizrms nemixrms nemiyrms nemirrms avgx avgy avgG numpar stdG avgBx avgBy avgBz avgfEy
-% gdf2a -w 16 -o avgfull_6_27_2024.txt avgfull_6_27_2024.gdf time avgz stdx stdy stdz nemizrms nemixrms nemiyrms nemirrms avgx avgy avgG numpar stdG avgBx avgBy avgBz avgfEy
-% gdf2a -w 16 -o res.txt resfull_6_27_2024.gdf time x y z Bx By Bz G ID fEy
-% use 0 energy spread when finding peak gradient
-% simres = readtable('res.txt');
-% res = table2struct(simres,'ToScalar',true);
-% length_cell = 0.0236;  %m
-%  maxG = (max(res.G)*938.27-938.27-energy0)/(length_cell);
-%  fprintf('max gradient %.2f MV/m\n',maxG)
-% 
-%  avgG = ((mean(res.G)*938.27-938.27)-energy0)/(length_cell);
-%  fprintf('average gradient %.2f MV/m\n',avgG)
-
-%sim_auto.bash
-% for phase in 0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.$
-% do
-%         gpt -o phia_simulationsEnergyMod_phi${phase}.gdf phia_simulationsEnergyMod_phi${phase}.in
-%         gdf2his -o phia_simulationsEnergyMod_phi${phase}hist.gdf phia_simulationsEnergyMod_phi${phase}.gdf G 0.00001
-%         gdf2a -w 16 -o  phia_simulationsEnergyMod_phi${phase}hist.txt phia_simulationsEnergyMod_phi${phase}hist.gdf
-%         ex -s -c '1d3|x' phia_simulationsEnergyMod_phi${phase}hist.txt
-% done
