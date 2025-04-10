@@ -20,14 +20,14 @@ const = 4*pi*n*re^2*mec2*q^2;  %MeV/cm %4 * pi * NA * re^2 * mec2  * Z * q^2 / T
 rad_beam = 0.5/2; %cm - 5mm beam diameter
 A_beam= pi*rad_beam^2; %cm^2
 
-%scaling between simlated and actual number of particles
-Qtot0 = 4.2e-15; %from phia_test_Emod_spreadBragg.m, going to assume this is in C
-Qproton =1.6e-19; %C
-sim_particles_scaling= Qtot0/Qproton;
+%translate simulated particles into real # of particles 
+    Qtot0 = 4.2e-15; %from phia_test_Emod_spreadBragg.m, going to assume this is in C
+    Qproton =1.6e-19; %C
+    numrealprotons= Qtot0/Qproton; %this is total number of real protons
+    numsimpart=2000; %from phia_test_EMod_spreadBragg.m
+    sim_particles_scaling=numrealprotons/numsimpart; %converting between simulated and real particles
+    
 %%Functions and arrays
-
-
-
 % Function to calculate beta^2
 function beta2 = calcbeta2(E, A, e_0)
     beta2 = 1 - (e_0^2 / (e_0 + E/A)^2);
@@ -68,7 +68,7 @@ dx = material_length / numsteps;
 x_values = linspace(0, material_length, numsteps); %cm
 %plotbrowser
 
-%the no RF case
+%%the no RF case
 comparison_noE = readtable(sprintf('phia_simulationsEnergyMod_phi0.00_0.03Espread_nominalhist.txt'));
 G_comp =comparison_noE.G;
 G_comp=G_comp(~isnan(G_comp));
@@ -111,7 +111,7 @@ for proton = 1:length(G_comp)
     end
 end
 
-%the RF case for each phase
+%%the RF case for each phase
 max_Egain=zeros(1, length(phioffsets));
 for pp = 1:length(phioffsets)
     phase = phioffsets(pp);
@@ -200,11 +200,11 @@ for pp = 1:length(phioffsets)
     hh=histogram(E, 100);
     xlabel('Energy [MeV]');
     ylabel('Simulated Particles')
-    bincounts= hh.BinCounts
+    bincounts= hh.BinCounts;
     ylim([0,max(bincounts)])
     yyaxis right 
     ylabel('Particles')
-    bincounts_scaled=hh.BinCounts*sim_particles_scaling
+    bincounts_scaled=hh.BinCounts*sim_particles_scaling;
     ylim([0,max(bincounts_scaled)])
     title(sprintf('phase offset is %.2f radians', phase));
     shg

@@ -14,7 +14,11 @@ for pp = 1:length(phioffsets)
     %translate simulated particles into real # of particles 
     Qtot0 = 4.2e-15; %from phia_test_Emod_spreadBragg.m, going to assume this is in C
     Qproton =1.6e-19; %C
-    sim_particles_scaling= Qtot0/Qproton
+    numrealprotons= Qtot0/Qproton; %this is total number of real protons
+    numsimpart=2000; %from phia_test_EMod_spreadBragg.m
+    sim_particles_scaling=numrealprotons/numsimpart %converting between simulated and real particles
+    
+
     
 
     %% Create a plot
@@ -22,12 +26,12 @@ for pp = 1:length(phioffsets)
     hh=histogram(E, 100);
     xlabel('Energy [MeV]');
     ylabel('Simulated Particles')
-    bincounts= hh.BinCounts
-    ylim([0,max(bincounts)])
+    bincounts= hh.BinCounts;
+    ylim([0,max(bincounts)]);
     yyaxis right 
     ylabel('Particles')
-    bincounts_scaled=hh.BinCounts*sim_particles_scaling
-    ylim([0,max(bincounts_scaled)])
+    bincounts_scaled=hh.BinCounts*sim_particles_scaling;
+    ylim([0,max(bincounts_scaled)]);
     title(sprintf('phase offset is %.2f radians', phase));
     % % grid on;
 end
