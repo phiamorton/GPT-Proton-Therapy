@@ -5,6 +5,8 @@ Creating the GPT input file in phia_test_EMod_spreadBragg.m,
   
 Using sim_auto.bat to run GPT and write output files for all the different phase offset values. "bash sim_auto.bat"
 
+More information can be found in the General Particle Tracer (GPT) manual: https://wiki.jlab.org/ciswiki/images/4/42/UserManual.pdf  
+
 Energy distribution vs simulated particles in plots_automated.m or as Bragg curve (not scaled) in EnergyDensity_BraggCruve.m, takes 
 'comparison_noE = readtable(sprintf('phia_simulationsEnergyMod_phi0.00_0.03Espread_nominalhist.txt'));' as a reference beam with RF into the cavities
 
