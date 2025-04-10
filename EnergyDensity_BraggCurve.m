@@ -17,7 +17,7 @@ e_0 = 931.5; % MeV
 A = 1; % A for proton=1
 n= 3.34*10^23; %electron density of water in 1/cc
 const = 4*pi*n*re^2*mec2*q^2;  %MeV/cm %4 * pi * NA * re^2 * mec2  * Z * q^2 / TA %MeV/cm
-rad_beam = 0.5/2; %cm - 5mm beam diameter
+rad_beam = 0.5; %cm - 5mm beam diameter
 A_beam= pi*rad_beam^2; %cm^2
 
 %translate simulated particles into real # of particles 
@@ -25,7 +25,7 @@ A_beam= pi*rad_beam^2; %cm^2
     Qproton =1.6e-19; %C
     numrealprotons= Qtot0/Qproton; %this is total number of real protons
     numsimpart=2000; %from phia_test_EMod_spreadBragg.m
-    sim_particles_scaling=numrealprotons/numsimpart; %converting between simulated and real particles
+    sim_particles_scaling=numrealprotons/numsimpart %converting between simulated and real particles
     
 %%Functions and arrays
 % Function to calculate beta^2
@@ -62,7 +62,7 @@ function dEdX = calc_stoppingpower(E_val, A, I, e_0, rho, const, Z, mec2, TA)
 end
 
 % Material and simulation parameters
-material_length = 80; % cm i hope
+material_length = 80; % cm 
 numsteps = 10000; % Increase the number of steps for better resolution
 dx = material_length / numsteps;
 x_values = linspace(0, material_length, numsteps); %cm
@@ -162,14 +162,14 @@ for pp = 1:length(phioffsets)
         end
     end
     %meandEdX=meandEdX/length(G);
-    dose_comp= dose_comp * 1.602*10^(-13)*1000;  %MeV/g to J/kg [Gy]
-    dose_vals= dose_vals * 1.602*10^(-13)*1000 ; %MeV/g to J/kg [Gy]
+    dose_comp= dose_comp * 1.602e-10;  %MeV/g to J/kg [Gy]
+    dose_vals= dose_vals * 1.602e-10 ; %MeV/g to J/kg [Gy]
     %% Create a plot
     figure(gcf)
     
     %scale up from sim particles to real particles
     scaled_dose_comp= dose_comp * sim_particles_scaling;  
-    scaled_dose_vals= dose_vals * sim_particles_scaling ; 
+    scaled_dose_vals= dose_vals * sim_particles_scaling; 
 
     subplot(2,1,1)
     %plot(x_values(1:numsteps), meandEdX(1:numsteps), 'b', 'LineWidth', 2,'Color',"#0072BD", 'DisplayName', 'With RF, 0.03% energy spread');
@@ -197,14 +197,14 @@ for pp = 1:length(phioffsets)
     %figure('WindowStyle','docked', 'Name', sprintf('Phase %.2f', phase), 'NumberTitle', 'off')
     subplot(2,1,2)
     E_spec=938.272*(G-1);
-    hh=histogram(E, 100);
+    hh=histogram(E_spec, 100);
     xlabel('Energy [MeV]');
-    ylabel('Simulated Particles')
+    ylabel('Simulated Particles');
     bincounts= hh.BinCounts;
     ylim([0,max(bincounts)])
     yyaxis right 
     ylabel('Particles')
-    bincounts_scaled=hh.BinCounts*sim_particles_scaling;
+    bincounts_scaled=bincounts*sim_particles_scaling;
     ylim([0,max(bincounts_scaled)])
     title(sprintf('phase offset is %.2f radians', phase));
     shg
