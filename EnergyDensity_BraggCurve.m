@@ -2,7 +2,7 @@
 phioffsets = [0.00] %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
  %[0.33]; %3.4; %in rad, 0-2pi
 %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98        3.31        3.64        3.97         4.3        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
-energyspreadpercent= 0.3
+energyspreadpercent= 0.03
 %%Material and constants
 I = 75 *10^(-6); % MeV or 80.8+-0.3
 rho = 1; % g/cc for water
@@ -17,7 +17,7 @@ e_0 = 931.5; % MeV
 A = 1; % A for proton=1
 n= 3.34*10^23; %electron density of water in 1/cc
 const = 4*pi*n*re^2*mec2*q^2;  %MeV/cm %4 * pi * NA * re^2 * mec2  * Z * q^2 / TA %MeV/cm
-rad_beam = 0.5; %cm - 5mm beam diameter
+rad_beam = 0.5/2; %cm - 5mm beam diameter
 A_beam= pi*rad_beam^2; %cm^2
 
 %translate simulated particles into real # of particles 
@@ -25,7 +25,7 @@ A_beam= pi*rad_beam^2; %cm^2
     Qproton =1.6e-19; %C
     numrealprotons= Qtot0/Qproton; %this is total number of real protons
     numsimpart=2000; %from phia_test_EMod_spreadBragg.m
-    sim_particles_scaling=numrealprotons/numsimpart %converting between simulated and real particles
+    sim_particles_scaling=numrealprotons/numsimpart; %converting between simulated and real particles
     
 %%Functions and arrays
 % Function to calculate beta^2

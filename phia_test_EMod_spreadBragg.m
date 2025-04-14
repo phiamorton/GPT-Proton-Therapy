@@ -49,18 +49,18 @@ for pp = 1:length(phioffsets)
     dgamma0 = (energy0*energyspreadpercent/100+938.27)/938.27-1; % .03% energy spread
     
     rad_beam = 0.5/2; %cm - 5mm beam diameter
-    beta0 = .5944;
+    beta0 = .5944; %v/c? 
     xrms0 = rad_beam/100; %m I think;
     yrms0 = rad_beam/100; %.0035;
-    c = 2.998e8;
+    c = 2.998e8; %m/s
     t_bunch= 2*10^(-6); %2 us
     %zlen0 = t_bunch*c*beta0 %
-    zlen0= 4*c/freq*beta0; % will set to three RF cycles for now, actual bunch length will be 2??? us long
+    zlen0= 4*c/freq*beta0 % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
     divangx0 = 0; %.58;
     divangy0 = 0; % .67;
     emit0 = .01e-6; % 3 pi mm-mrad emittance
     Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
-    zposE0 = zlen0/1.8; %.03;
+    zposE0 = zlen0/1.8; %.03; %what is this doing
     sc = 0;
     tdiff = .001/beta0/c;
     
