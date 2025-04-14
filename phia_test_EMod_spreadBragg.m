@@ -7,6 +7,7 @@ clearvars
 %phioffsets = [0.00 1/4*3.14 3.14/2 3/4*3.14 3.14 3/2*3.14 6.28]; %3.4; %in rad, 0-2pi
 phioffsets =  [0.00] %[0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28];  %linspace(0, 2*pi,30)
 energyspreadpercent= 0.03
+energy0 = 180 %alter energy into cavities
 
 rounded = round(phioffsets,2);
 %format bank
@@ -16,7 +17,7 @@ for pp = 1:length(phioffsets)
     inputfilepath = 'phia_simulations';
     fieldpathname = '""';
     GPTpathname = 'C:\bin\'; 
-    masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f.in', phioffsetE, energyspreadpercent);
+    masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f.in', phioffsetE, energy0, energyspreadpercent);
     %sprintf('EnergyMod_phi0.00_0.03Espread_nominal.in') %for ffac=0
     mrfilename = 'mr_test.mr';
     date = '6_27_2024';
@@ -43,7 +44,7 @@ for pp = 1:length(phioffsets)
     %% Define beam parameters
     
     npart0 = 2000;
-    energy0 = 228.5;
+    
     gamma0 = (energy0+938.27)/938.27; % 1.2435;
     
     dgamma0 = (energy0*energyspreadpercent/100+938.27)/938.27-1; % .03% energy spread
