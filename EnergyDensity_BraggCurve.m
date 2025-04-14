@@ -2,7 +2,7 @@
 phioffsets = [0.00] %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
  %[0.33]; %3.4; %in rad, 0-2pi
 %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98        3.31        3.64        3.97         4.3        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
-
+energyspreadpercent= 0.03
 %%Material and constants
 I = 75 *10^(-6); % MeV or 80.8+-0.3
 rho = 1; % g/cc for water
@@ -115,7 +115,7 @@ end
 max_Egain=zeros(1, length(phioffsets));
 for pp = 1:length(phioffsets)
     phase = phioffsets(pp);
-    data = readtable(sprintf('phia_simulationsEnergyMod_phi%.2fhist.txt',phase));
+    data = readtable(sprintf('phia_simulationsEnergyMod_phi%.2f_E%.2fhist.txt',phase, energyspreadpercent));
 
     %% Extract the columns from the table
     G = data.G;

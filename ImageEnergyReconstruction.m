@@ -1,5 +1,6 @@
 phase = 0.00;  % Define phase value for grabbing the photo
-filename = sprintf('BraggIm%.2f.png', phase);  % Input file name
+energyspreadpercent= 0.03
+filename = sprintf('BraggIm%.2f_E%.2f.png', phase, energyspreadpercent);  % Input file name
 inpict = imread(filename);  % Read image
 
 % Convert to grayscale to identify the white border
@@ -30,7 +31,7 @@ resizedImg = imresize(croppedImg, [newHeight, newWidth]);
 
 figure;
 % Save the resized image
-pixelated_filename = sprintf('BraggIm%.2fPixel.png', phase);
+pixelated_filename = sprintf('BraggIm%.2f_E%.2fPixel.png', phase, energyspreadpercent);
 imshow(resizedImg);
 
 saveas(gcf, pixelated_filename);
@@ -65,7 +66,7 @@ ylabel('Dose [a.u.]');
 grid on;
 
 % Save the intensity plot
-intensity_filename = sprintf('BraggIm%.2fIntensity.png', phase);
+intensity_filename = sprintf('BraggIm%.2f_E%.2fIntensity.png', phase, energyspreadpercent);
 saveas(gcf, intensity_filename);
 
 % %map depth to original particle energy--> do this by taking an array of
@@ -270,7 +271,7 @@ energy_spectrum(1:length(x_cm));
 
 figure
 subplot(2,1,2); 
-data = readtable(sprintf('phia_simulationsEnergyMod_phi%.2fhist.txt',phase));
+data = readtable(sprintf('phia_simulationsEnergyMod_phi%.2f_E%.2fhist.txt',phase, energyspreadpercent));
 
 %% Extract the columns from the table
 G = data.G;
@@ -280,7 +281,7 @@ E=938.272*(G-1); %MeV
 histogram(E, 100);
 xlabel('Energy [MeV]');
 ylabel('Simulated Particles');
-title(sprintf('Simulated Energy Spectrum, Phase is %.2f radians', phase));
+title(sprintf('Phase is %.2f radians, energy spread %.2f %', phase, energyspreadpercent));
 % % grid on; 
 rangemin=min(E)-0.3;
 rangemax=max(E)+0.3;
