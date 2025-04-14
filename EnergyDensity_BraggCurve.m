@@ -2,7 +2,7 @@
 phioffsets = [0.00] %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
  %[0.33]; %3.4; %in rad, 0-2pi
 %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98        3.31        3.64        3.97         4.3        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
-energyspreadpercent= 0.03
+energyspreadpercent= 0.3
 %%Material and constants
 I = 75 *10^(-6); % MeV or 80.8+-0.3
 rho = 1; % g/cc for water
@@ -173,7 +173,7 @@ for pp = 1:length(phioffsets)
 
     subplot(2,1,1)
     %plot(x_values(1:numsteps), meandEdX(1:numsteps), 'b', 'LineWidth', 2,'Color',"#0072BD", 'DisplayName', 'With RF, 0.03% energy spread');
-    plot(x_values(1:numsteps), scaled_dose_vals(1:numsteps), 'b', 'LineWidth', 2,'Color',"#0072BD", 'DisplayName', 'With RF, 0.03% energy spread');
+    plot(x_values(1:numsteps), scaled_dose_vals(1:numsteps), 'b', 'LineWidth', 2,'Color',"#0072BD", 'DisplayName', sprintf('With RF, %.2f%% energy spread',energyspreadpercent));
     hold on;
     %plot(x_values(1:numsteps), meandEdX_comp(1:numsteps), 'b', 'LineWidth', 2,'LineStyle',':', 'Color',"#7E2F8E",'DisplayName','No RF');
     plot(x_values(1:numsteps), scaled_dose_comp(1:numsteps), 'b', 'LineWidth', 2,'LineStyle',':', 'Color',"#7E2F8E",'DisplayName','No RF, 0.03% energy spread');
