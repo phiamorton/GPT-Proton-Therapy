@@ -32,7 +32,7 @@ resizedImg = imresize(croppedImg, [newHeight, newWidth]);
 figure;
 % Save the resized image
 pixelated_filename = sprintf('BraggIm%.2f_E%.2fPixel.png', phase, energyspreadpercent);
-imshow(resizedImg);
+%imshow(resizedImg);
 
 saveas(gcf, pixelated_filename);
 inpixsize= size(imread(filename));
@@ -301,5 +301,5 @@ title(sprintf('Reconstructed Energy Spectrum, Phase is %.2f and pixel size is %.
 xlabel('Energy [MeV]');
 ylabel('Intensity [a.u.]');
 xlim([rangemin, rangemax]);
+saveas(gcf,sprintf('ReconstructedSpectrum%.2f_E%.2f.png', phase, energyspreadpercent));
 hold off;
-%saveas(f,'ReconstructedVSSimulatedEnergy','fig')

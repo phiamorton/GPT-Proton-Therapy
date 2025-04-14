@@ -207,6 +207,7 @@ for pp = 1:length(phioffsets)
     bincounts_scaled=bincounts*sim_particles_scaling;
     ylim([0,max(bincounts_scaled)])
     title(sprintf('phase offset is %.2f radians', phase));
+    saveas(gcf,sprintf('BraggCurveandEspread%.2f_E%.2f.png', phase, energyspreadpercent));
     shg
 end
 % 
