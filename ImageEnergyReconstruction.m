@@ -1,4 +1,4 @@
-phase = 2.65;  % Define phase value for grabbing the photo
+phase = 0.00;  % Define phase value for grabbing the photo
 filename = sprintf('BraggIm%.2f.png', phase);  % Input file name
 inpict = imread(filename);  % Read image
 

@@ -1,6 +1,6 @@
 %https://gray.mgh.harvard.edu/media/com_dpattachments/attachments/com_content.article/Techniques-of-Proton-Radiotherapy-04-Basics.pdf
 % Read the data from the text file using readtable
-phioffsets = [2.65] ;%[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
+phioffsets = [0.00] ;%[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
  %[0.33]; %3.4; %in rad, 0-2pi
 %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98        3.31        3.64        3.97         4.3        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
 
@@ -101,8 +101,6 @@ for proton = 1:length(G_comp)
         meandEdX_comp(ii) = meandEdX_comp(ii)+ dEdX_new_comp;
         dose_comp(ii) = dose_comp(ii) +1/rho*dEdX_new_comp*1/A_beam; %MeV/cm *cm^3/g *1/cm^2 = MeV/g
 
-
-
     end
 end
 
@@ -177,34 +175,5 @@ for pp = 1:length(phioffsets)
     %a.Label.String = 'Dose [a.u.]';
     %title(sprintf('Bragg Curve for Proton in Water, phase offset = %.2f rad', phase), 'FontSize', 14);
     saveas(gcf,sprintf('BraggIm%.2f.png', phase))
-    %shading interp;
-    %% Create a plot
-    % figure(gcf)
-    % 
-    % subplot(2,1,1)
-    % %plot(x_values(1:numsteps), meandEdX(1:numsteps), 'b', 'LineWidth', 2,'Color',"#0072BD", 'DisplayName', 'With RF, 0.03% energy spread');
-    % plot(x_values(1:numsteps), dose_vals(1:numsteps), 'b', 'LineWidth', 2,'Color',"#0072BD", 'DisplayName', 'With RF, 0.03% energy spread');
-    % hold on;
-    % %plot(x_values(1:numsteps), meandEdX_comp(1:numsteps), 'b', 'LineWidth', 2,'LineStyle',':', 'Color',"#7E2F8E",'DisplayName','No RF');
-    % plot(x_values(1:numsteps), dose_comp(1:numsteps), 'b', 'LineWidth', 2,'LineStyle',':', 'Color',"#7E2F8E",'DisplayName','No RF');
-    % 
-    % hold off;
-    % xlim([29,35]);
-    % xlabel('Position [cm]', 'FontSize', 12);
-    % %ylabel('Stopping Power (dE/dx) [MeV/cm]', 'FontSize', 12);
-    % ylabel('Dose [Gy]', 'FontSize', 12);
-    % legend('Location','northwest')
-    % title(sprintf('Bragg Curve for Proton in Water, phase offset = %.2f rad', phase), 'FontSize', 14);
-    % grid on;
-    % % title(sprintf('phase offset is %.2f radians', phase));
-    % % grid on;
-    % %figure('WindowStyle','docked', 'Name', sprintf('Phase %.2f', phase), 'NumberTitle', 'off')
-    % subplot(2,1,2)
-    % E_spec=938.272*(G-1);
-    % histogram(E_spec, 100)
-    % %xlim([100 380]);
-    % xlabel('Energy [MeV]');
-    % ylabel('Simulated Particles')
-    % title(sprintf('phase offset is %.2f radians', phase));
-    % shg
+    
 end
