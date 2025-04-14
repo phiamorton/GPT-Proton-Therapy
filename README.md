@@ -15,6 +15,6 @@ Energy distribution vs simulated particles in plots_automated.m or as Bragg curv
 Automated image creation (phantom water sample) pulling data from the histogram GPT output files created from phia_test_EMod_spreadBragg.m,
   'data = readtable(sprintf('phia_simulationsEnergyMod_phi%.2fhist.txt',phase));'
   
-Image energy reconstruction from the output photos in ImageEnergyReconstruction.m, right now the lateral size of the beam in the images is set arbitrarily and off axis beams have not been tested.
+The image used for image reconstruction is created in dose_calcs.m as BraggIm{phase}.png. Image energy reconstruction from the output photos is done in ImageEnergyReconstruction.m. The reconstruction takes the photo, adjusts resolution to match camera resolution and then collapses the inensity into a 1D function of depth. A database of depth versus energy is used to subtract away the highest energies and add those values to the reconstructed energy spectrum. This is done until the entire energy deposited is accounted for. This technique must be used because a higher energy particle deposits energy at lower depths than where it stops. Right now the lateral size of the beam in the images is set arbitrarily and off axis beams have not been tested.
 
-Gif from braggpeakgif.m to show water phantom evolution as teh phase difference in the 2 cavity design changes (not all the necessary files may be on this git and you may need to go through the workflow for all phases to create the necessary inputs.
+Gif from braggpeakgif.m to show water phantom evolution as the phase difference in the 2 cavity design changes (not all the necessary files may be on this git and you may need to go through the workflow for all phases to create the necessary inputs.
