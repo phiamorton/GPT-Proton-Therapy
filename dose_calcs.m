@@ -4,7 +4,7 @@ phioffsets = [0.00] ;%[0  0.33        0.66        0.99        1.32        1.65  
  %[0.33]; %3.4; %in rad, 0-2pi
 %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98        3.31        3.64        3.97         4.3        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
 energyspreadpercent= 0.03
-energy0=180; %MeV
+energy0=228.5; %MeV
 masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
 %%Material and constants
 I = 75 *10^(-6); % MeV or 80.8+-0.3

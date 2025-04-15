@@ -1,9 +1,9 @@
 phase = 0.00;  % Define phase value for grabbing the photo
 energyspreadpercent= 0.03
-energy0=180 %MeV
+energy0=228.5 %MeV
 masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
 %filename = masterfilename.png;  % Input file name
-filename=sprintf('%sBraggIm.png', masterfilename))
+filename=sprintf('%sBraggIm.png', masterfilename)
 inpict = imread(filename);  % Read image
 
 % Convert to grayscale to identify the white border

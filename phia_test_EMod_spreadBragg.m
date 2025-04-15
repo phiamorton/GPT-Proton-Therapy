@@ -8,6 +8,7 @@ clearvars
 phioffsets =  [0.00] %[0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28];  %linspace(0, 2*pi,30)
 energyspreadpercent= 0.03
 energy0 = 228.5 %alter energy into cavities
+uniform=true
 
 rounded = round(phioffsets,2);
 %format bank
@@ -17,7 +18,11 @@ for pp = 1:length(phioffsets)
     inputfilepath = 'output_';
     fieldpathname = '""';
     GPTpathname = 'C:\bin\'; 
-    masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f.in', phioffsetE, energy0, energyspreadpercent);
+    if uniform ==true
+        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform.in', phioffsetE, energy0, energyspreadpercent);
+    else
+        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f.in', phioffsetE, energy0, energyspreadpercent);
+    end
     %sprintf('EnergyMod_phi0.00_0.03Espread_nominal.in') %for ffac=0
     mrfilename = 'mr_test.mr';
     date = '6_27_2024';
@@ -57,8 +62,8 @@ for pp = 1:length(phioffsets)
     yrms0 = rad_beam/100; %.0035;
     t_bunch= 2*10^(-6); %2 us
     %zlen0 = t_bunch*c*beta0 %in m
-    t_4rf=4/freq %4RF cycles is ~1.4e-9 seconds 
-    zlen0= 4*c/freq*beta0  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
+    %t_4rf=4/freq %4RF cycles is ~1.4e-9 seconds 
+    zlen0= 1*c/freq*beta0  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
     divangx0 = 0; %.58;
     divangy0 = 0; % .67;
     emit0 = .01e-6; % 3 pi mm-mrad emittance
@@ -68,30 +73,57 @@ for pp = 1:length(phioffsets)
     %tdiff = .001/beta0/c;
     
     %% Initialize particle distribution entering treatment room
-    buildparticles = {
-    'accuracy(6);';
-    ['npart = ' num2str(npart0) ';'];
-    ['sc = ' num2str(sc) ';'];
-    'if(npart==1){';
-    ['setstartpar("beam",0,0,0,0,0,' num2str(gamma0*beta0) ',mp,-qe,' num2str(Qtot0) ');'];
-    '}';
-    'if(npart > 1){';
-    ['setparticles("beam",' num2str(npart0) ',mp,-qe,' num2str(Qtot0) ');'];
-    ['setxdist("beam","g",0,' num2str(xrms0) ',3,3);'];
-    ['setydist("beam","g",0,' num2str(yrms0) ',3,3);'];
-    ['setzdist("beam","u", 0, ' num2str(zlen0) ');'];
-    'setGBxdist("beam","g",0,1e-3,3,3); #primarily setting distribution shape, will be rescaled';
-    'setGBydist("beam","g",0,1e-3,3,3);';
-    ['setGBxemittance("beam",' num2str(emit0) ');'];
-    ['setGByemittance("beam",' num2str(emit0) ');'];
-    ['setGdist("beam","g",' num2str(gamma0) ',' num2str(dgamma0) ',3,3); '];
-    ['addxdiv("beam",0,' num2str(divangx0) ');'];
-    ['addydiv("beam",0,' num2str(divangy0) ');'];
-    '}';
-    'if(sc==1){';
-    'spacecharge3dmesh();';
-    '}';
-    };
+    if uniform == true
+        buildparticles = {
+        'accuracy(6);';
+        ['npart = ' num2str(npart0) ';'];
+        ['sc = ' num2str(sc) ';'];
+        'if(npart==1){';
+        ['setstartpar("beam",0,0,0,0,0,' num2str(gamma0*beta0) ',mp,-qe,' num2str(Qtot0) ');'];
+        '}';
+        'if(npart > 1){';
+        ['setparticles("beam",' num2str(npart0) ',mp,-qe,' num2str(Qtot0) ');'];
+        ['setxdist("beam","g",0,' num2str(xrms0) ',3,3);'];
+        ['setydist("beam","g",0,' num2str(yrms0) ',3,3);'];
+        ['setzdist("beam","u", 0, ' num2str(zlen0) ');'];
+        'setGBxdist("beam","g",0,1e-3,3,3); #primarily setting distribution shape, will be rescaled';
+        'setGBydist("beam","g",0,1e-3,3,3);';
+        ['setGBxemittance("beam",' num2str(emit0) ');'];
+        ['setGByemittance("beam",' num2str(emit0) ');'];
+        ['setGdist("beam","g",' num2str(gamma0) ',' num2str(dgamma0) ',3,3); '];
+        ['addxdiv("beam",0,' num2str(divangx0) ');'];
+        ['addydiv("beam",0,' num2str(divangy0) ');'];
+        '}';
+        'if(sc==1){';
+        'spacecharge3dmesh();';
+        '}';
+        };
+    else
+        buildparticles = {
+        'accuracy(6);';
+        ['npart = ' num2str(npart0) ';'];
+        ['sc = ' num2str(sc) ';'];
+        'if(npart==1){';
+        ['setstartpar("beam",0,0,0,0,0,' num2str(gamma0*beta0) ',mp,-qe,' num2str(Qtot0) ');'];
+        '}';
+        'if(npart > 1){';
+        ['setparticles("beam",' num2str(npart0) ',mp,-qe,' num2str(Qtot0) ');'];
+        ['setxdist("beam","u",0,' num2str(a) ',3,3);'];
+        ['setydist("beam","u",0,' num2str(a) ',3,3);'];
+        ['setzdist("beam","u", 0, ' num2str(zlen0) ');'];
+        'setGBxdist("beam","g",0,1e-3,3,3); #primarily setting distribution shape, will be rescaled';
+        'setGBydist("beam","g",0,1e-3,3,3);';
+        ['setGBxemittance("beam",' num2str(emit0) ');'];
+        ['setGByemittance("beam",' num2str(emit0) ');'];
+        ['setGdist("beam","g",' num2str(gamma0) ',' num2str(dgamma0) ',3,3); '];
+        ['addxdiv("beam",0,' num2str(divangx0) ');'];
+        ['addydiv("beam",0,' num2str(divangy0) ');'];
+        '}';
+        'if(sc==1){';
+        'spacecharge3dmesh();';
+        '}';
+        };
+    end
     %% Initialize linac iris aperture
     maxl = a*5;
     stepl = a/10;

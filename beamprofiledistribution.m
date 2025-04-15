@@ -1,7 +1,13 @@
 phase = 0.00;  % Define phase value for grabbing the photo
 energyspreadpercent= 0.03
 energy0=228.5 %MeV
-masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
+uniform=true
+if uniform ==true
+    masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform', phioffsetE, energy0, energyspreadpercent);
+else
+    masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
+end
+
 for pp = 1:length(phioffsets)
     phase = phioffsets(pp)
     data = readtable(sprintf('%s.txt',masterfilename));
@@ -39,7 +45,13 @@ for pp = 1:length(phioffsets)
     cb = colorbar;
     cb.Label.String = 'Energy [MeV]';
     
+    s1.Position(1) = s1.Position(1);
+    s2.Position(1) = s2.Position(1) - 0.05;
     
-    saveas(gcf,sprintf('%sBeamDist.png', masterfilename))
+    if uniform==true
+        saveas(gcf,sprintf('%sBeamDist_uniform.png', masterfilename))
+    else
+        saveas(gcf,sprintf('%sBeamDist.png', masterfilename))
+    end
 
 end
