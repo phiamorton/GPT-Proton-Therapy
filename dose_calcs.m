@@ -4,7 +4,8 @@ phioffsets = [0.00] ;%[0  0.33        0.66        0.99        1.32        1.65  
  %[0.33]; %3.4; %in rad, 0-2pi
 %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98        3.31        3.64        3.97         4.3        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
 energyspreadpercent= 0.03
-
+energy0=180; %MeV
+masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
 %%Material and constants
 I = 75 *10^(-6); % MeV or 80.8+-0.3
 rho = 1; % g/cc for water
@@ -64,7 +65,7 @@ dx = material_length / numsteps;
 x_values = linspace(0, material_length, numsteps); %cm
 %plotbrowser
 
-comparison_noE = readtable(sprintf('phia_simulationsEnergyMod_phi0.00_0.03Espread_nominalhist.txt'));
+comparison_noE = readtable(sprintf('comparison_phi0.00_E228_Esp0.03.txt'));
 G_comp =comparison_noE.G;
 G_comp=G_comp(~isnan(G_comp));
 meandEdX_comp=zeros(numsteps);
@@ -109,7 +110,7 @@ end
 max_Egain=zeros(1, length(phioffsets));
 for pp = 1:length(phioffsets)
     phase = phioffsets(pp)
-    data = readtable(sprintf('phia_simulationsEnergyMod_phi%.2f_E%.2fhist.txt',phase, energyspreadpercent));
+    data = readtable(sprintf('%s.txt',masterfilename));
 
     %% Extract the columns from the table
     G = data.G;
@@ -175,6 +176,6 @@ for pp = 1:length(phioffsets)
     %a=colorbar;
     %a.Label.String = 'Dose [a.u.]';
     %title(sprintf('Bragg Curve for Proton in Water, phase offset = %.2f rad', phase), 'FontSize', 14);
-    saveas(gcf,sprintf('BraggIm%.2f_E%.2f.png', phase, energyspreadpercent))
+    saveas(gcf,sprintf('%sBraggIm.png', masterfilename))
     
 end

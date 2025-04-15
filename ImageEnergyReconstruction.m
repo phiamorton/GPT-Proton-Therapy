@@ -1,6 +1,9 @@
 phase = 0.00;  % Define phase value for grabbing the photo
 energyspreadpercent= 0.03
-filename = sprintf('BraggIm%.2f_E%.2f.png', phase, energyspreadpercent);  % Input file name
+energy0=180 %MeV
+masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
+%filename = masterfilename.png;  % Input file name
+filename=sprintf('%sBraggIm.png', masterfilename))
 inpict = imread(filename);  % Read image
 
 % Convert to grayscale to identify the white border
@@ -31,7 +34,7 @@ resizedImg = imresize(croppedImg, [newHeight, newWidth]);
 
 figure;
 % Save the resized image
-pixelated_filename = sprintf('BraggIm%.2f_E%.2fPixel.png', phase, energyspreadpercent);
+pixelated_filename = sprintf('%sPixel.png', masterfilename);
 %imshow(resizedImg);
 
 saveas(gcf, pixelated_filename);
@@ -66,7 +69,7 @@ ylabel('Dose [a.u.]');
 grid on;
 
 % Save the intensity plot
-intensity_filename = sprintf('BraggIm%.2f_E%.2fIntensity.png', phase, energyspreadpercent);
+intensity_filename = sprintf('%sIntensity.png', masterfilename);
 saveas(gcf, intensity_filename);
 
 % %map depth to original particle energy--> do this by taking an array of
@@ -271,7 +274,7 @@ energy_spectrum(1:length(x_cm));
 
 figure
 subplot(2,1,2); 
-data = readtable(sprintf('phia_simulationsEnergyMod_phi%.2f_E%.2fhist.txt',phase, energyspreadpercent));
+data = readtable(masterfilename.txt);
 
 %% Extract the columns from the table
 G = data.G;
@@ -301,5 +304,5 @@ title(sprintf('Reconstructed Energy Spectrum, Phase is %.2f and pixel size is %.
 xlabel('Energy [MeV]');
 ylabel('Intensity [a.u.]');
 xlim([rangemin, rangemax]);
-saveas(gcf,sprintf('ReconstructedSpectrum%.2f_E%.2f.png', phase, energyspreadpercent));
+saveas(gcf,sprintf('ReconstructedSpectrum%.2f_E%.2f_Esp%.2f.png', phase, energy0, energyspreadpercent));
 hold off;

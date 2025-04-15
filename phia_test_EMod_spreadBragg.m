@@ -7,14 +7,14 @@ clearvars
 %phioffsets = [0.00 1/4*3.14 3.14/2 3/4*3.14 3.14 3/2*3.14 6.28]; %3.4; %in rad, 0-2pi
 phioffsets =  [0.00] %[0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28];  %linspace(0, 2*pi,30)
 energyspreadpercent= 0.03
-energy0 = 180 %alter energy into cavities
+energy0 = 228.5 %alter energy into cavities
 
 rounded = round(phioffsets,2);
 %format bank
 num2str(rounded);
 for pp = 1:length(phioffsets)
     phioffsetE = phioffsets(pp);
-    inputfilepath = 'phia_simulations';
+    inputfilepath = 'output_';
     fieldpathname = '""';
     GPTpathname = 'C:\bin\'; 
     masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f.in', phioffsetE, energy0, energyspreadpercent);
@@ -29,7 +29,7 @@ for pp = 1:length(phioffsets)
     
     freq = 2.856e9;
     dcellE = 14.7*0.0254; %distance between the cells, 14.7 inches, takes input as m
-    a = .005;
+    a = .005; %0.5 cm
     ffacE = 5.5 ;%-482; %7.5; %5.1;
     %Cavity run with 2.5 MW into each cell 
     %an average gradient of 30 MV/m, 400 kW of input power is required to be fed into this cell. 
@@ -39,7 +39,7 @@ for pp = 1:length(phioffsets)
     ncellsE = 2; %length(philistE); %changed to 2 (only 2 cell cavities)
     phasebreakE = 2;
     subplotnum = 5;
-    drift = .67;
+    drift = .67; %m I think
     
     %% Define beam parameters
     
@@ -50,20 +50,22 @@ for pp = 1:length(phioffsets)
     dgamma0 = (energy0*energyspreadpercent/100+938.27)/938.27-1; % .03% energy spread
     
     rad_beam = 0.5/2; %cm - 5mm beam diameter
-    beta0 = .5944; %v/c? 
+    %beta0 = .5944; %v/c? 
+    c = 2.998e8; %m/s
+    beta0= sqrt(1-1/(gamma0^2));
     xrms0 = rad_beam/100; %m I think;
     yrms0 = rad_beam/100; %.0035;
-    c = 2.998e8; %m/s
     t_bunch= 2*10^(-6); %2 us
-    %zlen0 = t_bunch*c*beta0 %
-    zlen0= 4*c/freq*beta0 % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
+    %zlen0 = t_bunch*c*beta0 %in m
+    t_4rf=4/freq
+    zlen0= 4*c/freq*beta0  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
     divangx0 = 0; %.58;
     divangy0 = 0; % .67;
     emit0 = .01e-6; % 3 pi mm-mrad emittance
     Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
     zposE0 = zlen0/1.8; %.03; %what is this doing
     sc = 0;
-    tdiff = .001/beta0/c;
+    %tdiff = .001/beta0/c;
     
     %% Initialize particle distribution entering treatment room
     buildparticles = {

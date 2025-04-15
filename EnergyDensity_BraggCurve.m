@@ -3,7 +3,8 @@ phioffsets = [0.00] %[0  0.33        0.66        0.99        1.32        1.65   
  %[0.33]; %3.4; %in rad, 0-2pi
 %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98        3.31        3.64        3.97         4.3        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
 energyspreadpercent= 0.03
-energy0=180 %MeV
+energy0=228.5 %MeV
+masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
 %%Material and constants
 I = 75 *10^(-6); % MeV or 80.8+-0.3
 rho = 1; % g/cc for water
@@ -70,11 +71,13 @@ x_values = linspace(0, material_length, numsteps); %cm
 %plotbrowser
 
 %%the no RF case
-comparison_noE = readtable(sprintf('phia_simulationsEnergyMod_phi0.00_0.03Espread_nominalhist.txt'));
+comparison_noE = readtable(sprintf('comparison_phi0.00_E228_Esp0.03.txt'));
 G_comp =comparison_noE.G;
 G_comp=G_comp(~isnan(G_comp));
 meandEdX_comp=zeros(numsteps);
 dose_comp=zeros(numsteps);
+npart_comp=length(G_comp)
+%length(G_comp)
 for proton = 1:length(G_comp)
     E_0 =938.272*(G_comp(proton)-1); %MeV, starting energy
     % Loop to calculate energy loss and stopping power
@@ -106,7 +109,7 @@ for proton = 1:length(G_comp)
         %dEdX_values(proton, ii) = dEdX_new;
 
         meandEdX_comp(ii) = meandEdX_comp(ii)+ dEdX_new_comp;
-        dose_comp(ii) = dose_comp(ii) +1/rho*dEdX_new_comp*1/A_beam; %MeV/cm *cm^3/g *1/cm^2 = MeV/g, 
+        dose_comp(ii) = dose_comp(ii) +1/rho*dEdX_new_comp*npart_comp/A_beam; %MeV/cm *cm^3/g *1/cm^2 = MeV/g, 
         %rho is g/cm^3, 1g/cc for water, A is beam lateral size in cm^2
 
     end
@@ -117,8 +120,8 @@ max_Egain=zeros(1, length(phioffsets));
 
 for pp = 1:length(phioffsets)
     phase = phioffsets(pp);
-    masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
-    data = readtable(masterfilename.txt);
+    datafile=sprintf('%s.txt',masterfilename);
+    data = readtable(datafile);
 
     %% Extract the columns from the table
     G = data.G;
@@ -129,6 +132,7 @@ for pp = 1:length(phioffsets)
     dose_vals = zeros(numsteps);
     meandEdX=zeros(numsteps);
     size(dEdX_values);
+    npart0=length(G)
     for proton = 1:length(G)
         E_0 =938.272*(G(proton)-1); %MeV, starting energy
         % Loop to calculate energy loss and stopping power
@@ -159,7 +163,7 @@ for pp = 1:length(phioffsets)
             %dEdX_values(proton, ii) = dEdX_new;
 
             meandEdX(ii) = meandEdX(ii)+ dEdX_new; 
-            dose_vals(ii)= dose_vals(ii) + 1/rho*dEdX_new*1/A_beam; 
+            dose_vals(ii)= dose_vals(ii) + 1/rho*dEdX_new*npart0/A_beam; 
 
 
         end
@@ -176,7 +180,7 @@ for pp = 1:length(phioffsets)
 
     subplot(2,1,1)
     %plot(x_values(1:numsteps), meandEdX(1:numsteps), 'b', 'LineWidth', 2,'Color',"#0072BD", 'DisplayName', 'With RF, 0.03% energy spread');
-    plot(x_values(1:numsteps), scaled_dose_vals(1:numsteps), 'b', 'LineWidth', 2,'Color',"#0072BD", 'DisplayName', sprintf('With RF, %.2f%% energy spread',energyspreadpercent));
+    plot(x_values(1:numsteps), scaled_dose_vals(1:numsteps), 'b', 'LineWidth', 2,'Color',"#0072BD", 'DisplayName', sprintf('With RF, E=%.2f MeV %.2f%% energy spread',energy0, energyspreadpercent));
     hold on;
     %plot(x_values(1:numsteps), meandEdX_comp(1:numsteps), 'b', 'LineWidth', 2,'LineStyle',':', 'Color',"#7E2F8E",'DisplayName','No RF');
     plot(x_values(1:numsteps), scaled_dose_comp(1:numsteps), 'b', 'LineWidth', 2,'LineStyle',':', 'Color',"#7E2F8E",'DisplayName','No RF, 0.03% energy spread');
@@ -200,17 +204,22 @@ for pp = 1:length(phioffsets)
     %figure('WindowStyle','docked', 'Name', sprintf('Phase %.2f', phase), 'NumberTitle', 'off')
     subplot(2,1,2)
     E_spec=938.272*(G-1);
-    hh=histogram(E_spec, 100);
+    E_spec_comp=938.272*(G_comp-1);
+    histogram(E_spec_comp, 100, 'FaceColor',"#7E2F8E", 'DisplayName','No RF, 0.03% energy spread');
+    hold on;
+    hh=histogram(E_spec, 100, 'FaceColor',"#0072BD", 'DisplayName', sprintf('With RF, E=%.2f MeV %.2f%% energy spread',energy0, energyspreadpercent));
     xlabel('Energy [MeV]');
     ylabel('Simulated Particles');
     bincounts= hh.BinCounts;
+    hold on;
     ylim([0,max(bincounts)])
     yyaxis right 
     ylabel('Particles')
     bincounts_scaled=bincounts*sim_particles_scaling;
     ylim([0,max(bincounts_scaled)])
     title(sprintf('phase offset is %.2f radians', phase));
-    saveas(gcf,sprintf('BraggCurveandEspread%.2f_E%.2f_Esp%.2f.png', phase, energy0, energyspreadpercent));
+    legend('Location','northwest')
+    saveas(gcf,sprintf('%s.png',masterfilename));
     shg
 end
 % 
