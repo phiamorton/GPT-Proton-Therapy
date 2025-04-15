@@ -2,7 +2,7 @@
 phioffsets = [0.00] %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
  %[0.33]; %3.4; %in rad, 0-2pi
 %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98        3.31        3.64        3.97         4.3        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
-energyspreadpercent= 0.03
+energyspreadpercent= 0.03 % in %
 energy0=228.5 %MeV
 masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
 %%Material and constants
@@ -222,13 +222,12 @@ for pp = 1:length(phioffsets)
     saveas(gcf,sprintf('%s.png',masterfilename));
     shg
 end
-% 
+
 % figure
 % plot(phioffsets(1:length(phioffsets)),max_Egain(1:length(phioffsets)), 'b', 'LineWidth', 2)
 % xlabel('Phase')
 % ylabel('Max energy reached [MeV]')
 % xlim([0,6.28])
-% 
 % 
 % max_E_diff = -(228.5 - max(max_Egain)) %MeV
 % length_cell = 0.0236;  %m
