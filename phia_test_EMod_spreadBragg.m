@@ -9,6 +9,7 @@ phioffsets =  [0.00] %[0.00  0.33        0.66        0.99        1.32        1.6
 energyspreadpercent= 0.03
 energy0 = 228.5 %alter energy into cavities
 uniform=true
+NoRF=true
 
 rounded = round(phioffsets,2);
 %format bank
@@ -18,14 +19,29 @@ for pp = 1:length(phioffsets)
     inputfilepath = 'output_';
     fieldpathname = '""';
     GPTpathname = 'C:\bin\'; 
+    ffacE = 5.5; %5.5 ;%-482; %7.5; %5.1;
+
+    %Cavity run with 2.5 MW into each cell 
+    %an average gradient of 30 MV/m, 400 kW of input power is required to be fed into this cell. 
+    % %The peak surface E field in this case is 68 MV/m, and the peak H field is 99 kA/m. (https://doi.org/10.1063/5.0035331) 
+    %E and H files should be in V/m already, need to scale to get to
+    %average gradient of 30 MV/m
+
     if uniform ==true
         masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform.in', phioffsetE, energy0, energyspreadpercent);
-    else
+    elseif uniform==false
         masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f.in', phioffsetE, energy0, energyspreadpercent);
     end
+
+    if NoRF==true
+        masterfilename= sprintf('noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform.in', phioffsetE, energy0, energyspreadpercent);
+        ffacE=0
+    end
+
+    masterfilename
     %sprintf('EnergyMod_phi0.00_0.03Espread_nominal.in') %for ffac=0
-    mrfilename = 'mr_test.mr';
-    date = '6_27_2024';
+    %mrfilename = 'mr_test.mr';
+    %date = '6_27_2024';
     
     load energyMod_phase_1_24_2022_40cells30MeV
     philistE = philist;
@@ -35,12 +51,6 @@ for pp = 1:length(phioffsets)
     freq = 2.856e9;
     dcellE = 14.7*0.0254; %distance between the cells, 14.7 inches, takes input as m
     a = .005; %0.5 cm
-    ffacE = 5.5%5.5 ;%-482; %7.5; %5.1;
-    %Cavity run with 2.5 MW into each cell 
-    %an average gradient of 30 MV/m, 400 kW of input power is required to be fed into this cell. 
-    % %The peak surface E field in this case is 68 MV/m, and the peak H field is 99 kA/m. (https://doi.org/10.1063/5.0035331) 
-    %E and H files should be in V/m already, need to scale to get to
-    %average gradient of 30 MV/m
     ncellsE = 2; %length(philistE); %changed to 2 (only 2 cell cavities)
     phasebreakE = 2;
     subplotnum = 5;
@@ -70,7 +80,7 @@ for pp = 1:length(phioffsets)
     Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
     zposE0 = zlen0/1.8; %.03; %what is this doing
     sc = 0;
-    xoffset=0p; %m
+    xoffset=0; %m
     yoffset= 0; %m
     %tdiff = .001/beta0/c;
     
