@@ -22,8 +22,22 @@ ERF=938.272*(GRF-1); %MeV
     %G=G(~isnan(G));
 xRF=dataRF.x;
 yRF=dataRF.y;
-zRF=dataRF.z; 
+zRF=dataRF.z;
+%zRF_sorted=sort(zRF)
 lengthRF=length(zRF);
+k = ceil(lengthRF * overlap);
+
+% --- Step 2: Find indices of top 'k' values in zRF
+[~, sorted_idx] = sort(zRF, 'descend');
+top_idx = sorted_idx(1:k);
+
+% --- Step 3: Use these indices to grab corresponding data
+x_top = xRF(top_idx);
+y_top = yRF(top_idx);
+z_top = zRF(top_idx);
+E_top = ERF(top_idx);
+
+z_threshold = min(z_top) %where to splice the NoRF data
 
 GNoRF = dataNoRF.G;
 ENoRF=938.272*(GNoRF-1); %MeV
@@ -31,6 +45,24 @@ ENoRF=938.272*(GNoRF-1); %MeV
 xNoRF=dataNoRF.x;
 yNoRF=dataNoRF.y;
 zNoRF=dataNoRF.z; 
-lengthNoRF=length(zNoRF)
+lengthNoRF=length(zNoRF);
 
-    
+% --- Step 2: Filter zNoRF values >= threshold
+idx_keep = zNoRF <= z_threshold;
+
+% --- Step 3: Extract corresponding values
+zNoRF_kept = zNoRF(idx_keep);
+xNoRF_kept = xNoRF(idx_keep);
+yNoRF_kept = yNoRF(idx_keep);
+ENoRF_kept = ENoRF(idx_keep);
+%length(ENoRF_kept)
+%%plot 
+figure;
+hold on;
+scatter(z_top, E_top, 'DisplayName','RF');
+
+scatter(zNoRF_kept,ENoRF_kept, 'DisplayName', sprintf('No RF'));
+hold off;
+xlabel('z [cm]');
+ylabel('Energy [MeV]');
+legend();
