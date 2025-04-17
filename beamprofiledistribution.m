@@ -31,8 +31,8 @@ for pp = 1:length(phioffsets)
     scatter(x,y,25,E, 'filled')
     xlabel('x [m]')
     ylabel('y [m]')
-    xlim([-a-a/10,a+a/10])
-    ylim([-a-a/10,a+a/10])
+    %xlim([-a-a/10,a+a/10])
+    %tylim([-a-a/10,a+a/10])
 
     s2=subplot(1,2,2);
     %nexttile
