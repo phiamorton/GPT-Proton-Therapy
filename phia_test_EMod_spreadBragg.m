@@ -70,6 +70,8 @@ for pp = 1:length(phioffsets)
     Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
     zposE0 = zlen0/1.8; %.03; %what is this doing
     sc = 0;
+    xoffset=0p; %m
+    yoffset= 0; %m
     %tdiff = .001/beta0/c;
     
     %% Initialize particle distribution entering treatment room
@@ -91,6 +93,7 @@ for pp = 1:length(phioffsets)
         ['setGBxemittance("beam",' num2str(emit0) ');'];
         ['setGByemittance("beam",' num2str(emit0) ');'];
         ['setGdist("beam","g",' num2str(gamma0) ',' num2str(dgamma0) ',3,3); '];
+        ['setoffset("beam",' num2str(xoffset) ',' num2str(yoffset) ',0,0,0,0);'];
         ['addxdiv("beam",0,' num2str(divangx0) ');'];
         ['addydiv("beam",0,' num2str(divangy0) ');'];
         '}';
@@ -117,6 +120,7 @@ for pp = 1:length(phioffsets)
         ['setGBxemittance("beam",' num2str(emit0) ');'];
         ['setGByemittance("beam",' num2str(emit0) ');'];
         ['setGdist("beam","g",' num2str(gamma0) ',' num2str(dgamma0) ',3,3); '];
+        ['setoffset("beam",' num2str(xoffset) ',' num2str(yoffset) ',0,0,0,0);'];
         ['addxdiv("beam",0,' num2str(divangx0) ');'];
         ['addydiv("beam",0,' num2str(divangy0) ');'];
         '}';
