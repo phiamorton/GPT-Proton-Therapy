@@ -59,10 +59,26 @@ ENoRF_kept = ENoRF(idx_keep);
 %%plot 
 figure;
 hold on;
-scatter(z_top, E_top, 'DisplayName','RF');
+histogram([ENoRF_kept;E_top], 100, 'FaceColor', "#7E2F8E", 'DisplayName', sprintf('combined')); %concatenate
 
-scatter(zNoRF_kept,ENoRF_kept, 'DisplayName', sprintf('No RF'));
+histogram(E_top, 100, 'FaceColor', "#0072BD", 'DisplayName','RF');
+
+histogram(ENoRF_kept, 50, 'FaceColor', "#77AC30", 'DisplayName', sprintf('No RF'));
+
+hold off;
+xlabel('Energy [Mev]');
+ylabel('counts [simulated particles]');
+legend();
+
+figure;
+hold on;
+%scatter([zNoRF_kept;z_top],[ENoRF_kept;E_top], 'Color', "#7E2F8E", 'DisplayName', sprintf('combined')); %concatenate
+
+scatter(z_top, E_top,'Color', "#0072BD", 'DisplayName','RF');
+
+scatter(zNoRF_kept,ENoRF_kept, 'Color', "#77AC30", 'DisplayName', sprintf('No RF'));
+
 hold off;
 xlabel('z [cm]');
-ylabel('Energy [MeV]');
+ylabel('Energy [Mev]');
 legend();
