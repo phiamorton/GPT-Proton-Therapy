@@ -233,8 +233,8 @@ max_E_diff = -(energy0 - max(max_Egain)) %MeV
 length_cell = 0.0236;  %m
 % %use with input 0 energy spread
 MaxGradSeen = max_E_diff/(2*length_cell) %2 cells %peak surface E field in this case is 68 MV/m
-shuntimpedance= .46 %M-Ohm/m %54.8 %M-Ohm/m
-powerloss = max_E_diff^2/(2*length_cell*shuntimpedance)  %MV^2/m*MOhm/m = V^2/Ohm %power loss of klystron/power into cavities
+shuntimpedance= 4.6/1000 %4.6 kOhm/m %M-Ohm/m %54.8 %M-Ohm/m
+powerloss = max_E_diff^2/(2*length_cell*shuntimpedance)  %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
 
 % %Cavity run with 2.5 MW into each cell
 % cell_Power=2.5; %MW
