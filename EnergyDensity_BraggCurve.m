@@ -229,7 +229,7 @@ end
 % ylabel('Max energy reached [MeV]')
 % xlim([0,6.28])
 % 
-max_E_diff = -(energy0 - max(max_Egain)) %MeV
+max_E_diff = -(energy0 - max_Egain) %MeV
 length_cell = 0.0236;  %m
 % %use with input 0 energy spread
 MaxGradSeen = max_E_diff/(2*length_cell) %2 cells %peak surface E field in this case is 68 MV/m
