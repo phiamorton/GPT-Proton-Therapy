@@ -38,7 +38,7 @@ for pp = 1:length(phioffsets)
         ffacE=0
     end
 
-    masterfilename
+    %masterfilename;
     %sprintf('EnergyMod_phi0.00_0.03Espread_nominal.in') %for ffac=0
     %mrfilename = 'mr_test.mr';
     %date = '6_27_2024';

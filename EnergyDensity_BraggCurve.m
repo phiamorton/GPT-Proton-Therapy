@@ -186,12 +186,7 @@ for pp = 1:length(phioffsets)
     plot(x_values(1:numsteps), scaled_dose_comp(1:numsteps), 'b', 'LineWidth', 2,'LineStyle',':', 'Color',"#7E2F8E",'DisplayName','No RF, 0.03% energy spread');
     
     hold off;
-    % hold on;
-    %plot(x_values(1:ii), dEdX_values(1:ii), 'b', 'LineWidth', 2, 'Color', 'magenta');
-    %xline(32.75, '--r', '228.5 MeV Proton', 'LineWidth', 2);
-    %xline(38, '--r', '250 MeV Proton', 'LineWidth', 2);
-    %legend(sprintf('%.2f phase', phase));
-    %xlim([0 material_length]);
+   
     xlim([29,35]);
     xlabel('Position [cm]', 'FontSize', 12);
     %ylabel('Stopping Power (dE/dx) [MeV/cm]', 'FontSize', 12);
