@@ -7,7 +7,7 @@ clearvars
 %phioffsets = [0.00 1/4*3.14 3.14/2 3/4*3.14 3.14 3/2*3.14 6.28]; %3.4; %in rad, 0-2pi
 phioffsets =  [0.00] %[0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28];  %linspace(0, 2*pi,30)
 energyspreadpercent= 0.03
-energy0 = 228.5 %alter energy into cavities
+energy0 = 180 %alter energy into cavities
 uniform=true
 
 rounded = round(phioffsets,2);

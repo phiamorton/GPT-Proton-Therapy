@@ -1,7 +1,8 @@
 phase = 0.00;  % Define phase value for grabbing the photo
 energyspreadpercent= 0.03
-energy0=228.5 %MeV
+energy0=180 %MeV
 uniform=true
+a = .005; %0.5 cm
 if uniform ==true
     masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform', phioffsetE, energy0, energyspreadpercent);
 else
@@ -15,7 +16,6 @@ for pp = 1:length(phioffsets)
     %% Extract the columns from the table
     G = data.G;
     E=938.272*(G-1); %MeV
-    %G= phiasimulationsEnergyModphi0.VarName6;
     %G=G(~isnan(G));
     x=data.x;
     y=data.y;
@@ -31,8 +31,9 @@ for pp = 1:length(phioffsets)
     scatter(x,y,25,E, 'filled')
     xlabel('x [m]')
     ylabel('y [m]')
-    
-    %hold on;
+    xlim([-a-a/10,a+a/10])
+    ylim([-a-a/10,a+a/10])
+
     s2=subplot(1,2,2);
     %nexttile
     scatter(z,x,25,E, 'filled')

@@ -229,11 +229,13 @@ end
 % ylabel('Max energy reached [MeV]')
 % xlim([0,6.28])
 % 
-% max_E_diff = -(228.5 - max(max_Egain)) %MeV
-% length_cell = 0.0236;  %m
+max_E_diff = -(energy0 - max(max_Egain)) %MeV
+length_cell = 0.0236;  %m
 % %use with input 0 energy spread
-% MaxGradSeen = max_E_diff/length_cell; %peak surface E field in this case is 68 MV/m
-% 
+MaxGradSeen = max_E_diff/(2*length_cell) %2 cells %peak surface E field in this case is 68 MV/m
+shuntimpedance= .46 %M-Ohm/m %54.8 %M-Ohm/m
+powerloss = max_E_diff^2/(2*length_cell*shuntimpedance)  %MV^2/m*MOhm/m = V^2/Ohm %power loss of klystron/power into cavities
+
 % %Cavity run with 2.5 MW into each cell
 % cell_Power=2.5; %MW
 % RF_power = 400; %kW
@@ -242,3 +244,4 @@ end
 % %https://accelconf.web.cern.ch/l06/papers/TUP044.pdf
 % Avg_grad = 15*sqrt(cell_Power/0.1);  %MV/m
 % MaxGradSeen/Avg_grad; %2.26
+
