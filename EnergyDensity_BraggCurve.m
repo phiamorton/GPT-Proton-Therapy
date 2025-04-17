@@ -71,7 +71,7 @@ x_values = linspace(0, material_length, numsteps); %cm
 %plotbrowser
 
 %%the no RF case
-comparison_noE = readtable(sprintf('comparison_phi0.00_E228_Esp0.03.txt'));
+comparison_noE = readtable(sprintf('output_noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform.txt', phioffsetE, energy0, energyspreadpercent)); %sprintf('comparison_phi0.00_E228_Esp0.03.txt'));
 G_comp =comparison_noE.G;
 G_comp=G_comp(~isnan(G_comp));
 meandEdX_comp=zeros(numsteps);
