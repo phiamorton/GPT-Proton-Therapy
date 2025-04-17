@@ -7,7 +7,7 @@ clearvars
 %phioffsets = [0.00 1/4*3.14 3.14/2 3/4*3.14 3.14 3/2*3.14 6.28]; %3.4; %in rad, 0-2pi
 phioffsets =  [0.00] %[0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28];  %linspace(0, 2*pi,30)
 energyspreadpercent= 0.03
-energy0 = 180 %alter energy into cavities
+energy0 = 228.5 %alter energy into cavities
 uniform=true
 
 rounded = round(phioffsets,2);
@@ -35,7 +35,7 @@ for pp = 1:length(phioffsets)
     freq = 2.856e9;
     dcellE = 14.7*0.0254; %distance between the cells, 14.7 inches, takes input as m
     a = .005; %0.5 cm
-    ffacE = 5.5 ;%-482; %7.5; %5.1;
+    ffacE = 5.5%5.5 ;%-482; %7.5; %5.1;
     %Cavity run with 2.5 MW into each cell 
     %an average gradient of 30 MV/m, 400 kW of input power is required to be fed into this cell. 
     % %The peak surface E field in this case is 68 MV/m, and the peak H field is 99 kA/m. (https://doi.org/10.1063/5.0035331) 
@@ -83,8 +83,8 @@ for pp = 1:length(phioffsets)
         '}';
         'if(npart > 1){';
         ['setparticles("beam",' num2str(npart0) ',mp,-qe,' num2str(Qtot0) ');'];
-        ['setxdist("beam","g",0,' num2str(xrms0) ',3,3);'];
-        ['setydist("beam","g",0,' num2str(yrms0) ',3,3);'];
+        ['setrxydist("beam","u",' num2str(a/2) ',' num2str(a) ');'];
+        ['setphidist("beam","u",0,2*pi);'];
         ['setzdist("beam","u", 0, ' num2str(zlen0) ');'];
         'setGBxdist("beam","g",0,1e-3,3,3); #primarily setting distribution shape, will be rescaled';
         'setGBydist("beam","g",0,1e-3,3,3);';
@@ -98,7 +98,8 @@ for pp = 1:length(phioffsets)
         'spacecharge3dmesh();';
         '}';
         };
-    else
+        
+    else 
         buildparticles = {
         'accuracy(6);';
         ['npart = ' num2str(npart0) ';'];
@@ -108,8 +109,8 @@ for pp = 1:length(phioffsets)
         '}';
         'if(npart > 1){';
         ['setparticles("beam",' num2str(npart0) ',mp,-qe,' num2str(Qtot0) ');'];
-        ['setxdist("beam","u",0,' num2str(a) ',3,3);'];
-        ['setydist("beam","u",0,' num2str(a) ',3,3);'];
+        ['setxdist("beam","g",0,' num2str(xrms0) ',3,3);'];
+        ['setydist("beam","g",0,' num2str(yrms0) ',3,3);'];
         ['setzdist("beam","u", 0, ' num2str(zlen0) ');'];
         'setGBxdist("beam","g",0,1e-3,3,3); #primarily setting distribution shape, will be rescaled';
         'setGBydist("beam","g",0,1e-3,3,3);';
