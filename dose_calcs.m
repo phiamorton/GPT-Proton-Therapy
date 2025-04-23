@@ -20,9 +20,33 @@ e_0 = 931.5; % MeV
 A = 1; % A for proton=1
 n= 3.34*10^23; %electron density of water in 1/cc
 const = 4*pi*n*re^2*mec2*q^2;  %MeV/cm %4 * pi * NA * re^2 * mec2  * Z * q^2 / TA %MeV/cm
-rad_beam = 0.5/2; %cm - 5mm beam diameter
-A_beam= pi*rad_beam^2; %cm^2
+%rad_beam = 0.5/2; %cm - 5mm beam diameter
+%A_beam= pi*rad_beam^2; %cm^2
 
+mevion_25nA=false;
+mevion_1nA=true;
+
+if mevion_1nA==true
+    xrms0 = 3.495/1000 ;%m 4.9mm
+    %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
+    yrms0 = 4.007/1000; %m 6mm
+    %divergence of beam
+    divangx0 = (3.794-3.496)/120; %.58; %change in x [mm] over 12 cm
+    divangy0 = (4.299-4.007)/120; % .67;
+end  
+if mevion_25nA==true
+    xrms0 = 4.906/1000 ;%m 4.9mm
+    %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
+    yrms0 = 6.039/1000; %m 6mm
+    %divergence of beam
+    divangx0 = (5.198-4.906)/120; %.58; %change in x [mm] over 12 cm
+    divangy0 = (6.289-6.039)/120; % .67;
+end 
+
+yrms0=yrms0*100; %cm
+xrms0=xrms0*100; %cm
+
+A_beam=pi*xrms0*yrms0; %cm^2
 %%Functions and arrays
 
 % Function to calculate beta^2
@@ -160,10 +184,10 @@ for pp = 1:length(phioffsets)
     %meandEdX=meandEdX/length(G);
     dose_comp= dose_comp * 1.602*10^(-13)*1000;  %MeV/g to J/kg [Gy]
     dose_vals= dose_vals * 1.602*10^(-13)*1000 ; %MeV/g to J/kg [Gy]
-    y=linspace(-rad_beam*15,rad_beam*15,numsteps);
+    y=linspace(-yrms0*15,yrms0*15,numsteps);
     [Z,Y]=meshgrid(dose_vals(1:numsteps),y);
     size(dose_vals(1:numsteps));
-    D=Z .* 1/(rad_beam*sqrt(2*pi)).*exp(-Y.^2/(2*rad_beam^2));
+    D=Z .* 1/(yrms0*sqrt(2*pi)).*exp(-Y.^2/(2*yrms0^2));
     %figure(gcf)
     imagesc(x_values,y,D);
     %ylabel('y [cm]');
@@ -179,3 +203,4 @@ for pp = 1:length(phioffsets)
     saveas(gcf,sprintf('%sBraggIm.png', masterfilename))
     
 end
+

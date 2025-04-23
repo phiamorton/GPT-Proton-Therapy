@@ -1,5 +1,6 @@
 phase = 0.00;  % Define phase value for grabbing the photo
-energyspreadpercent= 0.03
+phioffsetE=phase
+energyspreadpercent= 0.3
 energy0=228.5 %MeV
 uniform=true
 a = .005; %0.5 cm

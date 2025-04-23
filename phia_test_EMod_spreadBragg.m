@@ -9,7 +9,7 @@ phioffsets =  [0.00] %[0.00  0.33        0.66        0.99        1.32        1.6
 energyspreadpercent= 0.03
 energy0 = 228.5 %alter energy into cavities
 uniform=true
-NoRF=true
+NoRF=false
 
 rounded = round(phioffsets,2);
 %format bank
@@ -19,7 +19,7 @@ for pp = 1:length(phioffsets)
     inputfilepath = 'output_';
     fieldpathname = '""';
     GPTpathname = 'C:\bin\'; 
-    ffacE = 5.5; %5.5 ;%-482; %7.5; %5.1;
+    ffacE = 5.5*10; %5.5 ;%-482; %7.5; %5.1;
 
     %Cavity run with 2.5 MW into each cell 
     %an average gradient of 30 MV/m, 400 kW of input power is required to be fed into this cell. 
@@ -64,20 +64,39 @@ for pp = 1:length(phioffsets)
     
     dgamma0 = (energy0*energyspreadpercent/100+938.27)/938.27-1; % .03% energy spread
     
-    rad_beam = 0.5/2; %cm - 5mm beam diameter
+    mevion_25nA=false;
+    mevion_1nA=true;
+   
+    if mevion_1nA==true
+        xrms0 = 3.495/1000 ;%m 4.9mm
+        %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
+        yrms0 = 4.007/1000; %m 6mm
+        %divergence of beam
+        divangx0 = (3.794-3.496)/120; %.58; %change in x [mm] over 12 cm
+        divangy0 = (4.299-4.007)/120; % .67;
+    end  
+    if mevion_25nA==true
+        xrms0 = 4.906/1000 ;%m 4.9mm
+        %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
+        yrms0 = 6.039/1000; %m 6mm
+        %divergence of beam
+        divangx0 = (5.198-4.906)/120; %.58; %change in x [mm] over 12 cm
+        divangy0 = (6.289-6.039)/120; % .67;
+    end 
     %beta0 = .5944; %v/c? 
     c = 2.998e8; %m/s
     beta0= sqrt(1-1/(gamma0^2));
-    xrms0 = rad_beam/100; %m I think;
-    yrms0 = rad_beam/100; %.0035;
+    
     t_bunch= 2*10^(-6); %2 us
     %zlen0 = t_bunch*c*beta0 %in m
     %t_4rf=4/freq %4RF cycles is ~1.4e-9 seconds 
-    zlen0= 1*c/freq*beta0  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
-    divangx0 = 0; %.58;
-    divangy0 = 0; % .67;
+    zlen0= 3*c/freq*beta0  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
+    %based on mevion numbers, 230 MeV beam will be 12 cm long at isocenter
+    %(midway between cavities)
     emit0 = .01e-6; % 3 pi mm-mrad emittance
     Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
+    %current for 2us period the pulse is there
+    %mevion gave average current
     zposE0 = zlen0/1.8; %.03; %what is this doing
     sc = 0;
     xoffset=0; %m

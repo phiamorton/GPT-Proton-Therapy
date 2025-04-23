@@ -9,6 +9,12 @@ else
     masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
 end
 
+NoRF=false
+if NoRF==true
+    masterfilename= sprintf('output_noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform', phioffsetE, energy0, energyspreadpercent);
+    ffacE=0
+end
+
 for pp = 1:length(phioffsets)
     phase = phioffsets(pp)
     data = readtable(sprintf('%s.txt',masterfilename));
