@@ -252,10 +252,10 @@ length_cell = 0.0236;  %m
 % %use with input 0 energy spread
 MaxGradSeen = max_E_diff/(2*length_cell) %2 cells %peak surface E field in this case is 68 MV/m
 % Compute the average energy gain
-AvgEGain = mean(valid_E0 - energy0);
+AvgEGain = mean(E_0 - energy0);
 AvgGrad=AvgEGain/(2*length_cell)
-shuntimpedance= 54.8e6 %Ohm/m
-power_avg= AvgEGain^2/(2*length_cell*shuntimpedance)
+shuntimpedance= 54.8 %e6 %MOhm/m
+power_avg= AvgEGain^2/(2*length_cell*shuntimpedance) %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
 power_max = max_E_diff^2/(2*length_cell*shuntimpedance)  %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
 
 % %Cavity run with 2.5 MW into each cell
@@ -264,6 +264,7 @@ power_max = max_E_diff^2/(2*length_cell*shuntimpedance)  %MV^2/m*MOhm/m = V^2/Oh
 % 
 % %Shunt_Imp = MaxGradSeen^2*length_cell/cell_Power %MeV^2/(m* MW)
 % %https://accelconf.web.cern.ch/l06/papers/TUP044.pdf
-% Avg_grad = 15*sqrt(cell_Power/0.1);  %MV/m
+Avg_grad_calc = 15*sqrt(power_avg/100000)  %MV/m, assumes P is in W
+disp(AvgGrad-Avg_grad_calc)
 % MaxGradSeen/Avg_grad; %2.26
 
