@@ -7,6 +7,13 @@ masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, e
 data = readtable(sprintf('%s.txt',masterfilename));
 rho=1;
 
+newWidth = 1292;
+newHeight = 964;
+%real camera calibration ruler photo 1292x964 pixels, 18.5cm-6.8cm
+realwidth=18.5-6.8; %in width
+realpixelsize=realwidth/newWidth;
+realyrange=realpixelsize*newHeight;
+
 mevion_25nA=false;
 mevion_1nA=true;
 
@@ -31,21 +38,21 @@ xrms0=xrms0*100; %cm
 A_beam=pi*xrms0*yrms0; %cm^2
 
 %% Extract the columns from the table
-G = data.G(1:100);
-x_beam=data.x(1:100)*100;
-y_beam=data.y(1:100)*100;
+G = data.G;
+x_beam=data.x*100;
+y_beam=data.y*100;
 E0 =938.272*(G-1); %MeV, starting energy
 num_particles = length(G);
 
 % --- Setup dose grid ---
 z_max = 50;                  
-num_z = 1000;                
+num_z = newWidth;                
 z_vals = linspace(0, z_max, num_z); 
-dx=z_max/num_z
+dx=z_max/num_z;
 
 % Increase y_bins range if needed
 realyrange=8.7297;
-y_bins = linspace(-realyrange/2, realyrange/2, 200);  % Wide enough to show thin beam
+y_bins = linspace(-realyrange/2, realyrange/2, newHeight);  % Wide enough to show thin beam
 dose_map = zeros(num_z, length(y_bins));    % z vs y (dose map)
 
 % --- Accumulate dose per particle ---
