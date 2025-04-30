@@ -5,6 +5,7 @@ energy0=228.5; %MeV
 phioffsetE=phioffsets;
 masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
 data = readtable(sprintf('%s.txt',masterfilename));
+rho=1;
 
 mevion_25nA=false;
 mevion_1nA=true;
@@ -33,13 +34,14 @@ A_beam=pi*xrms0*yrms0; %cm^2
 G = data.G(1:100);
 x_beam=data.x(1:100)*100;
 y_beam=data.y(1:100)*100;
-E_0 =938.272*(G-1); %MeV, starting energy
+E0 =938.272*(G-1); %MeV, starting energy
 num_particles = length(G);
 
 % --- Setup dose grid ---
 z_max = 50;                  
 num_z = 1000;                
 z_vals = linspace(0, z_max, num_z); 
+dx=z_max/num_z
 
 % Increase y_bins range if needed
 realyrange=8.7297;
@@ -69,7 +71,7 @@ imagesc(z_vals,y_bins, transpose(dose_map));
 
 ylabel('y [cm]');
 xlabel('depth [cm]');
-xmin=8;
+xmin=28;
 xlim([xmin,xmin+11.7]);
 ylim([-realyrange/2,realyrange/2]); 
 a=colorbar;
