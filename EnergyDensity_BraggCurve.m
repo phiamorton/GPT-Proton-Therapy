@@ -4,6 +4,7 @@ phioffsets = [0.00] %[0  0.33        0.66        0.99        1.32        1.65   
 %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98        3.31        3.64        3.97         4.3        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
 energyspreadpercent= 0.03 % in %
 energy0=228.5 %MeV
+phioffsetE=phioffsets
 masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
 %%Material and constants
 I = 75 *10^(-6); % MeV or 80.8+-0.3
@@ -252,19 +253,20 @@ length_cell = 0.0236;  %m
 % %use with input 0 energy spread
 MaxGradSeen = max_E_diff/(2*length_cell) %2 cells %peak surface E field in this case is 68 MV/m
 % Compute the average energy gain
-AvgEGain = mean(E_0 - energy0);
+AvgEGain = (mean(E_0 - energy0))*10^6;
 AvgGrad=AvgEGain/(2*length_cell)
-shuntimpedance= 54.8 %e6 %MOhm/m
-power_avg= AvgEGain^2/(2*length_cell*shuntimpedance) %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
-power_max = max_E_diff^2/(2*length_cell*shuntimpedance)  %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
-
+shuntimpedance= 54.8e6 %MOhm/m
+power_avg= AvgGrad^2/(2*shuntimpedance) %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
+disp(power_avg)
+%power_max = max_E_diff^2/(2*length_cell*shuntimpedance)  %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
+%https://cds.cern.ch/record/1005047/files/p145.pdf 
 % %Cavity run with 2.5 MW into each cell
 % cell_Power=2.5; %MW
 % RF_power = 400; %kW
 % 
 % %Shunt_Imp = MaxGradSeen^2*length_cell/cell_Power %MeV^2/(m* MW)
 % %https://accelconf.web.cern.ch/l06/papers/TUP044.pdf
-Avg_grad_calc = 15*sqrt(power_avg/100000)  %MV/m, assumes P is in W
+Avg_grad_calc = 15*10^6*sqrt(power_avg/100000)  %MV/m, assumes P is in W
 disp(AvgGrad-Avg_grad_calc)
 % MaxGradSeen/Avg_grad; %2.26
 
