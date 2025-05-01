@@ -60,13 +60,36 @@ pixelsizey= y_range/graysize(2); %cm %change based on image scale
 % Plot the integrated intensity vs. x-position
 x = 1:newWidth;
 x_cm= linspace(xmin, xmax ,newWidth);  %xlim([15,38]) steal from image boundaries
-figure('Visible','off');
+figure('Visible','on');
 plot(x_cm, intensityProfile, 'k', 'LineWidth', 2);
 title(sprintf('Reconstructed Dose vs Depth at Relative Phase %.2f',phase))
 xlabel('Depth [cm]');
 ylabel('Dose [a.u.]');
 %title(sprintf('Phase = %.2f', phase));
 grid on;
+
+%%extract max intensity value and furthest range
+% 1. Find max intensity and corresponding x
+[maxIntensity, idxMax] = max(intensityProfile);
+xAtMax = x_cm(idxMax);
+% 2. Find the furthest x with nonzero intensity
+nonzeroIndices = find(intensityProfile > maxIntensity*0.01);
+furthestX = x_cm(nonzeroIndices(end));  % largest x with nonzero intensity
+%intensityProfile map to energy
+%find energy from x position map
+x_val_furthest=furthestX;    
+[~, index] = min(abs(stop_pos - x_val_furthest));
+index;
+energy_furthest=G(index);
+
+x_val_highest=xAtMax;    
+[~, index] = min(abs(stop_pos - x_val_highest));
+index;
+energy_highest=G(index);
+% Display results
+fprintf('Max intensity: %f\n', maxIntensity);
+fprintf('position at max intensity: %f cm \n corresponds to highest intensity at %f MeV \n', xAtMax, energy_highest);
+fprintf('Furthest range: %f cm \n corresponds to a max energy of %f MeV \n', furthestX, energy_furthest);
 
 % Save the intensity plot
 intensity_filename = sprintf('%sIntensity.png', masterfilename);
@@ -248,8 +271,6 @@ for x_pos = length(x_cm):-1:1 %start at high x values, furthest out
         
         dose_resized=rescale(dose_resized,0, 1)*intensity;
         
-        
-    
         intensityProfile=intensityProfile-dose_resized; %need to rescale differently
 
         plot(x_cm,intensityProfile,'DisplayName', num2str(x_val));
@@ -270,11 +291,12 @@ for x_pos = length(x_cm):-1:1 %start at high x values, furthest out
 end
 
 hold off
+
 energy_spectrum(1:length(x_cm));
 
 figure
 subplot(2,1,2); 
-data = readtable(masterfilename.txt);
+data = readtable(sprintf('%s.txt',masterfilename));
 
 %% Extract the columns from the table
 G = data.G;
