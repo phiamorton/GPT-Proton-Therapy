@@ -257,12 +257,15 @@ MaxGradSeen = max_E_diff/(2*length_cell); %MV/m %2 cells %peak surface E field i
 AvgEGain = (mean(E_0 - energy0))*10^6;
 AvgGrad=AvgEGain/(2*length_cell);
 shuntimpedance= 54.8e6 %Ohm/m
-fprintf('Max gradient %f MV/m \n', MaxGradSeen)
+fprintf('Max gradient %.2f MV/m \n', MaxGradSeen)
 %p_disp=max_E_diff^2/(2*shuntimpedance*2*length_cell)
 p_disp=(MaxGradSeen*1000000)^2/(2*shuntimpedance); %W
-fprintf('Power calculated from max gradient %f MW \n', p_disp/1e6)
-power_avg= AvgGrad^2/(2*shuntimpedance); %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
-fprintf('Power calculated from average gradient %f MW \n', power_avg/1e6)
+fprintf('Power calculated from max gradient %.2f MW \n', p_disp/1e6)
+fprintf('Power calculated from max gradient %.2f MW per cavity \n', p_disp/1e6/2)
+power_avg= AvgGrad^2/(2*shuntimpedance); %MV^2/m*MOhm/m = V^2/Ohm= W 
+%power loss of klystron/power into cavities ?
+fprintf('Power calculated from average gradient %.2f MW \n', power_avg/1e6)
+fprintf('Power calculated from average gradient %.2f MW per cavity \n', power_avg/1e6/2)
 %disp(power_avg)
 %power_max = max_E_diff^2/(2*length_cell*shuntimpedance)  %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
 %https://cds.cern.ch/record/1005047/files/p145.pdf 
@@ -273,7 +276,7 @@ fprintf('Power calculated from average gradient %f MW \n', power_avg/1e6)
 % %Shunt_Imp = MaxGradSeen^2*length_cell/cell_Power %MeV^2/(m* MW)
 % %https://accelconf.web.cern.ch/l06/papers/TUP044.pdf
 Avg_grad_calc = 15*sqrt(power_avg/100000);  %MV/m, assumes P is in W
-fprintf('Average gradient calculated from power %f MV/m \n', Avg_grad_calc)
+fprintf('Average gradient calculated from power %.2f MV/m \n', Avg_grad_calc)
 %disp(AvgGrad-Avg_grad_calc)
 % MaxGradSeen/Avg_grad; %2.26
 

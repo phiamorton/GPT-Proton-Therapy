@@ -1,6 +1,6 @@
 phase = 0.00;  % Define phase value for grabbing the photo
 phioffsetE=phase
-energyspreadpercent= 0.3
+energyspreadpercent= 0.03
 energy0=228.5 %MeV
 uniform=true
 a = .005; %0.5 cm
@@ -77,9 +77,24 @@ hold on;
 
 scatter(z_top, E_top,'Color', "#0072BD", 'DisplayName','RF');
 
-scatter(zNoRF_kept,ENoRF_kept, 'Color', "#77AC30", 'DisplayName', sprintf('No RF'));
+scatter(zNoRF_kept,ENoRF_kept, 'Color', "#0072BD", 'DisplayName', sprintf('No RF'));
 
 hold off;
 xlabel('z [cm]');
 ylabel('Energy [Mev]');
 legend();
+
+
+figure;
+hold on;
+%scatter([zNoRF_kept;z_top],[ENoRF_kept;E_top], 'Color', "#7E2F8E", 'DisplayName', sprintf('combined')); %concatenate
+
+%scatter(y_top, E_top, 'DisplayName','RF','Color',"red",'Marker','*');
+%scatter(yNoRF_kept,ENoRF_kept, 'DisplayName', sprintf('No RF'),'Color',"red",'Marker','+');
+
+scatter([yNoRF_kept;y_top],[ENoRF_kept;E_top])
+hold off;
+xlabel('y [cm]');
+ylabel('Energy [Mev]');
+legend();
+%need to feed this into making an image to do reconstruction with

@@ -8,9 +8,9 @@ clearvars
 phioffsets =  [0.00] %[0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28];  %linspace(0, 2*pi,30)
 energyspreadpercent= 0.03
 energy0 = 228.5 %alter energy into cavities
-uniform=true
+uniform=false
 NoRF=false
-
+ffac=true
 rounded = round(phioffsets,2);
 %format bank
 num2str(rounded);
@@ -19,8 +19,8 @@ for pp = 1:length(phioffsets)
     inputfilepath = 'output_';
     fieldpathname = '""';
     GPTpathname = 'C:\bin\'; 
-    ffacE = 5.5*10; %5.5 ;%-482; %7.5; %5.1;
-
+    ffacE = 5.5;%*10; %5.5 ;%-482; %7.5; %5.1;
+    
     %Cavity run with 2.5 MW into each cell 
     %an average gradient of 30 MV/m, 400 kW of input power is required to be fed into this cell. 
     % %The peak surface E field in this case is 68 MV/m, and the peak H field is 99 kA/m. (https://doi.org/10.1063/5.0035331) 
@@ -36,6 +36,9 @@ for pp = 1:length(phioffsets)
     if NoRF==true
         masterfilename= sprintf('noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform.in', phioffsetE, energy0, energyspreadpercent);
         ffacE=0
+    end
+    if ffac==true
+        masterfilename= sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f.in', phioffsetE, energy0, energyspreadpercent,ffacE);
     end
 
     %masterfilename;
