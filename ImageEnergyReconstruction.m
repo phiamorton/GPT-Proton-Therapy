@@ -1,7 +1,7 @@
 phase = 0.00;  % Define phase value for grabbing the photo
 energyspreadpercent= 0.03
 energy0=228.5 %MeV
-masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
+masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phase, energy0, energyspreadpercent);
 %filename = masterfilename.png;  % Input file name
 filename=sprintf('%sBraggIm.png', masterfilename)
 inpict = imread(filename);  % Read image
@@ -67,29 +67,6 @@ xlabel('Depth [cm]');
 ylabel('Dose [a.u.]');
 %title(sprintf('Phase = %.2f', phase));
 grid on;
-
-%%extract max intensity value and furthest range
-% 1. Find max intensity and corresponding x
-[maxIntensity, idxMax] = max(intensityProfile);
-xAtMax = x_cm(idxMax);
-% 2. Find the furthest x with nonzero intensity
-nonzeroIndices = find(intensityProfile > maxIntensity*0.01);
-furthestX = x_cm(nonzeroIndices(end));  % largest x with nonzero intensity
-%intensityProfile map to energy
-%find energy from x position map
-x_val_furthest=furthestX;    
-[~, index] = min(abs(stop_pos - x_val_furthest));
-index;
-energy_furthest=G(index);
-
-x_val_highest=xAtMax;    
-[~, index] = min(abs(stop_pos - x_val_highest));
-index;
-energy_highest=G(index);
-% Display results
-fprintf('Max intensity: %f\n', maxIntensity);
-fprintf('position at max intensity: %f cm \n corresponds to highest intensity at %f MeV \n', xAtMax, energy_highest);
-fprintf('Furthest range: %f cm \n corresponds to a max energy of %f MeV \n', furthestX, energy_furthest);
 
 % Save the intensity plot
 intensity_filename = sprintf('%sIntensity.png', masterfilename);
@@ -292,6 +269,32 @@ end
 
 hold off
 
+
+
+%%extract max intensity value and furthest range
+% 1. Find max intensity and corresponding x
+[maxIntensity, idxMax] = max(intensityProfile);
+xAtMax = x_cm(idxMax);
+% 2. Find the furthest x with nonzero intensity
+nonzeroIndices = find(intensityProfile > maxIntensity*0.01);
+furthestX = x_cm(nonzeroIndices(end));  % largest x with nonzero intensity
+%intensityProfile map to energy
+%find energy from x position map
+[~, index_f] = min(abs(stop_pos - furthestX));
+index_f;
+energy_furthest=G(index_f);
+
+x_val_highest=xAtMax;    
+[~, index_h] = min(abs(stop_pos - x_val_highest));
+index_h;
+energy_highest=G(index_h);
+% Display results
+fprintf('Max intensity: %f\n', maxIntensity);
+fprintf('position at max intensity: %f cm \n corresponds to highest intensity at %f MeV \n', xAtMax, energy_highest);
+fprintf('Furthest range: %f cm \n corresponds to a max energy of %f MeV \n', furthestX, energy_furthest);
+
+
+
 energy_spectrum(1:length(x_cm));
 
 figure
@@ -299,8 +302,8 @@ subplot(2,1,2);
 data = readtable(sprintf('%s.txt',masterfilename));
 
 %% Extract the columns from the table
-G = data.G;
-E=938.272*(G-1); %MeV
+G_data = data.G;
+E=938.272*(G_data-1); %MeV
 %% Create a plot
 %figure('WindowStyle','docked', 'Name', sprintf('Energy Spectrum at Phase %.2f', phase), 'NumberTitle', 'off')
 histogram(E, 100);
