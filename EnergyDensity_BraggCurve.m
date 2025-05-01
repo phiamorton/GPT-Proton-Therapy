@@ -1,10 +1,10 @@
 % Read the data from the text file using readtable
-phioffsets = [0.00] %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
+phioffsets = [0.00]; %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
  %[0.33]; %3.4; %in rad, 0-2pi
 %[0  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98        3.31        3.64        3.97         4.3        4.63        4.96        5.29        5.62        5.95        6.28]; %3.4; %in rad, 0-2pi
-energyspreadpercent= 0.03 % in %
-energy0=228.5 %MeV
-phioffsetE=phioffsets
+energyspreadpercent= 0.03; % in %
+energy0=228.5; %MeV
+phioffsetE=phioffsets;
 masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
 %%Material and constants
 I = 75 *10^(-6); % MeV or 80.8+-0.3
@@ -100,7 +100,7 @@ G_comp =comparison_noE.G;
 G_comp=G_comp(~isnan(G_comp));
 meandEdX_comp=zeros(numsteps);
 dose_comp=zeros(numsteps);
-npart_comp=length(G_comp)
+npart_comp=length(G_comp);
 %length(G_comp)
 for proton = 1:length(G_comp)
     E_0 =938.272*(G_comp(proton)-1); %MeV, starting energy
@@ -156,7 +156,7 @@ for pp = 1:length(phioffsets)
     dose_vals = zeros(numsteps);
     meandEdX=zeros(numsteps);
     size(dEdX_values);
-    npart0=length(G)
+    npart0=length(G);
     for proton = 1:length(G)
         E_0 =938.272*(G(proton)-1); %MeV, starting energy
         % Loop to calculate energy loss and stopping power
@@ -196,8 +196,8 @@ for pp = 1:length(phioffsets)
     dose_comp= dose_comp * 1.602e-10;  %MeV/g to J/kg [Gy]
     dose_vals= dose_vals * 1.602e-10 ; %MeV/g to J/kg [Gy]
     %% Create a plot
-    figure(gcf)
-    
+    %figure(gcf)
+    figure('Visible','off')
     %scale up from sim particles to real particles
     scaled_dose_comp= dose_comp * sim_particles_scaling;  
     scaled_dose_vals= dose_vals * sim_particles_scaling; 
@@ -239,7 +239,7 @@ for pp = 1:length(phioffsets)
     title(sprintf('phase offset is %.2f radians', phase));
     legend('Location','northwest')
     saveas(gcf,sprintf('%s.png',masterfilename));
-    shg
+    %shg
 end
 
 % figure
@@ -248,19 +248,21 @@ end
 % ylabel('Max energy reached [MeV]')
 % xlim([0,6.28])
 % 
+max_Egain
 max_E_diff = -(energy0 - max_Egain) %MeV
 length_cell = 0.0236;  %m
 % %use with input 0 energy spread
-MaxGradSeen = max_E_diff/(2*length_cell) %MV/m %2 cells %peak surface E field in this case is 68 MV/m
+MaxGradSeen = max_E_diff/(2*length_cell); %MV/m %2 cells %peak surface E field in this case is 68 MV/m
 % Compute the average energy gain
 AvgEGain = (mean(E_0 - energy0))*10^6;
 AvgGrad=AvgEGain/(2*length_cell);
 shuntimpedance= 54.8e6 %Ohm/m
-
+fprintf('Max gradient %f MV/m \n', MaxGradSeen)
 %p_disp=max_E_diff^2/(2*shuntimpedance*2*length_cell)
-p_disp=(MaxGradSeen*1000000)^2/(2*shuntimpedance) %W
-
-power_avg= AvgGrad^2/(2*shuntimpedance) %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
+p_disp=(MaxGradSeen*1000000)^2/(2*shuntimpedance); %W
+fprintf('Power calculated from max gradient %f MW \n', p_disp/1e6)
+power_avg= AvgGrad^2/(2*shuntimpedance); %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
+fprintf('Power calculated from average gradient %f MW \n', power_avg/1e6)
 %disp(power_avg)
 %power_max = max_E_diff^2/(2*length_cell*shuntimpedance)  %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
 %https://cds.cern.ch/record/1005047/files/p145.pdf 
@@ -270,7 +272,8 @@ power_avg= AvgGrad^2/(2*shuntimpedance) %MV^2/m*MOhm/m = V^2/Ohm= W %power loss 
 % 
 % %Shunt_Imp = MaxGradSeen^2*length_cell/cell_Power %MeV^2/(m* MW)
 % %https://accelconf.web.cern.ch/l06/papers/TUP044.pdf
-%Avg_grad_calc = 15*10^6*sqrt(power_avg/100000)  %MV/m, assumes P is in W
+Avg_grad_calc = 15*sqrt(power_avg/100000);  %MV/m, assumes P is in W
+fprintf('Average gradient calculated from power %f MV/m \n', Avg_grad_calc)
 %disp(AvgGrad-Avg_grad_calc)
 % MaxGradSeen/Avg_grad; %2.26
 
