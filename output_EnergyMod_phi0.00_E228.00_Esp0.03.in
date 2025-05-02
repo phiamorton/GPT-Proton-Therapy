@@ -1,0 +1,28 @@
+accuracy(6); 
+npart = 2000; 
+sc = 0; 
+if(npart==1){ 
+setstartpar("beam",0,0,0,0,0,0.73828,mp,-qe,4.2e-15); 
+} 
+if(npart > 1){ 
+setparticles("beam",2000,mp,-qe,4.2e-15); 
+setxdist("beam","g",0,0.0025,3,3); 
+setydist("beam","g",0,0.0025,3,3); 
+setzdist("beam","u", 0, 356.13); 
+setGBxdist("beam","g",0,1e-3,3,3); #primarily setting distribution shape, will be rescaled 
+setGBydist("beam","g",0,1e-3,3,3); 
+setGBxemittance("beam",1e-08); 
+setGByemittance("beam",1e-08); 
+setGdist("beam","g",1.243,7.29e-05,3,3);  
+addxdiv("beam",0,0); 
+addydiv("beam",0,0); 
+} 
+if(sc==1){ 
+spacecharge3dmesh(); 
+} 
+map3D_remove("wcs","z",197.6633, ""+"linac_iris.gdf", "x","y","z","R") ; 
+map3D_Hcomplex("wcs","z",197.85, ""+"Hfield_01_13_2021.gdf", "x","y","z","HxRe","HyRe","HzRe","HxIm","HyIm","HzIm", 5.5, 1.9873, 17944777237.3049); 
+map3D_Ecomplex("wcs","z",197.85, ""+"Efield_01_13_2021.gdf", "x","y","z","ExRe","EyRe","EzRe","ExIm","EyIm","EzIm", 5.5, 1.9873, 17944777237.3049); 
+map3D_Hcomplex("wcs","z",198.2234, ""+"Hfield_01_13_2021.gdf", "x","y","z","HxRe","HyRe","HzRe","HxIm","HyIm","HzIm", 5.5, 5.8667, 17944777237.3049); 
+map3D_Ecomplex("wcs","z",198.2234, ""+"Efield_01_13_2021.gdf", "x","y","z","ExRe","EyRe","EzRe","ExIm","EyIm","EzIm", 5.5, 5.8667, 17944777237.3049); 
+tout(7.5253e-09); 
