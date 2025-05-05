@@ -10,7 +10,7 @@ for pp = 1:length(ffacs)
     ffac = ffacs(pp);
     disp(ffac)
     masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f', phioffsetE, energy0, energyspreadpercent,ffac);
-    masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
+    %masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
     datafile=sprintf('%s.txt',masterfilename);
     masterfilename
     data = readtable(datafile);
@@ -29,7 +29,7 @@ for pp = 1:length(ffacs)
     shuntimpedance= 54.8e6; %Ohm/m
     fprintf('Max gradient %.2f MV/m \n', MaxGradSeen)
     %p_disp=max_E_diff^2/(2*shuntimpedance*2*length_cell)
-    p_disp=(MaxGradSeen*1000000)^2/(2*shuntimpedance); %W
+    p_disp=(MaxGradSeen*1000000)^2/(2*shuntimpedance); %W %%should there be a factor of 2??
     fprintf('Power calculated from max gradient %.2f MW \n', p_disp/1e6)
     fprintf('Power calculated from max gradient %.2f MW per cavity \n', p_disp/1e6/2)
     Avg_grad_calc = 15*sqrt(p_disp/100000);  %MV/m, assumes P is in W
