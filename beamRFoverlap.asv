@@ -168,23 +168,21 @@ end
 
 % --- Plot result ---
 figure;
-dose_map;
-imagesc(z_vals,y_bins, transpose(dose_map));
+imagesc(z_combined,y_bins, transpose(dose_map));
 % xlabel('Z Position (cm)');
 % ylabel('Y Position (cm)');
 % colorbar;
 
 
-%
-% ylabel('y [cm]');
-%xlabel('depth [cm]');
+ylabel('y [cm]');
+xlabel('depth [cm]');
 xmin=28;
 xlim([xmin,xmin+11.7]);
 ylim([-realyrange/2,realyrange/2]); 
-%a=colorbar;
-%a.Label.String = 'Dose [a.u.]';
+a=colorbar;
+a.Label.String = 'Dose [a.u.]';
 title(sprintf('Bragg Curve for Proton in Water, phase offset = %.2f rad, energy=%.2f', phioffsetE,energy0), 'FontSize', 14);
-set(gca,'XTick',[], 'YTick', [],'Visible', 'off', 'Color','none');
+%set(gca,'XTick',[], 'YTick', [],'Visible', 'off', 'Color','none');
 saveas(gcf,sprintf('%sBraggIm_unknownoverlap.png', masterfilename))
 
 %%Functions
