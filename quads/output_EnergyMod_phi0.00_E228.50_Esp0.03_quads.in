@@ -1,0 +1,26 @@
+accuracy(6); 
+npart = 2000; 
+sc = 0; 
+if(npart==1){ 
+setstartpar("beam",0,0,0,0,0,0.73917,mp,-qe,4.2e-15); 
+} 
+if(npart > 1){ 
+setparticles("beam",2000,mp,-qe,4.2e-15); 
+setxdist("beam","g",0,0.003495,3,3); 
+setydist("beam","g",0,0.004007,3,3); 
+setzdist("beam","u", 0, 0.18719); 
+setGBxdist("beam","g",0,1e-3,3,3); #primarily setting distribution shape, will be rescaled 
+setGBydist("beam","g",0,1e-3,3,3); 
+setGBxemittance("beam",1e-08); 
+setGByemittance("beam",1e-08); 
+setGdist("beam","g",1.2435,7.306e-05,3,3);  
+setoffset("beam",0,0,0,0,0,0); 
+addxdiv("beam",0,0.0024833); 
+addydiv("beam",0,0.0024333); 
+} 
+if(sc==1){ 
+spacecharge3dmesh(); 
+} 
+quadrupole("wcs","z",0.10399,0.2062,36); 
+map3D_remove("wcs","z",-0.082696, ""+"linac_iris.gdf", "x","y","z","R") ; 
+tout(-5.3874e-10,2.8282e-09,1.1447e-09); 
