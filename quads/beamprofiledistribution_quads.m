@@ -6,7 +6,7 @@ uniform=false;
 a = .005; %0.5 cm
 zlen0= 3*c/freq*beta0;  %in m
 zposE0 = zlen0/1.8; %.104
-quadpos=zposE0;
+%quadpos=zposE0;
 zinit=zpos-0.1;
 tinit=(zinit)/beta0/c;
 zfin=zpos+0.6;
@@ -32,15 +32,18 @@ times=avg.time;
 stdx=avg.stdx;
 stdy=avg.stdy;
 avgz=avg.avgz;
-
+quadpos=[0.1,0.35,0.9];
 figure
-scatter(avgz,stdx, 'Color', "#0072BD", 'DisplayName', 'average x')
+scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'average x')
 hold on
-scatter(avgz,stdy, 'Color', "red", 'DisplayName', 'average y')
-xline(quadpos,'--','DisplayName', 'quad position', 'LineWidth',2)
+scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'average y')
+xline(quadpos(1),'-','DisplayName', 'quad position 1', 'LineWidth',2)
+xline(quadpos(2),'-','DisplayName', 'quad position 2', 'LineWidth',2)
+xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
 legend();
 xlabel('Average Z [m]');
-ylabel('Transverse Profile [m]');
+ylabel('Transverse Profile [mm]');
+saveas(gcf,sprintf('%sFODO.png', masterfilename))
 % 
 % G = data.G;
 % E=938.272*(G-1); %MeV
