@@ -39,7 +39,13 @@ for pp = 1:length(ffacs)
 end
 
 figure;
-scatter(ffacs,powers)
+line(ffacs,powers/1e6)
+hold on
+scatter(ffacs,powers/1e6)
+xlabel('ffac value')
+ylabel('power into both cavities [MW]')
+saveas(gcf,sprintf('%sPowerToFFAC.png', masterfilename))
+
 %power_avg= AvgGrad^2/(2*shuntimpedance); %MV^2/m*MOhm/m = V^2/Ohm= W 
     %power loss of klystron/power into cavities ?
     %fprintf('Power calculated from average gradient %.2f MW \n', power_avg/1e6)
