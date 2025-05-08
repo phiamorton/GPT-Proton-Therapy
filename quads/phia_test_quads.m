@@ -100,7 +100,7 @@ for pp = 1:length(phioffsets)
     Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
     %current for 2us period the pulse is there
     %mevion gave average current
-    zposE0 = zlen0/1.8; %.03; %what is this doing
+    zposE0 = zlen0/1.8 %.03; %what is this doing
     sc = 0;
     xoffset=0; %m
     yoffset= 0; %m
@@ -202,21 +202,23 @@ for pp = 1:length(phioffsets)
 
 
     %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
-    gq1 = 36; %~36kG/m
+    gq1 = -36; %~36kG/m + focuses in x and - focuses in y
     %gq2 = -0.0001;
     %gq3 = 0.0001;
 
     length_quad = 0.2062;
-
+    quadpos=[0.1,0.35,0.9];
     inputfiletext=[{ ['quadrupole( "wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }];
     %quadrupole( "wcs","z", 2.84, length_quad, gq2) ;
     %quadrupole( "wcs","z", 3.68, length_quad, gq3) ;
 
     inputfiletext = [buildparticles; 
-        { ['quadrupole("wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; {
+        { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
+        { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(-gq1) ');'] };
+        { ['quadrupole("wcs","z",' num2str(quadpos(3)) ',' num2str(length_quad) ',' num2str(gq1) ');'] };{
         ['map3D_remove("wcs","z",' num2str(zposE0-dcellE/2) ', ' fieldpathname '+"linac_iris.gdf", "x","y","z","R") ;'];
         }; linactext; {
-        ['tout(' num2str((zpos-0.2)/beta0/c) ',' num2str((zpos+0.6)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
+        ['tout(' num2str((zpos-0.1)/beta0/c) ',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
         };];
     %'tout(' num2str((2*drift)/beta0/c) ');'
     
