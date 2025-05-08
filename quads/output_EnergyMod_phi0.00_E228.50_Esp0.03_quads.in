@@ -23,4 +23,4 @@ spacecharge3dmesh();
 } 
 quadrupole("wcs","z",0.10399,0.2062,36); 
 map3D_remove("wcs","z",-0.082696, ""+"linac_iris.gdf", "x","y","z","R") ; 
-tout(-5.3874e-10,2.8282e-09,1.1447e-09); 
+tout(-5.3874e-10,3.9505e-09,5.6115e-11); 

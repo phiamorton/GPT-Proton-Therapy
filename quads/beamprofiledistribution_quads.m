@@ -17,24 +17,17 @@ if NoRF==true
 end
 
 simavg = readtable(sprintf('avgfull_%s.txt',masterfilename));
-avg = table2struct(simavg,'ToScalar',true);
-%%
-toutlist = unique(avg.time);
-tmargin = diff(toutlist(1:2))/2;
-tgrab = toutlist(round(linspace(1,length(toutlist),35))); %[toutlist(1) toutlist(end)];
-for kk = 1:length(tgrab)
-    %system(['"' GPTpathname 'gdfselect.exe" -o input_dist.gdf resfull_' date '.gdf time ' num2str(tgrab(kk)-tmargin) ' ' num2str(tgrab(kk)+tmargin)]); 
-    %system(['"' GPTpathname 'gdf2a.exe" -w 16 -o res.txt input_dist.gdf time x y z Bx By Bz G ID fEy GPTLICENSE=1329126328']);
-    simres = readtable('res.txt');
-    simres.time = simres.ID.*0+tgrab(kk);
-    if kk == 1
-        writetable(simres,['resfull_' date '.txt'],'WriteRowNames',true);
-    else
-        writetable(simres,['resfull_' date '.txt'],'WriteMode','Append','WriteVariableNames',false,'WriteRowNames',true);
-    end
-    
-end
+avg = table2struct(simavg,'ToScalar',true)
+times=avg.time;
+stdx=avg.stdx;
+stdy=avg.stdy;
+avgz=avg.avgz;
 
+figure
+scatter(avgz,stdx, 'Color', "#0072BD", 'DisplayName', 'x')
+hold on
+scatter(avgz,stdy, 'Color', "red", 'DisplayName', 'y')
+legend();
 % 
 % G = data.G;
 % E=938.272*(G-1); %MeV
