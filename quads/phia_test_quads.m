@@ -216,7 +216,7 @@ for pp = 1:length(phioffsets)
         { ['quadrupole("wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; {
         ['map3D_remove("wcs","z",' num2str(zposE0-dcellE/2) ', ' fieldpathname '+"linac_iris.gdf", "x","y","z","R") ;'];
         }; linactext; {
-        ['tout(' num2str((zpos-0.2)/beta0/c) ',' num2str((zpos+0.4)/beta0/c) ',' num2str((zpos+0.1)/beta0/c)  ');']; 
+        ['tout(' num2str((zpos-0.2)/beta0/c) ',' num2str((zpos+0.6)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
         };];
     %'tout(' num2str((2*drift)/beta0/c) ');'
     
