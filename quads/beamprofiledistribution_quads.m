@@ -39,12 +39,11 @@ hold on
 scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'average y')
 xline(quadpos(1),'-','DisplayName', 'quad position 1', 'LineWidth',2)
 xline(quadpos(2),'-','DisplayName', 'quad position 2', 'LineWidth',2)
-xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
+%xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
 legend();
 xlabel('Average Z [m]');
 ylabel('Transverse Profile [mm]');
 saveas(gcf,sprintf('%sFODO.png', masterfilename))
-% 
 % G = data.G;
 % E=938.272*(G-1); %MeV
 % G=G(~isnan(G));
