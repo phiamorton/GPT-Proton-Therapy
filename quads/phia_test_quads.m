@@ -20,13 +20,7 @@ for pp = 1:length(phioffsets)
     fieldpathname = '""';
     GPTpathname = 'C:\bin\'; 
     ffacE = 5.5;%*10; %5.5 ;%-482; %7.5; %5.1;
-    
-    %Cavity run with 2.5 MW into each cell 
-    %an average gradient of 30 MV/m, 400 kW of input power is required to be fed into this cell. 
-    % %The peak surface E field in this case is 68 MV/m, and the peak H field is 99 kA/m. (https://doi.org/10.1063/5.0035331) 
-    %E and H files should be in V/m already, need to scale to get to
-    %average gradient of 30 MV/m
-
+ 
     if uniform ==true
         masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads.in', phioffsetE, energy0, energyspreadpercent);
     elseif uniform==false
@@ -40,15 +34,10 @@ for pp = 1:length(phioffsets)
     if ffac==true
         masterfilename= sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f_quads.in', phioffsetE, energy0, energyspreadpercent,ffacE);
     end
-
-    %masterfilename;
-    %sprintf('EnergyMod_phi0.00_0.03Espread_nominal.in') %for ffac=0
-    %mrfilename = 'mr_test.mr';
-    %date = '6_27_2024';
     
     load energyMod_phase_1_24_2022_40cells30MeV
     philistE = philist;
-    %disp(philistE)
+    
     %% Define linac parameters
     
     freq = 2.856e9;
@@ -94,8 +83,6 @@ for pp = 1:length(phioffsets)
     %zlen0 = t_bunch*c*beta0 %in m
     %t_4rf=4/freq %4RF cycles is ~1.4e-9 seconds 
     zlen0= 3*c/freq*beta0;  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
-    %based on mevion numbers, 230 MeV beam will be 12 cm long at isocenter
-    %(midway between cavities)
     emit0 = .01e-6; % 3 pi mm-mrad emittance
     Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
     %current for 2us period the pulse is there
@@ -184,31 +171,20 @@ for pp = 1:length(phioffsets)
     tic
     linactext = cell(2*ncellsE,1);
     zpos = zposE0;
-    % for jj = 1:ncellsE
-    %     if jj<phasebreakE
-    %         %disp(num2str(philistE(jj)))
-    %         linactext(2*(jj-1)+1:2*(jj-1)+2) = {
-    %                 ['map3D_Hcomplex("wcs","z",' num2str(zpos) ', ' fieldpathname '+"Hfield_01_13_2021.gdf", "x","y","z","HxRe","HyRe","HzRe","HxIm","HyIm","HzIm", ' num2str(ffacE) ', ' num2str(philistE(jj)) ', ' num2str(2*pi*freq) ');'];
-    %                 ['map3D_Ecomplex("wcs","z",' num2str(zpos) ', ' fieldpathname '+"Efield_01_13_2021.gdf", "x","y","z","ExRe","EyRe","EzRe","ExIm","EyIm","EzIm", ' num2str(ffacE) ', ' num2str(philistE(jj)) ', ' num2str(2*pi*freq) ');'];
-    %                 };
-    %     else
-    %         linactext(2*(jj-1)+1:2*(jj-1)+2) = {
-    %                 ['map3D_Hcomplex("wcs","z",' num2str(zpos) ', ' fieldpathname '+"Hfield_01_13_2021.gdf", "x","y","z","HxRe","HyRe","HzRe","HxIm","HyIm","HzIm", ' num2str(ffacE) ', ' num2str(philistE(jj)+phioffsetE) ', ' num2str(2*pi*freq) ');'];
-    %                 ['map3D_Ecomplex("wcs","z",' num2str(zpos) ', ' fieldpathname '+"Efield_01_13_2021.gdf", "x","y","z","ExRe","EyRe","EzRe","ExIm","EyIm","EzIm", ' num2str(ffacE) ', ' num2str(philistE(jj)+phioffsetE) ', ' num2str(2*pi*freq) ');'];
-    %                 };
-    %     end
-    %     zpos = zpos+dcellE; 
-    % end
-
+   
 
     %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
-    length_quad = 0.2062;
+    length_quad = 0.1062;
     quadpos=[0.2,0.5];
     gq1 = -2; %~36kG/m + focuses in x and - focuses in y
     %gq2 = -0.0001;
     %gq3 = 0.0001;
 
-    
+    %should set up a loop for strength, length, position, do for 2 and 3
+    %quads, find min divergence and size at desired distance away, 1-1.5 m
+    %away
+    %should test what stdx and y are actually what they mean, and how it is
+    %doing length of quad (ie start and end)
     inputfiletext=[{ ['quadrupole( "wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }];
     %quadrupole( "wcs","z", 2.84, length_quad, gq2) ;
     %quadrupole( "wcs","z", 3.68, length_quad, gq3) ;
@@ -265,5 +241,5 @@ legend();
 xlabel('Average Z [m]');
 ylabel('Transverse Profile [mm]');
 hold off
-title(sprintf('Transverse profile, strength= %.2f T/m, positions are %.2f & %.2f m', gq1abs, quadpos(1),quadpos(2)), 'FontSize', 8);
+title(sprintf('Transverse profile, strength= %.2f T/m for length %.2f m, positions are %.2f & %.2f', gq1abs, length_quad, quadpos(1),quadpos(2)), 'FontSize', 8);
 saveas(gcf,sprintf('%sFODO.png', masterfilename))
