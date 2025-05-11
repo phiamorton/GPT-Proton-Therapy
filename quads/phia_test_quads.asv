@@ -10,7 +10,7 @@ energyspreadpercent= 0.03
 energy0 = 228.5 %alter energy into cavities
 uniform=false
 NoRF=false
-ffac=true
+ffac=false
 rounded = round(phioffsets,2);
 %format bank
 num2str(rounded);
@@ -28,17 +28,17 @@ for pp = 1:length(phioffsets)
     %average gradient of 30 MV/m
 
     if uniform ==true
-        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_quads.in', phioffsetE, energy0, energyspreadpercent);
+        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads.in', phioffsetE, energy0, energyspreadpercent);
     elseif uniform==false
-        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f.in', phioffsetE, energy0, energyspreadpercent);
+        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_quads.in', phioffsetE, energy0, energyspreadpercent);
     end
 
     if NoRF==true
-        masterfilename= sprintf('noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform.in', phioffsetE, energy0, energyspreadpercent);
+        masterfilename= sprintf('noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads.in', phioffsetE, energy0, energyspreadpercent);
         ffacE=0
     end
     if ffac==true
-        masterfilename= sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f.in', phioffsetE, energy0, energyspreadpercent,ffacE);
+        masterfilename= sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f_quads.in', phioffsetE, energy0, energyspreadpercent,ffacE);
     end
 
     %masterfilename;
@@ -93,14 +93,14 @@ for pp = 1:length(phioffsets)
     t_bunch= 2*10^(-6); %2 us
     %zlen0 = t_bunch*c*beta0 %in m
     %t_4rf=4/freq %4RF cycles is ~1.4e-9 seconds 
-    zlen0= 3*c/freq*beta0  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
+    zlen0= 3*c/freq*beta0;  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
     %based on mevion numbers, 230 MeV beam will be 12 cm long at isocenter
     %(midway between cavities)
     emit0 = .01e-6; % 3 pi mm-mrad emittance
     Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
     %current for 2us period the pulse is there
     %mevion gave average current
-    zposE0 = zlen0/1.8; %.03; %what is this doing
+    zposE0 = zlen0/1.8 %.03; %what is this doing
     sc = 0;
     xoffset=0; %m
     yoffset= 0; %m
@@ -202,22 +202,25 @@ for pp = 1:length(phioffsets)
 
 
     %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
-    gq1 = 0.0001;
+    length_quad = 0.2062;
+    quadpos=[0.1,0.35];
+    gq1 = -15; %~36kG/m + focuses in x and - focuses in y
     %gq2 = -0.0001;
     %gq3 = 0.0001;
 
-    length_quad = 0.2062;
-
-    inputfiletext=quadrupole( "wcs","z", num2str(zpos), num2str(ength_quad), num2str(gq1))
+    
+    inputfiletext=[{ ['quadrupole( "wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }];
     %quadrupole( "wcs","z", 2.84, length_quad, gq2) ;
     %quadrupole( "wcs","z", 3.68, length_quad, gq3) ;
-
-    inputfiletext = [buildparticles; {
+    %{ ['quadrupole("wcs","z",' num2str(quadpos(3)) ',' num2str(length_quad) ',' num2str(gq1) ');'] };
+    inputfiletext = [buildparticles; 
+        { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
+        { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(-gq1) ');'] };{
         ['map3D_remove("wcs","z",' num2str(zposE0-dcellE/2) ', ' fieldpathname '+"linac_iris.gdf", "x","y","z","R") ;'];
         }; linactext; {
-        ['tout(' num2str((2*drift)/beta0/c) ');']; 
+        ['tout(' num2str((zpos-0.1)/beta0/c) ',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
         };];
-    
+    %'tout(' num2str((2*drift)/beta0/c) ');'
     
     % Write input file
     fileID = fopen([inputfilepath masterfilename],'wt');

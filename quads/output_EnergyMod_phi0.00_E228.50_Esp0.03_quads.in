@@ -21,7 +21,7 @@ addydiv("beam",0,0.0024333);
 if(sc==1){ 
 spacecharge3dmesh(); 
 } 
-quadrupole("wcs","z",0.1,0.2062,-15); 
-quadrupole("wcs","z",0.35,0.2062,15); 
+quadrupole("wcs","z",0.2,0.2062,-2); 
+quadrupole("wcs","z",0.5,0.2062,2); 
 map3D_remove("wcs","z",-0.082696, ""+"linac_iris.gdf", "x","y","z","R") ; 
 tout(2.2415e-11,1.1807e-08,5.6115e-11); 

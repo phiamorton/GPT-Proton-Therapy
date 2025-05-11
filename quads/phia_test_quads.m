@@ -202,12 +202,13 @@ for pp = 1:length(phioffsets)
 
 
     %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
-    gq1 = -15; %~36kG/m + focuses in x and - focuses in y
+    length_quad = 0.2062;
+    quadpos=[0.2,0.5];
+    gq1 = -2; %~36kG/m + focuses in x and - focuses in y
     %gq2 = -0.0001;
     %gq3 = 0.0001;
 
-    length_quad = 0.2062;
-    quadpos=[0.1,0.35];
+    
     inputfiletext=[{ ['quadrupole( "wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }];
     %quadrupole( "wcs","z", 2.84, length_quad, gq2) ;
     %quadrupole( "wcs","z", 3.68, length_quad, gq3) ;
@@ -228,3 +229,41 @@ for pp = 1:length(phioffsets)
     end
     fclose(fileID); 
 end
+
+%run the GPT script
+system('bash "sim_auto.bat"');
+
+%do the plotting
+if uniform ==true
+    masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
+else
+    masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_quads', phioffsetE, energy0, energyspreadpercent);
+end
+
+NoRF=false;
+if NoRF==true
+    masterfilename= sprintf('output_noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
+    ffacE=0;
+end
+
+simavg = readtable(sprintf('avgfull_%s.txt',masterfilename));
+avg = table2struct(simavg,'ToScalar',true);
+times=avg.time;
+stdx=avg.stdx;
+stdy=avg.stdy;
+avgz=avg.avgz;
+
+gq1abs=abs(gq1);
+figure
+scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'average x')
+hold on
+scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'average y')
+xline(quadpos(1),'-','DisplayName', 'quad position 1', 'LineWidth',2)
+xline(quadpos(2),'-','DisplayName', 'quad position 2', 'LineWidth',2)
+%xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
+legend();
+xlabel('Average Z [m]');
+ylabel('Transverse Profile [mm]');
+hold off
+title(sprintf('Transverse profile, strength= %.2f T/m, positions are %.2f & %.2f m', gq1abs, quadpos(1),quadpos(2)), 'FontSize', 8);
+saveas(gcf,sprintf('%sFODO.png', masterfilename))

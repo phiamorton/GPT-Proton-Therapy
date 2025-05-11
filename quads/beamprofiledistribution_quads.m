@@ -32,7 +32,12 @@ times=avg.time;
 stdx=avg.stdx;
 stdy=avg.stdy;
 avgz=avg.avgz;
-quadpos=[0.1,0.35,0.9];
+
+length_quad = 0.2062; %~20 cm 
+quadpos=[0.2,0.5];
+gq1 = -2; %~36kG/m + focuses in x and - focuses in y
+
+gq1abs=abs(gq1);
 figure
 scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'average x')
 hold on
@@ -43,7 +48,10 @@ xline(quadpos(2),'-','DisplayName', 'quad position 2', 'LineWidth',2)
 legend();
 xlabel('Average Z [m]');
 ylabel('Transverse Profile [mm]');
+hold off
+title(sprintf('Transverse profile, strength= %.2f T/m, positions are %.2f & %.2f m', gq1abs, quadpos(1),quadpos(2)), 'FontSize', 8);
 saveas(gcf,sprintf('%sFODO.png', masterfilename))
+
 % G = data.G;
 % E=938.272*(G-1); %MeV
 % G=G(~isnan(G));
