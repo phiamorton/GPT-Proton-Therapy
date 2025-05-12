@@ -14,25 +14,36 @@ ffac=false
 rounded = round(phioffsets,2);
 %format bank
 num2str(rounded);
-for pp = 1:length(phioffsets)
-    phioffsetE = phioffsets(pp);
+%for pp = 1:length(phioffsets)
+length_quad = 0.2062;
+npos=5
+position2s=linspace(0.4, 1,npos)
+     %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
+for qps1=1:npos
+        qps1
+        length_quad = 0.2062;
+        quadpos=[0.2,position2s(qps1)]
+        gq1 = -5; %~36kG/m + focuses in x and - focuses in y
+        gq2 = -gq1;
+        %gq3 = 0.0001;
+    phioffsetE = phioffsets;
     inputfilepath = 'output_';
     fieldpathname = '""';
     GPTpathname = 'C:\bin\'; 
     ffacE = 5.5;%*10; %5.5 ;%-482; %7.5; %5.1;
  
     if uniform ==true
-        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads.in', phioffsetE, energy0, energyspreadpercent);
+        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
     elseif uniform==false
-        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_quads.in', phioffsetE, energy0, energyspreadpercent);
+        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_quads', phioffsetE, energy0, energyspreadpercent);
     end
 
     if NoRF==true
-        masterfilename= sprintf('noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads.in', phioffsetE, energy0, energyspreadpercent);
+        masterfilename= sprintf('noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
         ffacE=0
     end
     if ffac==true
-        masterfilename= sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f_quads.in', phioffsetE, energy0, energyspreadpercent,ffacE);
+        masterfilename= sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f_quads', phioffsetE, energy0, energyspreadpercent,ffacE);
     end
     
     load energyMod_phase_1_24_2022_40cells30MeV
@@ -42,7 +53,7 @@ for pp = 1:length(phioffsets)
     
     freq = 2.856e9;
     dcellE = 14.7*0.0254; %distance between the cells, 14.7 inches, takes input as m
-    a = .005; %0.5 cm
+    a = 0.005; %0.5 cm
     ncellsE = 0; %length(philistE); %changed to 2 (only 2 cell cavities)
     phasebreakE = 2;
     subplotnum = 5;
@@ -56,8 +67,8 @@ for pp = 1:length(phioffsets)
     
     dgamma0 = (energy0*energyspreadpercent/100+938.27)/938.27-1; % .03% energy spread
     
-    mevion_25nA=false;
-    mevion_1nA=true;
+    mevion_25nA=true;
+    mevion_1nA=false;
    
     if mevion_1nA==true
         xrms0 = 3.495/1000 ;%m 4.9mm
@@ -83,7 +94,7 @@ for pp = 1:length(phioffsets)
     %zlen0 = t_bunch*c*beta0 %in m
     %t_4rf=4/freq %4RF cycles is ~1.4e-9 seconds 
     zlen0= 3*c/freq*beta0;  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
-    emit0 = .01e-6; % 3 pi mm-mrad emittance
+    %emit0 = .01e-6; % 3 pi mm-mrad emittance
     Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
     %current for 2us period the pulse is there
     %mevion gave average current
@@ -104,7 +115,7 @@ for pp = 1:length(phioffsets)
         '}';
         'if(npart > 1){';
         ['setparticles("beam",' num2str(npart0) ',mp,-qe,' num2str(Qtot0) ');'];
-        ['setrxydist("beam","u",' num2str(a/2) ',' num2str(a) ');'];
+        ['setrxydist("beam","u",' num2str(yrms0/2) ',' num2str(yrms0) ');'];
         ['setphidist("beam","u",0,2*pi);'];
         ['setzdist("beam","u", 0, ' num2str(zlen0) ');'];
         'setGBxdist("beam","g",0,1e-3,3,3); #primarily setting distribution shape, will be rescaled';
@@ -126,18 +137,14 @@ for pp = 1:length(phioffsets)
         'accuracy(6);';
         ['npart = ' num2str(npart0) ';'];
         ['sc = ' num2str(sc) ';'];
-        'if(npart==1){';
-        ['setstartpar("beam",0,0,0,0,0,' num2str(gamma0*beta0) ',mp,-qe,' num2str(Qtot0) ');'];
-        '}';
+        % 'if(npart==1){';
+        % ['setstartpar("beam",0,0,0,0,0,' num2str(gamma0*beta0) ',mp,-qe,' num2str(Qtot0) ');'];
+        % '}';
         'if(npart > 1){';
         ['setparticles("beam",' num2str(npart0) ',mp,-qe,' num2str(Qtot0) ');'];
         ['setxdist("beam","g",0,' num2str(xrms0) ',3,3);'];
         ['setydist("beam","g",0,' num2str(yrms0) ',3,3);'];
         ['setzdist("beam","u", 0, ' num2str(zlen0) ');'];
-        'setGBxdist("beam","g",0,1e-3,3,3); #primarily setting distribution shape, will be rescaled';
-        'setGBydist("beam","g",0,1e-3,3,3);';
-        ['setGBxemittance("beam",' num2str(emit0) ');'];
-        ['setGByemittance("beam",' num2str(emit0) ');'];
         ['setGdist("beam","g",' num2str(gamma0) ',' num2str(dgamma0) ',3,3); '];
         ['setoffset("beam",' num2str(xoffset) ',' num2str(yoffset) ',0,0,0,0);'];
         ['addxdiv("beam",0,' num2str(divangx0) ');'];
@@ -147,6 +154,7 @@ for pp = 1:length(phioffsets)
         'spacecharge3dmesh();';
         '}';
         };
+        
     end
     %% Initialize linac iris aperture
     maxl = a*5;
@@ -171,94 +179,80 @@ for pp = 1:length(phioffsets)
     tic
     linactext = cell(2*ncellsE,1);
     zpos = zposE0;
-   
-
-    %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
-    length_quad = 0.1062;
-    quadpos=[0.3,0.8];
-    gq1 = -30; %~36kG/m + focuses in x and - focuses in y
-    %gq2 = -0.0001;
-    %gq3 = 0.0001;
-
-    %should set up a loop for strength, length, position, do for 2 and 3
-    %quads, find min divergence and size at desired distance away, 1-1.5 m
-    %away
-    %should test what stdx and y are actually what they mean, and how it is
-    %doing length of quad (ie start and end)
-    inputfiletext=[{ ['quadrupole( "wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }];
-    %quadrupole( "wcs","z", 2.84, length_quad, gq2) ;
-    %quadrupole( "wcs","z", 3.68, length_quad, gq3) ;
-    %{ ['quadrupole("wcs","z",' num2str(quadpos(3)) ',' num2str(length_quad) ',' num2str(gq1) ');'] };
-    inputfiletext = [buildparticles; 
-        { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
-        { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(0) ');'] };{
-        ['map3D_remove("wcs","z",' num2str(zposE0-dcellE/2) ', ' fieldpathname '+"linac_iris.gdf", "x","y","z","R") ;'];
-        }; linactext; {
-        ['tout(' num2str(0) ',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
-        };];
-    %'tout(' num2str((2*drift)/beta0/c) ');'
-    %',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c) 
-    % Write input file
-    fileID = fopen([inputfilepath masterfilename],'wt');
-    for ii = 1:length(inputfiletext)
-    fprintf(fileID,'%s \n',inputfiletext{ii});
+    
+    
+        %should set up a loop for strength, length, position, do for 2 and 3
+        %quads, find min divergence and size at desired distance away, 1-1.5 m
+        %away
+        %should test what stdx and y are actually what they mean, and how it is
+        %doing length of quad (ie start and end)
+        %inputfiletext=[{ ['quadrupole( "wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }];
+    
+        inputfiletext = [buildparticles; 
+            { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
+            { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(gq2) ');'] };
+            % {['map3D_remove("wcs","z",' num2str(zposE0+dcellE/2) ', ' fieldpathname '+"linac_iris.gdf", "x","y","z","R") ;'];
+            % }; 
+            linactext; {
+            ['tout(' num2str(0/c) ',' num2str((2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
+            };];
+        %
+        %'tout(' num2str((2*drift)/beta0/c) ');'
+        %',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c) 
+        % Write input file
+        masterfilenamein=sprintf('%.s.in', masterfilename);
+        fileID = fopen([inputfilepath masterfilenamein],'wt');
+        for ii = 1:length(inputfiletext)
+        fprintf(fileID,'%s \n',inputfiletext{ii});
+        end
+        fclose(fileID); 
     end
-    fclose(fileID); 
+    
+    %run the GPT script
+    system('bash "sim_auto.bat"');
+    
+    simavg = readtable(sprintf('avgfull_output_%s.txt',masterfilename));
+    avg = table2struct(simavg,'ToScalar',true);
+    times=avg.time;
+    stdx=avg.stdx; %std dev in x in m
+    stdy=avg.stdy;
+    avgz=avg.avgz;
+    
+    figure(qps1); hold on
+    scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'average x')
+    scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'average y')
+    %hold off
+    xline(quadpos(1),'-','DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m * %.2f m', quadpos(1),gq1,length_quad), 'LineWidth',2)
+    xline(quadpos(2),'-','DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m * %.2f m', quadpos(2),gq2,length_quad), 'LineWidth',2)
+    %xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
+    legend();
+    xlabel('Average Z [m]');
+    ylabel('Transverse Profile Size rms [mm]');
+    %hold off
+    title(sprintf('Transverse profile with %.0f quads',length(quadpos)), 'FontSize', 14);
+    %saveas(gcf,sprintf('%sFODO.png', masterfilename))
+    
 end
 
-%run the GPT script
-system('bash "sim_auto.bat"');
 
-%do the plotting
-if uniform ==true
-    masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
-else
-    masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_quads', phioffsetE, energy0, energyspreadpercent);
-end
-
-NoRF=false;
-if NoRF==true
-    masterfilename= sprintf('output_noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
-    ffacE=0;
-end
-
-simavg = readtable(sprintf('avgfull_%s.txt',masterfilename));
-avg = table2struct(simavg,'ToScalar',true);
-times=avg.time;
-stdx=avg.stdx;
-stdy=avg.stdy;
-avgz=avg.avgz;
-
-gq1abs=abs(gq1);
-figure
-scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'average x')
-hold on
-scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'average y')
-xline(quadpos(1),'-','DisplayName', 'quad position 1', 'LineWidth',2)
-xline(quadpos(2),'-','DisplayName', 'quad position 2', 'LineWidth',2)
-%xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
-legend();
-xlabel('Average Z [m]');
-ylabel('Transverse Profile [mm]');
-hold off
-title(sprintf('Transverse profile, strength= %.2f T/m for length %.2f m, positions are %.2f & %.2f', gq1abs, length_quad, quadpos(1),quadpos(2)), 'FontSize', 8);
-saveas(gcf,sprintf('%sFODO.png', masterfilename))
-
-data = readtable(sprintf('%s.txt',masterfilename));
-G = data.G;
-E=938.272*(G-1); %MeV
-    %G=G(~isnan(G));
-x=data.x;
-y=data.y;
-z=data.z; 
-Bx=data.fBx;
-By=data.fBy;
-B_tot=sqrt(By.^2+Bx.^2);
-figure;
-%quiver(x,y,Bx,By);
-%cb = colorbar;
-%cb.Label.String = 'Field Strength [T]';
-scatter(z,Bx)
-xlabel('x [m]');
-ylabel('y [m]');
-saveas(gcf,sprintf('%sQuadField.png', masterfilename))
+    %do the plotting
+%testing quad position
+%data = readtable(sprintf('%s.txt',masterfilename));
+% G = data.G;
+% E=938.272*(G-1); %MeV
+%     %G=G(~isnan(G));
+%x=data.x;
+%length(x)
+% y=data.y;
+% z=data.z; 
+% Bx=data.fBx;
+% By=data.fBy;
+% B_tot=sqrt(By.^2+Bx.^2);
+% figure;
+% %quiver(x,y,Bx,By);
+% %cb = colorbar;
+% %cb.Label.String = 'Field Strength [T]';
+% scatter(z,Bx)
+% xlabel('x [m]');
+% ylabel('y [m]');
+% saveas(gcf,sprintf('%sQuadField.png', masterfilename))
