@@ -180,6 +180,7 @@ for qps1=1:npos
         avgz=avg.avgz;
         
         fig=figure(qps1+quadstrength); 
+        set(gcf, 'WindowStyle', 'docked');
         %figure('Visible', 'on');
         scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
         hold on
