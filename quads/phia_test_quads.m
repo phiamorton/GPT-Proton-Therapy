@@ -1,5 +1,5 @@
-% runs through end of chopper slit - started 2/28/2022
-% will include optional phase offset for section of linac
+% % runs through end of chopper slit - started 2/28/2022
+% % will include optional phase offset for section of linac
 close all
 clearvars
 
@@ -16,7 +16,7 @@ rounded = round(phioffsets,2);
 num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
-npos=20;
+npos=15;
 position2s=linspace(0.4, 0.7,npos);
 quadstrengths=linspace(0.1,15,20);
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
@@ -38,13 +38,13 @@ for qps1=1:npos
         fieldpathname = '""';
         GPTpathname = 'C:\bin\'; 
         ffacE = 5.5;%*10; %5.5 ;%-482; %7.5; %5.1;
-     
+
         if uniform ==true
             masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
         elseif uniform==false
             masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_quads', phioffsetE, energy0, energyspreadpercent);
         end
-    
+
         if NoRF==true
             masterfilename= sprintf('output_noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
             ffacE=0;
@@ -52,12 +52,12 @@ for qps1=1:npos
         if ffac==true
             masterfilename= sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f_quads', phioffsetE, energy0, energyspreadpercent,ffacE);
         end
-        
+
         load energyMod_phase_1_24_2022_40cells30MeV
         philistE = philist;
         masterfilename;
         %% Define linac parameters
-        
+
         freq = 2.856e9;
         dcellE = 14.7*0.0254; %distance between the cells, 14.7 inches, takes input as m
         a = 0.005; %0.5 cm
@@ -65,18 +65,18 @@ for qps1=1:npos
         phasebreakE = 2;
         subplotnum = 5;
         drift = .67; %m I think
-        
+
         %% Define beam parameters
-        
+
         npart0 = 2000;
-        
+
         gamma0 = (energy0+938.27)/938.27; % 1.2435;
-        
+
         dgamma0 = (energy0*energyspreadpercent/100+938.27)/938.27-1; % .03% energy spread
-        
+
         mevion_25nA=true;
         mevion_1nA=false;
-       
+
         if mevion_1nA==true
             xrms0 = 3.495/1000 ;%m 4.9mm
             %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
@@ -96,7 +96,7 @@ for qps1=1:npos
         %beta0 = .5944; %v/c? 
         c = 2.998e8; %m/s
         beta0= sqrt(1-1/(gamma0^2));
-        
+
         t_bunch= 2*10^(-6); %2 us
         %zlen0 = t_bunch*c*beta0 %in m
         %t_4rf=4/freq %4RF cycles is ~1.4e-9 seconds 
@@ -110,9 +110,9 @@ for qps1=1:npos
         xoffset=0; %m
         yoffset= 0; %m
         %tdiff = .001/beta0/c;
-        
+
         %% Initialize particle distribution entering treatment room
-            
+
         if uniform==false
             buildparticles = {
             'accuracy(6);';
@@ -135,13 +135,13 @@ for qps1=1:npos
             'spacecharge3dmesh();';
             '}';
             };
-            
+
         end
-        
+
         linactext = cell(2*ncellsE,1);
         zpos = zposE0;
-        
-        
+
+
         %should set up a loop for strength, length, position, do for 2 and 3
         %quads, find min divergence and size at desired distance away, 1-1.5 m
         %away
@@ -151,7 +151,7 @@ for qps1=1:npos
         inputfiletext = [buildparticles; 
             { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
             { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(gq2) ');'] };
-            
+
             linactext; {
             ['tout(' num2str(0/c) ',' num2str((2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
             };];
@@ -165,11 +165,11 @@ for qps1=1:npos
         fprintf(fileID,'%s \n',inputfiletext{ii});
         end
         fclose(fileID); 
-        
-        
+
+
         %run the GPT script
         system('bash "sim_auto.bat"');
-        
+
 
         simavg = readtable(sprintf('avgfull_%s.txt',masterfilename));
         sprintf('avgfull_%s.txt',masterfilename)
@@ -178,10 +178,10 @@ for qps1=1:npos
         stdx=avg.stdx; %std dev in x in m
         stdy=avg.stdy;
         avgz=avg.avgz;
-        
-        fig=figure(qps1+quadstrength); 
-        set(gcf, 'WindowStyle', 'docked');
-        %figure('Visible', 'off');
+
+        %fig=figure(qps1+quadstrength); 
+        %set(gcf, 'WindowStyle', 'docked');
+        figure('Visible', 'off');
         scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
         hold on
         scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
@@ -190,7 +190,7 @@ for qps1=1:npos
         %xline(quadpos(2),'-','DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m * %.2f m', quadpos(2),gq2,length_quad), 'LineWidth',2)
         fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*1000+2, yrms0*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
         fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*1000+2, yrms0*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
-        
+
         ylim([0,yrms0*1000+2])
         %xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
         legend();
@@ -214,7 +214,7 @@ for qps1=1:npos
     end
     hold off
 end
-
+% 
 
 
 % Flatten the matrix and get linear indices
@@ -254,8 +254,8 @@ for i = 1:top_n
         top_values_divx(i)*1000, corresponding_positions_divx(i), corresponding_quadstrengths_divx(i));
 end
 
-colLabels = arrayfun(@(x) sprintf('Position= %.2f m', x), position2s, 'UniformOutput', false);
-rowLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths, 'UniformOutput', false);
+rowLabels = arrayfun(@(x) sprintf('Position= %.2f m', x), position2s, 'UniformOutput', false);
+colLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths, 'UniformOutput', false);
 
 % Create the table
 T = array2table(beammonitorarea, 'RowNames', rowLabels, 'VariableNames', colLabels)
@@ -265,19 +265,19 @@ T_divy = array2table(divanglesy, 'RowNames', rowLabels, 'VariableNames', colLabe
 T_divx = array2table(divanglesx, 'RowNames', rowLabels, 'VariableNames', colLabels)
 
 h=figure()
-h=heatmap(position2s, quadstrengths,  divanglesy)
+h=heatmap(quadstrengths, position2s,   divanglesy)
 h.Title = 'Divergence in y';
 h.XLabel = 'Strength (T/m)';
 h.YLabel = 'Position (m)';
 
 h2=figure()
-h2=heatmap(position2s, quadstrengths,  divanglesx)
+h2=heatmap(quadstrengths, position2s,   divanglesx)
 h2.Title = 'Divergence in x';
 h2.XLabel = 'Strength (T/m)';
 h2.YLabel = 'Position (m)';
 
 h3=figure()
-h3=heatmap(position2s, quadstrengths,  beammonitorarea*1000*1000)
+h3=heatmap(quadstrengths, position2s,  beammonitorarea*1000*1000)
 h3.Title = '~Beam Size [mm^2]';
 h3.XLabel = 'Strength (T/m)';
 h3.YLabel = 'Position (m)';
