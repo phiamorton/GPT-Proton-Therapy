@@ -200,7 +200,7 @@ for qps1=1:npos
         indices = abs(avgz - beamonitorpos) <= tolerance;
 
         % Extract corresponding x values
-        y_at_beamonitor = min(stdy(indices)*stdx(indices));
+        y_at_beamonitor = min(stdy(indices).*stdx(indices));
         beammonitory(qps1,quadstrength)=y_at_beamonitor;
     end
     hold off
