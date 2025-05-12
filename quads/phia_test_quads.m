@@ -16,15 +16,15 @@ rounded = round(phioffsets,2);
 num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
-npos=5
+npos=15
 position2s=linspace(0.4, 1,npos)
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 for qps1=1:npos
-        qps1
-        length_quad = 0.2062;
-        quadpos=[0.2,position2s(qps1)]
-        gq1 = -5; %~36kG/m + focuses in x and - focuses in y
-        gq2 = -gq1;
+    qps1
+    length_quad = 0.2062;
+    quadpos=[0.2,position2s(qps1)]
+    gq1 = -5; %~36kG/m + focuses in x and - focuses in y
+    gq2 = -gq1;
         %gq3 = 0.0001;
     phioffsetE = phioffsets;
     inputfilepath = 'output_';
@@ -33,22 +33,22 @@ for qps1=1:npos
     ffacE = 5.5;%*10; %5.5 ;%-482; %7.5; %5.1;
  
     if uniform ==true
-        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
+        masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
     elseif uniform==false
-        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_quads', phioffsetE, energy0, energyspreadpercent);
+        masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_quads', phioffsetE, energy0, energyspreadpercent);
     end
 
     if NoRF==true
-        masterfilename= sprintf('noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
+        masterfilename= sprintf('output_noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
         ffacE=0
     end
     if ffac==true
-        masterfilename= sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f_quads', phioffsetE, energy0, energyspreadpercent,ffacE);
+        masterfilename= sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f_quads', phioffsetE, energy0, energyspreadpercent,ffacE);
     end
     
     load energyMod_phase_1_24_2022_40cells30MeV
     philistE = philist;
-    
+    masterfilename
     %% Define linac parameters
     
     freq = 2.856e9;
@@ -105,34 +105,8 @@ for qps1=1:npos
     %tdiff = .001/beta0/c;
     
     %% Initialize particle distribution entering treatment room
-    if uniform == true
-        buildparticles = {
-        'accuracy(6);';
-        ['npart = ' num2str(npart0) ';'];
-        ['sc = ' num2str(sc) ';'];
-        'if(npart==1){';
-        ['setstartpar("beam",0,0,0,0,0,' num2str(gamma0*beta0) ',mp,-qe,' num2str(Qtot0) ');'];
-        '}';
-        'if(npart > 1){';
-        ['setparticles("beam",' num2str(npart0) ',mp,-qe,' num2str(Qtot0) ');'];
-        ['setrxydist("beam","u",' num2str(yrms0/2) ',' num2str(yrms0) ');'];
-        ['setphidist("beam","u",0,2*pi);'];
-        ['setzdist("beam","u", 0, ' num2str(zlen0) ');'];
-        'setGBxdist("beam","g",0,1e-3,3,3); #primarily setting distribution shape, will be rescaled';
-        'setGBydist("beam","g",0,1e-3,3,3);';
-        ['setGBxemittance("beam",' num2str(emit0) ');'];
-        ['setGByemittance("beam",' num2str(emit0) ');'];
-        ['setGdist("beam","g",' num2str(gamma0) ',' num2str(dgamma0) ',3,3); '];
-        ['setoffset("beam",' num2str(xoffset) ',' num2str(yoffset) ',0,0,0,0);'];
-        ['addxdiv("beam",0,' num2str(divangx0) ');'];
-        ['addydiv("beam",0,' num2str(divangy0) ');'];
-        '}';
-        'if(sc==1){';
-        'spacecharge3dmesh();';
-        '}';
-        };
         
-    else 
+    if uniform==false
         buildparticles = {
         'accuracy(6);';
         ['npart = ' num2str(npart0) ';'];
@@ -156,68 +130,48 @@ for qps1=1:npos
         };
         
     end
-    %% Initialize linac iris aperture
-    maxl = a*5;
-    stepl = a/10;
-    [X,Y,Z] = meshgrid(-maxl:stepl:maxl,-maxl:stepl:maxl,0:1);
-    map.x = X(:);
-    map.y = Y(:);
-    map.z = Z(:);
-    map.R = map.x*0;
-    map.R(sqrt(map.x.^2+map.y.^2)>=a) = 1;
     
-    fileID = fopen([inputfilepath 'linac_iris.txt'],'w');
-    fprintf(fileID,'%s\t%s\t%s\t%s\r\n','x','y','z','R');
-    for ii = 1:length(map.x)
-        fprintf(fileID,'%1.5f\t%1.5f\t%1.5f\t%i\r\n',map.x(ii),map.y(ii),map.z(ii),map.R(ii));
-    end
-    fclose(fileID);
-    
-    %system(['"' 'asci2gdf.exe" -o linac_iris.gdf linac_iris.txt x 1 y 1 z ' num2str(dcellE*ncellsE) ' R 1']);
-    
-    %% Initialize loop over cells
-    tic
     linactext = cell(2*ncellsE,1);
     zpos = zposE0;
     
     
-        %should set up a loop for strength, length, position, do for 2 and 3
-        %quads, find min divergence and size at desired distance away, 1-1.5 m
-        %away
-        %should test what stdx and y are actually what they mean, and how it is
-        %doing length of quad (ie start and end)
-        %inputfiletext=[{ ['quadrupole( "wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }];
-    
-        inputfiletext = [buildparticles; 
-            { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
-            { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(gq2) ');'] };
-            % {['map3D_remove("wcs","z",' num2str(zposE0+dcellE/2) ', ' fieldpathname '+"linac_iris.gdf", "x","y","z","R") ;'];
-            % }; 
-            linactext; {
-            ['tout(' num2str(0/c) ',' num2str((2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
-            };];
-        %
-        %'tout(' num2str((2*drift)/beta0/c) ');'
-        %',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c) 
-        % Write input file
-        masterfilenamein=sprintf('%.s.in', masterfilename);
-        fileID = fopen([inputfilepath masterfilenamein],'wt');
-        for ii = 1:length(inputfiletext)
-        fprintf(fileID,'%s \n',inputfiletext{ii});
-        end
-        fclose(fileID); 
+    %should set up a loop for strength, length, position, do for 2 and 3
+    %quads, find min divergence and size at desired distance away, 1-1.5 m
+    %away
+    %how it is doing length of quad (ie start and end)
+    %inputfiletext=[{ ['quadrupole( "wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }];
+    quadpos(2)
+    inputfiletext = [buildparticles; 
+        { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
+        { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(gq2) ');'] };
+        
+        linactext; {
+        ['tout(' num2str(0/c) ',' num2str((2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
+        };];
+    %
+    %'tout(' num2str((2*drift)/beta0/c) ');'
+    %',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c) 
+    % Write input file
+    masterfilenamein=sprintf('%s.in', masterfilename);
+    masterfilenamein
+    fileID = fopen([masterfilenamein],'wt');
+    for ii = 1:length(inputfiletext)
+    fprintf(fileID,'%s \n',inputfiletext{ii});
     end
+    fclose(fileID); 
+    
     
     %run the GPT script
     system('bash "sim_auto.bat"');
     
-    simavg = readtable(sprintf('avgfull_output_%s.txt',masterfilename));
+    simavg = readtable(sprintf('avgfull_%s.txt',masterfilename));
+    sprintf('avgfull_%s.txt',masterfilename)
     avg = table2struct(simavg,'ToScalar',true);
     times=avg.time;
     stdx=avg.stdx; %std dev in x in m
     stdy=avg.stdy;
     avgz=avg.avgz;
-    
+    qps1
     figure(qps1); hold on
     scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'average x')
     scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'average y')
