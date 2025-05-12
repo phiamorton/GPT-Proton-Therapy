@@ -16,9 +16,9 @@ rounded = round(phioffsets,2);
 num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
-npos=3;
+npos=20;
 position2s=linspace(0.4, 0.7,npos);
-quadstrengths=linspace(0.1,10,3);
+quadstrengths=linspace(0.1,15,20);
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 beamonitorpos=1; %m
 tolerance = 0.05;  % Accept values within ±0.05 for the pos monitor
@@ -179,11 +179,11 @@ for qps1=1:npos
         stdy=avg.stdy;
         avgz=avg.avgz;
         
-        %fig=figure(qps1+quadstrength); 
-        figure('Visible', 'off');
-        scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'average x')
+        fig=figure(qps1+quadstrength); 
+        %figure('Visible', 'on');
+        scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
         hold on
-        scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'average y')
+        scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
         %hold off
         %xline(quadpos(1),'-','DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m * %.2f m', quadpos(1),gq1,length_quad), 'LineWidth',2)
         %xline(quadpos(2),'-','DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m * %.2f m', quadpos(2),gq2,length_quad), 'LineWidth',2)
@@ -253,8 +253,8 @@ for i = 1:top_n
         top_values_divx(i)*1000, corresponding_positions_divx(i), corresponding_quadstrengths_divx(i));
 end
 
-rowLabels = arrayfun(@(x) sprintf('Position %.2f m', x), position2s, 'UniformOutput', false);
-colLabels = arrayfun(@(x) sprintf('Strength %.2f T/m', x), quadstrengths, 'UniformOutput', false);
+colLabels = arrayfun(@(x) sprintf('Position= %.2f m', x), position2s, 'UniformOutput', false);
+rowLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths, 'UniformOutput', false);
 
 % Create the table
 T = array2table(beammonitorarea, 'RowNames', rowLabels, 'VariableNames', colLabels)
@@ -282,7 +282,7 @@ h3.XLabel = 'Strength (T/m)';
 h3.YLabel = 'Position (m)';
 
 
-    %do the plotting
+    %do the plotting for the quad magnetic field
 %testing quad position
 %data = readtable(sprintf('%s.txt',masterfilename));
 % G = data.G;
