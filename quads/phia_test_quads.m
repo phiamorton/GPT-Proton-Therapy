@@ -181,7 +181,7 @@ for qps1=1:npos
         
         fig=figure(qps1+quadstrength); 
         set(gcf, 'WindowStyle', 'docked');
-        %figure('Visible', 'on');
+        %figure('Visible', 'off');
         scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
         hold on
         scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
