@@ -16,180 +16,184 @@ rounded = round(phioffsets,2);
 num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
-npos=15
-position2s=linspace(0.4, 1,npos)
+npos=10
+position2s=linspace(0.4, 0.7,npos)
+quadstrengths=linspace(0.1,15,15)
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 for qps1=1:npos
-    qps1
-    length_quad = 0.2062;
-    quadpos=[0.2,position2s(qps1)]
-    gq1 = -5; %~36kG/m + focuses in x and - focuses in y
-    gq2 = -gq1;
-        %gq3 = 0.0001;
-    phioffsetE = phioffsets;
-    inputfilepath = 'output_';
-    fieldpathname = '""';
-    GPTpathname = 'C:\bin\'; 
-    ffacE = 5.5;%*10; %5.5 ;%-482; %7.5; %5.1;
- 
-    if uniform ==true
-        masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
-    elseif uniform==false
-        masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_quads', phioffsetE, energy0, energyspreadpercent);
-    end
-
-    if NoRF==true
-        masterfilename= sprintf('output_noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
-        ffacE=0
-    end
-    if ffac==true
-        masterfilename= sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f_quads', phioffsetE, energy0, energyspreadpercent,ffacE);
-    end
+    for quadstrength=1:length(quadstrengths)
+        qps1
+        length_quad = 0.2062;
+        quadpos=[0.15,position2s(qps1)]
+        gq1 = -quadstrengths(quadstrength); %~36kG/m + focuses in x and - focuses in y
+        gq2 = -gq1;
+            %gq3 = 0.0001;
+        phioffsetE = phioffsets;
+        inputfilepath = 'output_';
+        fieldpathname = '""';
+        GPTpathname = 'C:\bin\'; 
+        ffacE = 5.5;%*10; %5.5 ;%-482; %7.5; %5.1;
+     
+        if uniform ==true
+            masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
+        elseif uniform==false
+            masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_quads', phioffsetE, energy0, energyspreadpercent);
+        end
     
-    load energyMod_phase_1_24_2022_40cells30MeV
-    philistE = philist;
-    masterfilename
-    %% Define linac parameters
-    
-    freq = 2.856e9;
-    dcellE = 14.7*0.0254; %distance between the cells, 14.7 inches, takes input as m
-    a = 0.005; %0.5 cm
-    ncellsE = 0; %length(philistE); %changed to 2 (only 2 cell cavities)
-    phasebreakE = 2;
-    subplotnum = 5;
-    drift = .67; %m I think
-    
-    %% Define beam parameters
-    
-    npart0 = 2000;
-    
-    gamma0 = (energy0+938.27)/938.27; % 1.2435;
-    
-    dgamma0 = (energy0*energyspreadpercent/100+938.27)/938.27-1; % .03% energy spread
-    
-    mevion_25nA=true;
-    mevion_1nA=false;
-   
-    if mevion_1nA==true
-        xrms0 = 3.495/1000 ;%m 4.9mm
-        %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
-        yrms0 = 4.007/1000; %m 6mm
-        %divergence of beam
-        divangx0 = (3.794-3.496)/120; %.58; %change in x [mm] over 12 cm
-        divangy0 = (4.299-4.007)/120; % .67;
-    end  
-    if mevion_25nA==true
-        xrms0 = 4.906/1000 ;%m 4.9mm
-        %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
-        yrms0 = 6.039/1000; %m 6mm
-        %divergence of beam
-        divangx0 = (5.198-4.906)/120; %.58; %change in x [mm] over 12 cm
-        divangy0 = (6.289-6.039)/120; % .67;
-    end 
-    %beta0 = .5944; %v/c? 
-    c = 2.998e8; %m/s
-    beta0= sqrt(1-1/(gamma0^2));
-    
-    t_bunch= 2*10^(-6); %2 us
-    %zlen0 = t_bunch*c*beta0 %in m
-    %t_4rf=4/freq %4RF cycles is ~1.4e-9 seconds 
-    zlen0= 3*c/freq*beta0;  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
-    %emit0 = .01e-6; % 3 pi mm-mrad emittance
-    Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
-    %current for 2us period the pulse is there
-    %mevion gave average current
-    zposE0 = zlen0/1.8 %.03; %what is this doing
-    sc = 0;
-    xoffset=0; %m
-    yoffset= 0; %m
-    %tdiff = .001/beta0/c;
-    
-    %% Initialize particle distribution entering treatment room
+        if NoRF==true
+            masterfilename= sprintf('output_noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
+            ffacE=0
+        end
+        if ffac==true
+            masterfilename= sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f_quads', phioffsetE, energy0, energyspreadpercent,ffacE);
+        end
         
-    if uniform==false
-        buildparticles = {
-        'accuracy(6);';
-        ['npart = ' num2str(npart0) ';'];
-        ['sc = ' num2str(sc) ';'];
-        % 'if(npart==1){';
-        % ['setstartpar("beam",0,0,0,0,0,' num2str(gamma0*beta0) ',mp,-qe,' num2str(Qtot0) ');'];
-        % '}';
-        'if(npart > 1){';
-        ['setparticles("beam",' num2str(npart0) ',mp,-qe,' num2str(Qtot0) ');'];
-        ['setxdist("beam","g",0,' num2str(xrms0) ',3,3);'];
-        ['setydist("beam","g",0,' num2str(yrms0) ',3,3);'];
-        ['setzdist("beam","u", 0, ' num2str(zlen0) ');'];
-        ['setGdist("beam","g",' num2str(gamma0) ',' num2str(dgamma0) ',3,3); '];
-        ['setoffset("beam",' num2str(xoffset) ',' num2str(yoffset) ',0,0,0,0);'];
-        ['addxdiv("beam",0,' num2str(divangx0) ');'];
-        ['addydiv("beam",0,' num2str(divangy0) ');'];
-        '}';
-        'if(sc==1){';
-        'spacecharge3dmesh();';
-        '}';
-        };
+        load energyMod_phase_1_24_2022_40cells30MeV
+        philistE = philist;
+        masterfilename
+        %% Define linac parameters
         
-    end
-    
-    linactext = cell(2*ncellsE,1);
-    zpos = zposE0;
-    
-    
-    %should set up a loop for strength, length, position, do for 2 and 3
-    %quads, find min divergence and size at desired distance away, 1-1.5 m
-    %away
-    %how it is doing length of quad (ie start and end)
-    %inputfiletext=[{ ['quadrupole( "wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }];
-    quadpos(2)
-    inputfiletext = [buildparticles; 
-        { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
-        { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(gq2) ');'] };
+        freq = 2.856e9;
+        dcellE = 14.7*0.0254; %distance between the cells, 14.7 inches, takes input as m
+        a = 0.005; %0.5 cm
+        ncellsE = 0; %length(philistE); %changed to 2 (only 2 cell cavities)
+        phasebreakE = 2;
+        subplotnum = 5;
+        drift = .67; %m I think
         
-        linactext; {
-        ['tout(' num2str(0/c) ',' num2str((2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
-        };];
-    %
-    %'tout(' num2str((2*drift)/beta0/c) ');'
-    %',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c) 
-    % Write input file
-    masterfilenamein=sprintf('%s.in', masterfilename);
-    masterfilenamein
-    fileID = fopen([masterfilenamein],'wt');
-    for ii = 1:length(inputfiletext)
-    fprintf(fileID,'%s \n',inputfiletext{ii});
+        %% Define beam parameters
+        
+        npart0 = 2000;
+        
+        gamma0 = (energy0+938.27)/938.27; % 1.2435;
+        
+        dgamma0 = (energy0*energyspreadpercent/100+938.27)/938.27-1; % .03% energy spread
+        
+        mevion_25nA=true;
+        mevion_1nA=false;
+       
+        if mevion_1nA==true
+            xrms0 = 3.495/1000 ;%m 4.9mm
+            %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
+            yrms0 = 4.007/1000; %m 6mm
+            %divergence of beam
+            divangx0 = (3.794-3.496)/120; %.58; %change in x [mm] over 12 cm
+            divangy0 = (4.299-4.007)/120; % .67;
+        end  
+        if mevion_25nA==true
+            xrms0 = 4.906/1000 ;%m 4.9mm
+            %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
+            yrms0 = 6.039/1000; %m 6mm
+            %divergence of beam
+            divangx0 = (5.198-4.906)/120; %.58; %change in x [mm] over 12 cm
+            divangy0 = (6.289-6.039)/120; % .67;
+        end 
+        %beta0 = .5944; %v/c? 
+        c = 2.998e8; %m/s
+        beta0= sqrt(1-1/(gamma0^2));
+        
+        t_bunch= 2*10^(-6); %2 us
+        %zlen0 = t_bunch*c*beta0 %in m
+        %t_4rf=4/freq %4RF cycles is ~1.4e-9 seconds 
+        zlen0= 3*c/freq*beta0;  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
+        %emit0 = .01e-6; % 3 pi mm-mrad emittance
+        Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
+        %current for 2us period the pulse is there
+        %mevion gave average current
+        zposE0 = zlen0/1.8 %.03; %what is this doing
+        sc = 0;
+        xoffset=0; %m
+        yoffset= 0; %m
+        %tdiff = .001/beta0/c;
+        
+        %% Initialize particle distribution entering treatment room
+            
+        if uniform==false
+            buildparticles = {
+            'accuracy(6);';
+            ['npart = ' num2str(npart0) ';'];
+            ['sc = ' num2str(sc) ';'];
+            % 'if(npart==1){';
+            % ['setstartpar("beam",0,0,0,0,0,' num2str(gamma0*beta0) ',mp,-qe,' num2str(Qtot0) ');'];
+            % '}';
+            'if(npart > 1){';
+            ['setparticles("beam",' num2str(npart0) ',mp,-qe,' num2str(Qtot0) ');'];
+            ['setxdist("beam","g",0,' num2str(xrms0) ',3,3);'];
+            ['setydist("beam","g",0,' num2str(yrms0) ',3,3);'];
+            ['setzdist("beam","u", 0, ' num2str(zlen0) ');'];
+            ['setGdist("beam","g",' num2str(gamma0) ',' num2str(dgamma0) ',3,3); '];
+            ['setoffset("beam",' num2str(xoffset) ',' num2str(yoffset) ',0,0,0,0);'];
+            ['addxdiv("beam",0,' num2str(divangx0) ');'];
+            ['addydiv("beam",0,' num2str(divangy0) ');'];
+            '}';
+            'if(sc==1){';
+            'spacecharge3dmesh();';
+            '}';
+            };
+            
+        end
+        
+        linactext = cell(2*ncellsE,1);
+        zpos = zposE0;
+        
+        
+        %should set up a loop for strength, length, position, do for 2 and 3
+        %quads, find min divergence and size at desired distance away, 1-1.5 m
+        %away
+        %how it is doing length of quad (ie start and end)
+        %inputfiletext=[{ ['quadrupole( "wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }];
+        quadpos(2)
+        inputfiletext = [buildparticles; 
+            { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
+            { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(gq2) ');'] };
+            
+            linactext; {
+            ['tout(' num2str(0/c) ',' num2str((2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
+            };];
+        %
+        %'tout(' num2str((2*drift)/beta0/c) ');'
+        %',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c) 
+        % Write input file
+        masterfilenamein=sprintf('%s.in', masterfilename);
+        masterfilenamein
+        fileID = fopen([masterfilenamein],'wt');
+        for ii = 1:length(inputfiletext)
+        fprintf(fileID,'%s \n',inputfiletext{ii});
+        end
+        fclose(fileID); 
+        
+        
+        %run the GPT script
+        system('bash "sim_auto.bat"');
+        
+        simavg = readtable(sprintf('avgfull_%s.txt',masterfilename));
+        sprintf('avgfull_%s.txt',masterfilename)
+        avg = table2struct(simavg,'ToScalar',true);
+        times=avg.time;
+        stdx=avg.stdx; %std dev in x in m
+        stdy=avg.stdy;
+        avgz=avg.avgz;
+        
+        figure(qps1+quadstrength); hold on
+        scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'average x')
+        scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'average y')
+        %hold off
+        %xline(quadpos(1),'-','DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m * %.2f m', quadpos(1),gq1,length_quad), 'LineWidth',2)
+        %xline(quadpos(2),'-','DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m * %.2f m', quadpos(2),gq2,length_quad), 'LineWidth',2)
+        fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*1000+2, yrms0*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
+        fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*1000+2, yrms0*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
+        
+        ylim([0,yrms0*1000+2])
+        %xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
+        legend();
+        xlabel('Average Z [m]');
+        ylabel('Transverse Profile Size rms [mm]');
+        %hold off
+        title(sprintf('Transverse profile with %.0f quads',length(quadpos)), 'FontSize', 14);
+        %saveas(gcf,sprintf('%sFODO.png', masterfilename))
+        hold off
     end
-    fclose(fileID); 
-    
-    
-    %run the GPT script
-    system('bash "sim_auto.bat"');
-    
-    simavg = readtable(sprintf('avgfull_%s.txt',masterfilename));
-    sprintf('avgfull_%s.txt',masterfilename)
-    avg = table2struct(simavg,'ToScalar',true);
-    times=avg.time;
-    stdx=avg.stdx; %std dev in x in m
-    stdy=avg.stdy;
-    avgz=avg.avgz;
-    qps1
-    figure(qps1); hold on
-    scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'average x')
-    scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'average y')
-    %hold off
-    %xline(quadpos(1),'-','DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m * %.2f m', quadpos(1),gq1,length_quad), 'LineWidth',2)
-    %xline(quadpos(2),'-','DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m * %.2f m', quadpos(2),gq2,length_quad), 'LineWidth',2)
-    fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*1000+2, yrms0*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
-    fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*1000+2, yrms0*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
-    
-    ylim([0,yrms0*1000+2])
-    %xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
-    legend();
-    xlabel('Average Z [m]');
-    ylabel('Transverse Profile Size rms [mm]');
-    %hold off
-    title(sprintf('Transverse profile with %.0f quads',length(quadpos)), 'FontSize', 14);
-    %saveas(gcf,sprintf('%sFODO.png', masterfilename))
-    
+    hold off
 end
 
 
