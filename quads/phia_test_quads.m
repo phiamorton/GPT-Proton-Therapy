@@ -175,8 +175,8 @@ for pp = 1:length(phioffsets)
 
     %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
     length_quad = 0.1062;
-    quadpos=[0.2,0.5];
-    gq1 = -2; %~36kG/m + focuses in x and - focuses in y
+    quadpos=[0.3,0.8];
+    gq1 = -30; %~36kG/m + focuses in x and - focuses in y
     %gq2 = -0.0001;
     %gq3 = 0.0001;
 
@@ -191,13 +191,13 @@ for pp = 1:length(phioffsets)
     %{ ['quadrupole("wcs","z",' num2str(quadpos(3)) ',' num2str(length_quad) ',' num2str(gq1) ');'] };
     inputfiletext = [buildparticles; 
         { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
-        { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(-gq1) ');'] };{
+        { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(0) ');'] };{
         ['map3D_remove("wcs","z",' num2str(zposE0-dcellE/2) ', ' fieldpathname '+"linac_iris.gdf", "x","y","z","R") ;'];
         }; linactext; {
-        ['tout(' num2str((zpos-0.1)/beta0/c) ',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
+        ['tout(' num2str(0) ',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
         };];
     %'tout(' num2str((2*drift)/beta0/c) ');'
-    
+    %',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c) 
     % Write input file
     fileID = fopen([inputfilepath masterfilename],'wt');
     for ii = 1:length(inputfiletext)
@@ -243,3 +243,22 @@ ylabel('Transverse Profile [mm]');
 hold off
 title(sprintf('Transverse profile, strength= %.2f T/m for length %.2f m, positions are %.2f & %.2f', gq1abs, length_quad, quadpos(1),quadpos(2)), 'FontSize', 8);
 saveas(gcf,sprintf('%sFODO.png', masterfilename))
+
+data = readtable(sprintf('%s.txt',masterfilename));
+G = data.G;
+E=938.272*(G-1); %MeV
+    %G=G(~isnan(G));
+x=data.x;
+y=data.y;
+z=data.z; 
+Bx=data.fBx;
+By=data.fBy;
+B_tot=sqrt(By.^2+Bx.^2);
+figure;
+%quiver(x,y,Bx,By);
+%cb = colorbar;
+%cb.Label.String = 'Field Strength [T]';
+scatter(z,Bx)
+xlabel('x [m]');
+ylabel('y [m]');
+saveas(gcf,sprintf('%sQuadField.png', masterfilename))
