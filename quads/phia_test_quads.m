@@ -16,13 +16,15 @@ rounded = round(phioffsets,2);
 num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
-npos=10;
+npos=3;
 position2s=linspace(0.4, 0.7,npos);
-quadstrengths=linspace(0.1,10,15);
+quadstrengths=linspace(0.1,10,3);
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
-beamonitorpos=1 %m
+beamonitorpos=1; %m
 tolerance = 0.05;  % Accept values within ±0.05 for the pos monitor
-beammonitory=zeros([npos,length(quadstrengths)])
+beammonitorarea=zeros([npos,length(quadstrengths)]);
+divanglesy=zeros([npos,length(quadstrengths)]);
+divanglesx=zeros([npos,length(quadstrengths)]);
 for qps1=1:npos
     for quadstrength=1:length(quadstrengths)
         qps1;
@@ -45,7 +47,7 @@ for qps1=1:npos
     
         if NoRF==true
             masterfilename= sprintf('output_noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
-            ffacE=0
+            ffacE=0;
         end
         if ffac==true
             masterfilename= sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f_quads', phioffsetE, energy0, energyspreadpercent,ffacE);
@@ -53,7 +55,7 @@ for qps1=1:npos
         
         load energyMod_phase_1_24_2022_40cells30MeV
         philistE = philist;
-        masterfilename
+        masterfilename;
         %% Define linac parameters
         
         freq = 2.856e9;
@@ -103,7 +105,7 @@ for qps1=1:npos
         Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
         %current for 2us period the pulse is there
         %mevion gave average current
-        zposE0 = zlen0/1.8 %.03; %what is this doing
+        zposE0 = zlen0/1.8; %.03; %what is this doing
         sc = 0;
         xoffset=0; %m
         yoffset= 0; %m
@@ -177,8 +179,10 @@ for qps1=1:npos
         stdy=avg.stdy;
         avgz=avg.avgz;
         
-        figure(qps1+quadstrength); hold on
+        %fig=figure(qps1+quadstrength); 
+        figure('Visible', 'off');
         scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'average x')
+        hold on
         scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'average y')
         %hold off
         %xline(quadpos(1),'-','DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m * %.2f m', quadpos(1),gq1,length_quad), 'LineWidth',2)
@@ -197,11 +201,15 @@ for qps1=1:npos
         hold off
 
         % Find indices where z is within the tolerance of beamonitorpos
-        indices = abs(avgz - beamonitorpos) <= tolerance;
+        indices = find(abs(avgz - beamonitorpos) <= tolerance);
 
         % Extract corresponding x values
-        y_at_beamonitor = min(stdy(indices).*stdx(indices));
-        beammonitory(qps1,quadstrength)=y_at_beamonitor;
+        area_at_beamonitor = min(stdy(indices).*stdx(indices));
+        beammonitorarea(qps1,quadstrength)=area_at_beamonitor;
+        divy_at_beamonitor=abs(stdy(max(indices)+1)-stdy(min(indices)-1))/(avgz(max(indices)+1)-avgz(min(indices)-1));
+        divanglesy(qps1,quadstrength)=divy_at_beamonitor;
+        divx_at_beamonitor=abs(stdx(max(indices)+1)-stdx(min(indices)-1))/(avgz(max(indices)+1)-avgz(min(indices)-1));
+        divanglesx(qps1,quadstrength)=divx_at_beamonitor;
     end
     hold off
 end
@@ -209,26 +217,46 @@ end
 
 
 % Flatten the matrix and get linear indices
-[x_flat, linear_indices] = sort(beammonitory(:));
-
+[x_flat, linear_indices] = sort(beammonitorarea(:));
+[divy_flat, linear_indices_divy] = sort(divanglesy(:));
 % Get the top 5 smallest values and their indices
-top_n = 5;
+top_n = 2;
 top_values = x_flat(1:top_n);
+top_values_divy=divy_flat(1:top_n);
 top_linear_indices = linear_indices(1:top_n);
+top_linear_indices_divy = linear_indices_divy(1:top_n);
 
 % Convert linear indices to subscripts (row and column indices)
-[row_indices, col_indices] = ind2sub(size(beammonitory), top_linear_indices);
-
+[row_indices, col_indices] = ind2sub(size(beammonitorarea), top_linear_indices);
+[row_indices_divy, col_indices_divy] = ind2sub(size(divanglesy), top_linear_indices_divy);
 % Get corresponding position2s and quadstrengths
 corresponding_positions = position2s(row_indices);
 corresponding_quadstrengths = quadstrengths(col_indices);
+corresponding_positions_divy = position2s(row_indices_divy);
+corresponding_quadstrengths_divy = quadstrengths(col_indices_divy);
 
 % Display results
-disp('Top smallest beammonitorx values and their corresponding position2s and quadstrengths:');
+disp('Top smallest beammonitorarea values and their corresponding position2s and quadstrengths:');
 for i = 1:top_n
     fprintf('Value: %.2f mm, Position2s: %.2f m, QuadStrength: %.2f T/m\n', ...
         top_values(i)*1000, corresponding_positions(i), corresponding_quadstrengths(i));
+    fprintf('Value: %.2f divergence in y, Position2s: %.2f m, QuadStrength: %.2f T/m\n', ...
+        top_values_divy(i)*1000, corresponding_positions_divy(i), corresponding_quadstrengths_divy(i));
 end
+
+rowLabels = arrayfun(@(x) sprintf('Position %.2f m', x), position2s, 'UniformOutput', false);
+colLabels = arrayfun(@(x) sprintf('Strength %.2f T/m', x), quadstrengths, 'UniformOutput', false);
+
+% Create the table
+T = array2table(beammonitorarea, 'RowNames', rowLabels, 'VariableNames', colLabels)
+
+T_divy = array2table(divanglesy, 'RowNames', rowLabels, 'VariableNames', colLabels)
+
+h=figure()
+h=heatmap(position2s, quadstrengths,  divanglesy)
+h.Title = 'Divergence in y';
+h.XLabel = 'Strength (T/m)';
+h.YLabel = 'Position (m)';
 
     %do the plotting
 %testing quad position
