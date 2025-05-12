@@ -5,26 +5,29 @@ clearvars
 
 %%
 %phioffsets = [0.00 1/4*3.14 3.14/2 3/4*3.14 3.14 3/2*3.14 6.28]; %3.4; %in rad, 0-2pi
-phioffsets =  [0.00] %[0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28];  %linspace(0, 2*pi,30)
-energyspreadpercent= 0.03
-energy0 = 228.5 %alter energy into cavities
-uniform=false
-NoRF=false
-ffac=false
+phioffsets =  [0.00]; %[0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28];  %linspace(0, 2*pi,30)
+energyspreadpercent= 0.03;
+energy0 = 228.5; %alter energy into cavities
+uniform=false;
+NoRF=false;
+ffac=false;
 rounded = round(phioffsets,2);
 %format bank
 num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
-npos=10
-position2s=linspace(0.4, 0.7,npos)
-quadstrengths=linspace(0.1,15,15)
+npos=10;
+position2s=linspace(0.4, 0.7,npos);
+quadstrengths=linspace(0.1,10,15);
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
+beamonitorpos=1 %m
+tolerance = 0.05;  % Accept values within ±0.05 for the pos monitor
+beammonitory=zeros([npos,length(quadstrengths)])
 for qps1=1:npos
     for quadstrength=1:length(quadstrengths)
-        qps1
+        qps1;
         length_quad = 0.2062;
-        quadpos=[0.15,position2s(qps1)]
+        quadpos=[0.15,position2s(qps1)];
         gq1 = -quadstrengths(quadstrength); %~36kG/m + focuses in x and - focuses in y
         gq2 = -gq1;
             %gq3 = 0.0001;
@@ -155,7 +158,6 @@ for qps1=1:npos
         %',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c) 
         % Write input file
         masterfilenamein=sprintf('%s.in', masterfilename);
-        masterfilenamein
         fileID = fopen([masterfilenamein],'wt');
         for ii = 1:length(inputfiletext)
         fprintf(fileID,'%s \n',inputfiletext{ii});
@@ -166,6 +168,7 @@ for qps1=1:npos
         %run the GPT script
         system('bash "sim_auto.bat"');
         
+
         simavg = readtable(sprintf('avgfull_%s.txt',masterfilename));
         sprintf('avgfull_%s.txt',masterfilename)
         avg = table2struct(simavg,'ToScalar',true);
@@ -192,10 +195,40 @@ for qps1=1:npos
         title(sprintf('Transverse profile with %.0f quads',length(quadpos)), 'FontSize', 14);
         %saveas(gcf,sprintf('%sFODO.png', masterfilename))
         hold off
+
+        % Find indices where z is within the tolerance of beamonitorpos
+        indices = abs(avgz - beamonitorpos) <= tolerance;
+
+        % Extract corresponding x values
+        y_at_beamonitor = min(stdy(indices)*stdx(indices));
+        beammonitory(qps1,quadstrength)=y_at_beamonitor;
     end
     hold off
 end
 
+
+
+% Flatten the matrix and get linear indices
+[x_flat, linear_indices] = sort(beammonitory(:));
+
+% Get the top 5 smallest values and their indices
+top_n = 5;
+top_values = x_flat(1:top_n);
+top_linear_indices = linear_indices(1:top_n);
+
+% Convert linear indices to subscripts (row and column indices)
+[row_indices, col_indices] = ind2sub(size(beammonitory), top_linear_indices);
+
+% Get corresponding position2s and quadstrengths
+corresponding_positions = position2s(row_indices);
+corresponding_quadstrengths = quadstrengths(col_indices);
+
+% Display results
+disp('Top smallest beammonitorx values and their corresponding position2s and quadstrengths:');
+for i = 1:top_n
+    fprintf('Value: %.2f mm, Position2s: %.2f m, QuadStrength: %.2f T/m\n', ...
+        top_values(i)*1000, corresponding_positions(i), corresponding_quadstrengths(i));
+end
 
     %do the plotting
 %testing quad position
