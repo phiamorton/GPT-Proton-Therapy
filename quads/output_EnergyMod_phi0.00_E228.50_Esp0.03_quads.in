@@ -14,6 +14,6 @@ addydiv("beam",0,0.0020833);
 if(sc==1){ 
 spacecharge3dmesh(); 
 } 
-quadrupole("wcs","z",0.15,0.2062,-12.6474); 
-quadrupole("wcs","z",0.41579,0.2062,12.6474); 
+quadrupole("wcs","z",0.15,0.2062,-8.7263); 
+quadrupole("wcs","z",0.49474,0.2062,8.7263); 
 tout(0,1.1223e-08,5.6115e-11); 
