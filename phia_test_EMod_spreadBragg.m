@@ -5,12 +5,12 @@ clearvars
 
 %%
 %phioffsets = [0.00 1/4*3.14 3.14/2 3/4*3.14 3.14 3/2*3.14 6.28]; %3.4; %in rad, 0-2pi
-phioffsets =  [0.00] %[0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28];  %linspace(0, 2*pi,30)
-energyspreadpercent= 0.03
-energy0 = 228.5 %alter energy into cavities
-uniform=false
-NoRF=false
-ffac=true
+phioffsets =  [0.00] ;%[0.00  0.33        0.66        0.99        1.32        1.65        1.98        2.31        2.65        2.98      3.14   3.31        3.64        3.97         4.30        4.63        4.96        5.29        5.62        5.95        6.28];  %linspace(0, 2*pi,30)
+energyspreadpercent= 0.03;
+energy0 = 228.5 ;%alter energy into cavities
+uniform=false;
+NoRF=false;
+ffac=true;
 rounded = round(phioffsets,2);
 %format bank
 num2str(rounded);
@@ -35,7 +35,7 @@ for pp = 1:length(phioffsets)
 
     if NoRF==true
         masterfilename= sprintf('noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform.in', phioffsetE, energy0, energyspreadpercent);
-        ffacE=0
+        ffacE=0;
     end
     if ffac==true
         masterfilename= sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f.in', phioffsetE, energy0, energyspreadpercent,ffacE);
@@ -67,25 +67,6 @@ for pp = 1:length(phioffsets)
     
     dgamma0 = (energy0*energyspreadpercent/100+938.27)/938.27-1; % .03% energy spread
     
-    mevion_25nA=false;
-    mevion_1nA=true;
-   
-    if mevion_1nA==true
-        xrms0 = 3.495/1000 ;%m 4.9mm
-        %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
-        yrms0 = 4.007/1000; %m 6mm
-        %divergence of beam
-        divangx0 = (3.794-3.496)/120; %.58; %change in x [mm] over 12 cm
-        divangy0 = (4.299-4.007)/120; % .67;
-    end  
-    if mevion_25nA==true
-        xrms0 = 4.906/1000 ;%m 4.9mm
-        %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
-        yrms0 = 6.039/1000; %m 6mm
-        %divergence of beam
-        divangx0 = (5.198-4.906)/120; %.58; %change in x [mm] over 12 cm
-        divangy0 = (6.289-6.039)/120; % .67;
-    end 
     %beta0 = .5944; %v/c? 
     c = 2.998e8; %m/s
     beta0= sqrt(1-1/(gamma0^2));
@@ -93,7 +74,7 @@ for pp = 1:length(phioffsets)
     t_bunch= 2*10^(-6); %2 us
     %zlen0 = t_bunch*c*beta0 %in m
     %t_4rf=4/freq %4RF cycles is ~1.4e-9 seconds 
-    zlen0= 3*c/freq*beta0  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
+    zlen0= 3*c/freq*beta0 ; %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
     %based on mevion numbers, 230 MeV beam will be 12 cm long at isocenter
     %(midway between cavities)
     emit0 = .01e-6; % 3 pi mm-mrad emittance
@@ -105,6 +86,41 @@ for pp = 1:length(phioffsets)
     xoffset=0; %m
     yoffset= 0; %m
     %tdiff = .001/beta0/c;
+    isocenter = zposE0+dcellE/2 ;%m
+
+    mevion_25nA=false;
+    mevion_1nA=true;
+   
+    if mevion_1nA==true
+        divangx0 = (3.794-3.496)/120; %.58; %change in x [mm] over 12 cm
+        divangy0 = (4.299-4.007)/120; % .67;
+        xiso=3.604/1000; %m 4.9mm
+        yiso = 4.129/1000; %m 6mm
+        divangx0*isocenter;
+        divangy0*isocenter;
+        xrms0 = xiso-divangx0*isocenter;
+        yrms0= yiso-divangy0*isocenter;
+        %gives y=4.15 at iso and x=3.61
+        
+    end  
+    if mevion_25nA==true
+        divangx0 = (5.198-4.906)/120; %.58; %change in x [mm] over 12 cm
+        divangy0 = (6.289-6.039)/120; % .67;
+        xiso=5.05/1000 ;%m 4.9mm
+        yiso = 6.23/1000; %m 6mm
+        divangx0*isocenter;
+        divangy0*isocenter;
+        xrms0 = xiso-divangx0*isocenter;
+        yrms0= yiso-divangy0*isocenter;
+        %remember, div in GPT MUST be rad/m ie div/sizerms
+        %this actually gives isocenter yrms0=6.28 and xrms0=5.09
+       
+        %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
+        
+        %divergence of beam
+        
+    end 
+    
     
     %% Initialize particle distribution entering treatment room
     if uniform == true
@@ -126,8 +142,8 @@ for pp = 1:length(phioffsets)
         ['setGByemittance("beam",' num2str(emit0) ');'];
         ['setGdist("beam","g",' num2str(gamma0) ',' num2str(dgamma0) ',3,3); '];
         ['setoffset("beam",' num2str(xoffset) ',' num2str(yoffset) ',0,0,0,0);'];
-        ['addxdiv("beam",0,' num2str(divangx0) ');'];
-        ['addydiv("beam",0,' num2str(divangy0) ');'];
+        ['addxdiv("beam",0,' num2str(divangx0/xiso) ');'];
+        ['addydiv("beam",0,' num2str(divangy0/yiso) ');'];
         '}';
         'if(sc==1){';
         'spacecharge3dmesh();';
