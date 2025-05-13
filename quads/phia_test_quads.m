@@ -16,10 +16,10 @@ rounded = round(phioffsets,2);
 num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
-npos=8;
+npos=4;
 position2s= linspace(0.5, 0.8,npos);
 quadstrengths1= [25] %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(2,quadstrengths1(1)+5,5)
+quadstrengths2= linspace(20,20,1)
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 beamonitorpos=1; %m
 tolerance = 0.005;  % Accept values within ±0.05 for the pos monitor
@@ -27,23 +27,23 @@ beammonitorarea=zeros([npos,length(quadstrengths2)]);
 divanglesy=zeros([npos,length(quadstrengths2)]);
 divanglesx=zeros([npos,length(quadstrengths2)]);
 counter=1
-z_xmins=zeros(1,length(quadstrengths2))
-z_ymins=zeros(1,length(quadstrengths2))
-area_at_xmins=zeros(1,length(quadstrengths2))
-area_at_ymins=zeros(1,length(quadstrengths2))
-z_focaldiffs=zeros(1,length(quadstrengths2))
+z_xmins=zeros(1,npos)
+z_ymins=zeros(1,npos)
+area_at_xmins=zeros(1,npos)
+area_at_ymins=zeros(1,npos)
+z_focaldiffs=zeros(1,npos)
 
-for qps2=1:npos
-    for quadstrength1=1:length(quadstrengths1)
-        for quadstrength2=1:length(quadstrengths2)
+for quadstrength1=1:length(quadstrengths1)
+    for quadstrength2=1:length(quadstrengths2)
+        for qps2=1:npos
                 qps2;
                 length_quad = 0.2062;
                 quadpos=[0.15,position2s(qps2)]
-                gq1 = -quadstrengths1(quadstrength1) %~36kG/m + focuses in x and - focuses in y 
+                gq1 = -quadstrengths1(quadstrength1); %~36kG/m + focuses in x and - focuses in y 
                 %set first quad to focus~0.8m but sweeping strength
                 gq2 = quadstrengths2(quadstrength2) %add in second quad and adjust strength to look at min in x and y and minimize the diff in z between the two 
                 %pick 2 other initial magnet strengths and find 
-                    %gq3 = 0.0001;
+                %gq3 = 0.0001;
                 phioffsetE = phioffsets;
                 inputfilepath = 'output_';
                 fieldpathname = '""';
@@ -212,7 +212,7 @@ for qps2=1:npos
                 %fig=figure(counter); 
                 %qps2+quadstrength2
                 %set(gcf, 'WindowStyle', 'docked');
-                figure('Visible', 'off');
+                figure('Visible', 'on');
                 scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                 hold on
                 scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
@@ -232,45 +232,50 @@ for qps2=1:npos
                 %saveas(gcf,sprintf('%sFODO.png', masterfilename))
                 %hold off
         
-                % Find indices where area is min
-                indicesx = find(abs(min(stdx(round(length(stdx)/2):length(stdx))))) %need to adapt for pos>1m
-                indicesy= find(abs(min(stdy((round(length(stdx)/2):length(stdy))))))
-                indicesx=indicesx+round(length(stdx)/2)
-                indicesy=indicesy+round(length(stdy)/2)
-                z_xmin=avgz(indicesx);
+                % Find indices where size in x,y is min
+                %stdx(round(length(stdx)/2):length(stdx))
+                min_stdx_past1m=min(stdx(round(length(stdx)/2):length(stdx)))
+                min_stdy_past1m=min(stdx(round(length(stdx)/2):length(stdx)))
+
+                indicesx = find(stdx==min_stdx_past1m) %need to adapt for pos>1m
+                indicesy= find(stdx==min_stdy_past1m);
+                %indicesx=indicesx+round(length(stdx)/2)
+                %indicesy=indicesy+round(length(stdy)/2);
+                z_xmin=avgz(indicesx)
                 z_ymin=avgz(indicesy);
                 z_focaldiff=abs(z_xmin-z_ymin)
-                z_focaldiffs(quadstrength2)=z_focaldiff;
+                z_focaldiffs(qps2)=z_focaldiff
                 % Extract corresponding x values
-                area_at_xmin = min(stdy(indicesx).*stdx(indicesx))*3.14
-                area_at_ymin = min(stdy(indicesy).*stdx(indicesy))*3.14;
-                z_xmins(quadstrength2)=z_xmin
-                z_ymins(quadstrength2)=z_ymin
+                %area_at_xmin = min(stdy(indicesx).*stdx(indicesx))*3.14
+                %area_at_ymin = min(stdy(indicesy).*stdx(indicesy))*3.14;
+                z_xmins(qps2)=z_xmin
+                %z_ymins(qps2)=z_ymin;
 
-                area_at_xmins(quadstrength2)=area_at_xmin;
+                %area_at_xmins(qps2)=area_at_xmin
 
-                area_at_ymins(quadstrength2)=area_at_ymin;
+                %area_at_ymins(qps2)=area_at_ymin;
 
-                beammonitorarea(qps2,quadstrength2)=area_at_xmin;
+                %beammonitorarea(qps2,quadstrength2)=area_at_xmin;
                 % divy_at_beamonitor=abs(stdy(max(indices)+1)-stdy(min(indices)-1))/(avgz(max(indices)+1)-avgz(min(indices)-1));
                 % divanglesy(qps2,quadstrength2)=divy_at_beamonitor;
                 % divx_at_beamonitor=abs(stdx(max(indices)+1)-stdx(min(indices)-1))/(avgz(max(indices)+1)-avgz(min(indices)-1));
                 % divanglesx(qps2,quadstrength2)=divx_at_beamonitor;
             
         end
-        indices_zdiffmin= find(abs(min(z_focaldiffs)));
-        sprintf('min z diff %.2f at quads strength %.2f T/m and areas ~%.2f mm^2 at x min and ~%.2f mm^2 at y min ',min(z_focaldiffs),quadstrengths2(indices_zdiffmin), area_at_ymins(indices_zdiffmin), area_at_xmins(indices_zdiffmin))
-        figure('Visible','on')
-        plot(quadstrengths2,area_at_xmins*1000*1000)
-        area_at_xmins;
-        hold on
-        plot(quadstrengths2,area_at_ymins*1000*1000)
-        xlabel('quad 2 strength [T/m]')
-        ylabel('area at x/y minima [mm^2]')
-        title(sprintf('area for quad 1 pos %.2f quad 2 pos %.2f', quadpos(1),quadpos(2)))
-        figure('Visible','on')
-        plot(quadstrengths2, z_focaldiffs)
-        title(sprintf('focal point difference for quad 1 pos %.2f quad 2 pos %.2f', quadpos(1),quadpos(2)))
+        % indices_zdiffmin= find(abs(min(z_focaldiffs)))
+        % sprintf('min z diff %.2f at quads strength %.2f T/m and areas ~%.2f mm^2 at x min and ~%.2f mm^2 at y min ',min(z_focaldiffs),quadstrengths2(indices_zdiffmin), area_at_ymins(indices_zdiffmin), area_at_xmins(indices_zdiffmin))
+        % figure('Visible','on')
+        % plot(position2s,area_at_xmins*1000*1000)
+        % area_at_xmins;
+        % hold on
+        % plot(position2s,area_at_ymins*1000*1000);
+        % xlabel('quad 2 position [m]')
+        % ylabel('area at x/y minima [mm^2]')
+        % title(sprintf('area for quad 1 pos %.2f quad 2 pos %.2f for strength %.2f T/m and %.2f T/m', quadpos(1),quadpos(2), quadstrengths2(quadstrength2),quadstrengths1(quadstrength1)))
+        % figure('Visible','on')
+        figure()
+        plot(position2s, z_xmins)
+        title(sprintf('focal point difference for quad 1 pos %.2f quad 2 pos %.2f for strength %.2f T/m and %.2f T/m', quadpos(1),quadpos(2), quadstrengths2(quadstrength2),quadstrengths1(quadstrength1)))
         hold off
     end
     hold off
@@ -278,70 +283,70 @@ end
 % 
 
 
-% Flatten the matrix and get linear indices
-[x_flat, linear_indices] = sort(beammonitorarea(:));
-[divy_flat, linear_indices_divy] = sort(divanglesy(:));
-[divx_flat, linear_indices_divx] = sort(divanglesx(:));
-% Get the top 5 smallest values and their indices
-top_n = 2;
-top_values = x_flat(1:top_n);
-% top_values_divy=divy_flat(1:top_n);
-% top_values_divx=divx_flat(1:top_n);
-top_linear_indices = linear_indices(1:top_n);
-% top_linear_indices_divy = linear_indices_divy(1:top_n);
-% top_linear_indices_divx = linear_indices_divx(1:top_n);
-
-
-% Convert linear indices to subscripts (row and column indices)
-[row_indices, col_indices] = ind2sub(size(beammonitorarea), top_linear_indices);
-% [row_indices_divy, col_indices_divy] = ind2sub(size(divanglesy), top_linear_indices_divy);
-% [row_indices_divx, col_indices_divx] = ind2sub(size(divanglesx), top_linear_indices_divx);
-% Get corresponding position2s and quadstrengths
-corresponding_positions = position2s(row_indices);
-corresponding_quadstrengths = quadstrengths2(col_indices);
-% corresponding_positions_divy = position2s(row_indices_divy);
-% corresponding_quadstrengths_divy = quadstrengths2(col_indices_divy);
-% corresponding_positions_divx = position2s(row_indices_divx);
-% corresponding_quadstrengths_divx = quadstrengths2(col_indices_divx);
-
-% Display results
-disp('Top smallest beammonitorarea values and their corresponding position2s and quadstrengths:');
-for i = 1:top_n
-    fprintf('Value: %.2f mm, Position2s: %.2f m, QuadStrength: %.2f T/m\n', ...
-        top_values(i)*1000, corresponding_positions(i), corresponding_quadstrengths(i));
-    % fprintf('Value: %.2f divergence in y, Position2s: %.2f m, QuadStrength: %.2f T/m\n', ...
-    %     top_values_divy(i)*1000, corresponding_positions_divy(i), corresponding_quadstrengths_divy(i));
-    % fprintf('Value: %.2f divergence in x, Position2s: %.2f m, QuadStrength: %.2f T/m\n', ...
-    %     top_values_divx(i)*1000, corresponding_positions_divx(i), corresponding_quadstrengths_divx(i));
-end
-
-rowLabels = arrayfun(@(x) sprintf('Position= %.2f m', x), position2s, 'UniformOutput', false);
-colLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths2, 'UniformOutput', false);
-
-% Create the table
-T = array2table(beammonitorarea, 'RowNames', rowLabels, 'VariableNames', colLabels)
+% % Flatten the matrix and get linear indices
+% [x_flat, linear_indices] = sort(beammonitorarea(:));
+% [divy_flat, linear_indices_divy] = sort(divanglesy(:));
+% [divx_flat, linear_indices_divx] = sort(divanglesx(:));
+% % Get the top 5 smallest values and their indices
+% top_n = 2;
+% top_values = x_flat(1:top_n);
+% % top_values_divy=divy_flat(1:top_n);
+% % top_values_divx=divx_flat(1:top_n);
+% top_linear_indices = linear_indices(1:top_n);
+% % top_linear_indices_divy = linear_indices_divy(1:top_n);
+% % top_linear_indices_divx = linear_indices_divx(1:top_n);
 % 
-% T_divy = array2table(divanglesy, 'RowNames', rowLabels, 'VariableNames', colLabels)
 % 
-% T_divx = array2table(divanglesx, 'RowNames', rowLabels, 'VariableNames', colLabels)
+% % Convert linear indices to subscripts (row and column indices)
+% [row_indices, col_indices] = ind2sub(size(beammonitorarea), top_linear_indices);
+% % [row_indices_divy, col_indices_divy] = ind2sub(size(divanglesy), top_linear_indices_divy);
+% % [row_indices_divx, col_indices_divx] = ind2sub(size(divanglesx), top_linear_indices_divx);
+% % Get corresponding position2s and quadstrengths
+% corresponding_positions = position2s(row_indices);
+% corresponding_quadstrengths = quadstrengths2(col_indices);
+% % corresponding_positions_divy = position2s(row_indices_divy);
+% % corresponding_quadstrengths_divy = quadstrengths2(col_indices_divy);
+% % corresponding_positions_divx = position2s(row_indices_divx);
+% % corresponding_quadstrengths_divx = quadstrengths2(col_indices_divx);
 % 
-% h=figure()
-% h=heatmap(quadstrengths2, position2s,   divanglesy)
-% h.Title = 'Divergence in y';
-% h.XLabel = 'Strength (T/m)';
-% h.YLabel = 'Position (m)';
+% % Display results
+% disp('Top smallest beammonitorarea values and their corresponding position2s and quadstrengths:');
+% for i = 1:top_n
+%     fprintf('Value: %.2f mm, Position2s: %.2f m, QuadStrength: %.2f T/m\n', ...
+%         top_values(i)*1000, corresponding_positions(i), corresponding_quadstrengths(i));
+%     % fprintf('Value: %.2f divergence in y, Position2s: %.2f m, QuadStrength: %.2f T/m\n', ...
+%     %     top_values_divy(i)*1000, corresponding_positions_divy(i), corresponding_quadstrengths_divy(i));
+%     % fprintf('Value: %.2f divergence in x, Position2s: %.2f m, QuadStrength: %.2f T/m\n', ...
+%     %     top_values_divx(i)*1000, corresponding_positions_divx(i), corresponding_quadstrengths_divx(i));
+% end
 % 
-% h2=figure()
-% h2=heatmap(quadstrengths2, position2s,   divanglesx)
-% h2.Title = 'Divergence in x';
-% h2.XLabel = 'Strength (T/m)';
-% h2.YLabel = 'Position (m)';
-
-h3=figure()
-h3=heatmap(quadstrengths2, position2s,  beammonitorarea*1000*1000)
-h3.Title = '~Beam Size [mm^2]';
-h3.XLabel = 'Strength (T/m)';
-h3.YLabel = 'Position (m)';
+% rowLabels = arrayfun(@(x) sprintf('Position= %.2f m', x), position2s, 'UniformOutput', false);
+% colLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths2, 'UniformOutput', false);
+% 
+% % Create the table
+% T = array2table(beammonitorarea, 'RowNames', rowLabels, 'VariableNames', colLabels)
+% % 
+% % T_divy = array2table(divanglesy, 'RowNames', rowLabels, 'VariableNames', colLabels)
+% % 
+% % T_divx = array2table(divanglesx, 'RowNames', rowLabels, 'VariableNames', colLabels)
+% % 
+% % h=figure()
+% % h=heatmap(quadstrengths2, position2s,   divanglesy)
+% % h.Title = 'Divergence in y';
+% % h.XLabel = 'Strength (T/m)';
+% % h.YLabel = 'Position (m)';
+% % 
+% % h2=figure()
+% % h2=heatmap(quadstrengths2, position2s,   divanglesx)
+% % h2.Title = 'Divergence in x';
+% % h2.XLabel = 'Strength (T/m)';
+% % h2.YLabel = 'Position (m)';
+% 
+% h3=figure()
+% h3=heatmap(quadstrengths2, position2s,  beammonitorarea*1000*1000)
+% h3.Title = '~Beam Size [mm^2]';
+% h3.XLabel = 'Strength (T/m)';
+% h3.YLabel = 'Position (m)';
 
 
     %do the plotting for the quad magnetic field
