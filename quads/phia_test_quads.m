@@ -33,12 +33,12 @@ area_at_xmins=zeros(1,length(quadstrengths2))
 area_at_ymins=zeros(1,length(quadstrengths2))
 z_focaldiffs=zeros(1,length(quadstrengths2))
 
-for qps1=1:npos
+for qps2=1:npos
     for quadstrength1=1:length(quadstrengths1)
         for quadstrength2=1:length(quadstrengths2)
-                qps1;
+                qps2;
                 length_quad = 0.2062;
-                quadpos=[0.15,position2s(qps1)]
+                quadpos=[0.15,position2s(qps2)]
                 gq1 = -quadstrengths1(quadstrength1) %~36kG/m + focuses in x and - focuses in y 
                 %set first quad to focus~0.8m but sweeping strength
                 gq2 = quadstrengths2(quadstrength2) %add in second quad and adjust strength to look at min in x and y and minimize the diff in z between the two 
@@ -209,10 +209,10 @@ for qps1=1:npos
                 stdy=avg.stdy;
                 avgz=avg.avgz;
                 counter=counter+1;
-                fig=figure(counter); 
-                %qps1+quadstrength2
-                set(gcf, 'WindowStyle', 'docked');
-                %figure('Visible', 'off');
+                %fig=figure(counter); 
+                %qps2+quadstrength2
+                %set(gcf, 'WindowStyle', 'docked');
+                figure('Visible', 'off');
                 scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                 hold on
                 scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
@@ -233,8 +233,10 @@ for qps1=1:npos
                 %hold off
         
                 % Find indices where area is min
-                indicesx = find(abs(min(stdx(round(length(stdx)/2):length(stdx)))))
-                indicesy= find(abs(min(stdy(1:length(stdy)))))
+                indicesx = find(abs(min(stdx(round(length(stdx)/2):length(stdx))))) %need to adapt for pos>1m
+                indicesy= find(abs(min(stdy((round(length(stdx)/2):length(stdy))))))
+                indicesx=indicesx+round(length(stdx)/2)
+                indicesy=indicesy+round(length(stdy)/2)
                 z_xmin=avgz(indicesx);
                 z_ymin=avgz(indicesy);
                 z_focaldiff=abs(z_xmin-z_ymin)
@@ -243,17 +245,17 @@ for qps1=1:npos
                 area_at_xmin = min(stdy(indicesx).*stdx(indicesx))*3.14
                 area_at_ymin = min(stdy(indicesy).*stdx(indicesy))*3.14;
                 z_xmins(quadstrength2)=z_xmin
-                z_ymins(quadstrength2)=z_ymin;
+                z_ymins(quadstrength2)=z_ymin
 
                 area_at_xmins(quadstrength2)=area_at_xmin;
 
                 area_at_ymins(quadstrength2)=area_at_ymin;
 
-                beammonitorarea(qps1,quadstrength2)=area_at_xmin;
+                beammonitorarea(qps2,quadstrength2)=area_at_xmin;
                 % divy_at_beamonitor=abs(stdy(max(indices)+1)-stdy(min(indices)-1))/(avgz(max(indices)+1)-avgz(min(indices)-1));
-                % divanglesy(qps1,quadstrength2)=divy_at_beamonitor;
+                % divanglesy(qps2,quadstrength2)=divy_at_beamonitor;
                 % divx_at_beamonitor=abs(stdx(max(indices)+1)-stdx(min(indices)-1))/(avgz(max(indices)+1)-avgz(min(indices)-1));
-                % divanglesx(qps1,quadstrength2)=divx_at_beamonitor;
+                % divanglesx(qps2,quadstrength2)=divx_at_beamonitor;
             
         end
         indices_zdiffmin= find(abs(min(z_focaldiffs)));
