@@ -19,7 +19,7 @@ length_quad = 0.2062;
 npos=8;
 position2s= linspace(0.5, 0.8,npos);
 quadstrengths1= [25] %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(1,quadstrengths1(1)+5,5);
+quadstrengths2= linspace(2,quadstrengths1(1)+5,5)
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 beamonitorpos=1; %m
 tolerance = 0.005;  % Accept values within ±0.05 for the pos monitor
@@ -27,11 +27,11 @@ beammonitorarea=zeros([npos,length(quadstrengths2)]);
 divanglesy=zeros([npos,length(quadstrengths2)]);
 divanglesx=zeros([npos,length(quadstrengths2)]);
 counter=1
-z_xmins=zeros(length(quadstrengths2))
-z_ymins=zeros(length(quadstrengths2))
-area_at_xmins=zeros(length(quadstrengths2))
-area_at_ymins=zeros(length(quadstrengths2))
-z_focaldiffs=zeros(length(quadstrengths2))
+z_xmins=zeros(1,length(quadstrengths2))
+z_ymins=zeros(1,length(quadstrengths2))
+area_at_xmins=zeros(1,length(quadstrengths2))
+area_at_ymins=zeros(1,length(quadstrengths2))
+z_focaldiffs=zeros(1,length(quadstrengths2))
 
 for qps1=1:npos
     for quadstrength1=1:length(quadstrengths1)
@@ -233,16 +233,16 @@ for qps1=1:npos
                 %hold off
         
                 % Find indices where area is min
-                indicesx = find(abs(min(stdx(round(length(stdx)/2):length(stdx)))));
-                indicesy= find(abs(min(stdy(round(length(stdy)/2):length(stdy)))));
+                indicesx = find(abs(min(stdx(round(length(stdx)/2):length(stdx)))))
+                indicesy= find(abs(min(stdy(1:length(stdy)))))
                 z_xmin=avgz(indicesx);
                 z_ymin=avgz(indicesy);
-                z_focaldiff=abs(z_xmin-z_ymin);
+                z_focaldiff=abs(z_xmin-z_ymin)
                 z_focaldiffs(quadstrength2)=z_focaldiff;
                 % Extract corresponding x values
-                area_at_xmin = min(stdy(indicesx).*stdx(indicesx))*3.14;
+                area_at_xmin = min(stdy(indicesx).*stdx(indicesx))*3.14
                 area_at_ymin = min(stdy(indicesy).*stdx(indicesy))*3.14;
-                z_xmins(quadstrength2)=z_xmin;
+                z_xmins(quadstrength2)=z_xmin
                 z_ymins(quadstrength2)=z_ymin;
 
                 area_at_xmins(quadstrength2)=area_at_xmin;
@@ -256,8 +256,8 @@ for qps1=1:npos
                 % divanglesx(qps1,quadstrength2)=divx_at_beamonitor;
             
         end
-        indices_zdiffmin= find(abs(min(z_focaldiffs)))
-        fprintf('min z diff %.2f at quads strength %.2f T/m and areas ~%.2f mm^2 at x min and ~%.2f mm^2 at y min ',min(z_focaldiffs),quadstrengths2(indices_zdiffmin), area_at_ymins(indices_zdiffmin), area_at_xmins(indices_zdiffmin))
+        indices_zdiffmin= find(abs(min(z_focaldiffs)));
+        sprintf('min z diff %.2f at quads strength %.2f T/m and areas ~%.2f mm^2 at x min and ~%.2f mm^2 at y min ',min(z_focaldiffs),quadstrengths2(indices_zdiffmin), area_at_ymins(indices_zdiffmin), area_at_xmins(indices_zdiffmin))
         figure('Visible','on')
         plot(quadstrengths2,area_at_xmins*1000*1000)
         area_at_xmins;
