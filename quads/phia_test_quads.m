@@ -17,14 +17,16 @@ num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
 npos=15;
-position2s=linspace(0.4, 0.7,npos);
-quadstrengths=linspace(0.1,15,20);
+position2s= linspace(0.4, 0.8,npos);
+quadstrengths= linspace(0.1,36,40);
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 beamonitorpos=1; %m
 tolerance = 0.05;  % Accept values within ±0.05 for the pos monitor
 beammonitorarea=zeros([npos,length(quadstrengths)]);
 divanglesy=zeros([npos,length(quadstrengths)]);
 divanglesx=zeros([npos,length(quadstrengths)]);
+
+
 for qps1=1:npos
     for quadstrength=1:length(quadstrengths)
         qps1;
@@ -59,12 +61,13 @@ for qps1=1:npos
         %% Define linac parameters
 
         freq = 2.856e9;
-        dcellE = 14.7*0.0254; %distance between the cells, 14.7 inches, takes input as m
+        dcellE = 14.7*0.0254; %distance between the cells, 14.7 inches, given as m
         a = 0.005; %0.5 cm
-        ncellsE = 0; %length(philistE); %changed to 2 (only 2 cell cavities)
+        ncellsE = 0; %length(philistE); %changed to 0 for quads only
         phasebreakE = 2;
         subplotnum = 5;
         drift = .67; %m I think
+       
 
         %% Define beam parameters
 
@@ -73,31 +76,10 @@ for qps1=1:npos
         gamma0 = (energy0+938.27)/938.27; % 1.2435;
 
         dgamma0 = (energy0*energyspreadpercent/100+938.27)/938.27-1; % .03% energy spread
-
-        mevion_25nA=true;
-        mevion_1nA=false;
-
-        if mevion_1nA==true
-            xrms0 = 3.495/1000 ;%m 4.9mm
-            %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
-            yrms0 = 4.007/1000; %m 6mm
-            %divergence of beam
-            divangx0 = (3.794-3.496)/120; %.58; %change in x [mm] over 12 cm
-            divangy0 = (4.299-4.007)/120; % .67;
-        end  
-        if mevion_25nA==true
-            xrms0 = 4.906/1000 ;%m 4.9mm
-            %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
-            yrms0 = 6.039/1000; %m 6mm
-            %divergence of beam
-            divangx0 = (5.198-4.906)/120; %.58; %change in x [mm] over 12 cm
-            divangy0 = (6.289-6.039)/120; % .67;
-        end 
-        %beta0 = .5944; %v/c? 
+        t_bunch= 2*10^(-6); %2 us
         c = 2.998e8; %m/s
         beta0= sqrt(1-1/(gamma0^2));
 
-        t_bunch= 2*10^(-6); %2 us
         %zlen0 = t_bunch*c*beta0 %in m
         %t_4rf=4/freq %4RF cycles is ~1.4e-9 seconds 
         zlen0= 3*c/freq*beta0;  %in m % will set to 3-4 RF cycles for now, actual bunch length will be 2??? us long
@@ -109,7 +91,44 @@ for qps1=1:npos
         sc = 0;
         xoffset=0; %m
         yoffset= 0; %m
+        isocenter = zposE0+dcellE/2 %m
         %tdiff = .001/beta0/c;
+        
+
+        mevion_25nA=true;
+        mevion_1nA=false;
+
+        if mevion_1nA==true
+            divangx0 = (3.794-3.496)/120; %.58; %change in x [mm] over 12 cm
+            divangy0 = (4.299-4.007)/120; % .67;
+            xiso=3.604/1000 %m 4.9mm
+            yiso = 4.129/1000 %m 6mm
+            divangx0*isocenter
+            divangy0*isocenter
+            xrms0 = xiso-divangx0*isocenter
+            yrms0= yiso-divangy0*isocenter
+            %gives y=4.15 at iso and x=3.61
+            
+        end  
+        if mevion_25nA==true
+            divangx0 = (5.198-4.906)/120; %.58; %change in x [mm] over 12 cm
+            divangy0 = (6.289-6.039)/120; % .67;
+            xiso=5.05/1000 %m 4.9mm
+            yiso = 6.23/1000 %m 6mm
+            divangx0*isocenter
+            divangy0*isocenter
+            xrms0 = xiso-divangx0*isocenter
+            yrms0= yiso-divangy0*isocenter
+            %remember, div in GPT MUST be rad/m ie div/sizerms
+            %this actually gives isocenter yrms0=6.28 and xrms0=5.09
+           
+            %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
+            
+            %divergence of beam
+            
+        end 
+        %beta0 = .5944; %v/c? 
+        
 
         %% Initialize particle distribution entering treatment room
 
@@ -128,8 +147,8 @@ for qps1=1:npos
             ['setzdist("beam","u", 0, ' num2str(zlen0) ');'];
             ['setGdist("beam","g",' num2str(gamma0) ',' num2str(dgamma0) ',3,3); '];
             ['setoffset("beam",' num2str(xoffset) ',' num2str(yoffset) ',0,0,0,0);'];
-            ['addxdiv("beam",0,' num2str(divangx0) ');'];
-            ['addydiv("beam",0,' num2str(divangy0) ');'];
+            ['addxdiv("beam",0,' num2str(divangx0/xiso) ');'];
+            ['addydiv("beam",0,' num2str(divangy0/yiso) ');'];
             '}';
             'if(sc==1){';
             'spacecharge3dmesh();';
@@ -155,7 +174,9 @@ for qps1=1:npos
             linactext; {
             ['tout(' num2str(0/c) ',' num2str((2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
             };];
-        %
+        %['tout(' num2str(0/c) ',' num2str((2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
+        %['tout(' num2str((isocenter-.06)/beta0/c) ',' num2str((isocenter+.06)/beta0/c) ',' num2str((.03)/beta0/c)  ');'];  
+        %use line above if checking size at isocenter
         %'tout(' num2str((2*drift)/beta0/c) ');'
         %',' num2str((zpos+2)/beta0/c) ',' num2str((0.01)/beta0/c) 
         % Write input file
@@ -179,9 +200,9 @@ for qps1=1:npos
         stdy=avg.stdy;
         avgz=avg.avgz;
 
-        %fig=figure(qps1+quadstrength); 
-        %set(gcf, 'WindowStyle', 'docked');
-        figure('Visible', 'off');
+        fig=figure(qps1+quadstrength); 
+        set(gcf, 'WindowStyle', 'docked');
+        %figure('Visible', 'off');
         scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
         hold on
         scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
@@ -190,7 +211,7 @@ for qps1=1:npos
         %xline(quadpos(2),'-','DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m * %.2f m', quadpos(2),gq2,length_quad), 'LineWidth',2)
         fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*1000+2, yrms0*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
         fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*1000+2, yrms0*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
-
+        
         ylim([0,yrms0*1000+2])
         %xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
         legend();
