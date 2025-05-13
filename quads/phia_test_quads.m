@@ -235,21 +235,21 @@ for quadstrength1=1:length(quadstrengths1)
                 % Find indices where size in x,y is min
                 %stdx(round(length(stdx)/2):length(stdx))
                 min_stdx_past1m=min(stdx(round(length(stdx)/2):length(stdx)))
-                min_stdy_past1m=min(stdx(round(length(stdx)/2):length(stdx)))
+                min_stdy_past1m=min(stdy(round(length(stdy)/2):length(stdy)))
 
                 indicesx = find(stdx==min_stdx_past1m) %need to adapt for pos>1m
-                indicesy= find(stdx==min_stdy_past1m);
+                indicesy= find(stdy==min_stdy_past1m);
                 %indicesx=indicesx+round(length(stdx)/2)
                 %indicesy=indicesy+round(length(stdy)/2);
                 z_xmin=avgz(indicesx)
-                z_ymin=avgz(indicesy);
+                z_ymin=avgz(indicesy)
                 z_focaldiff=abs(z_xmin-z_ymin)
                 z_focaldiffs(qps2)=z_focaldiff
                 % Extract corresponding x values
                 %area_at_xmin = min(stdy(indicesx).*stdx(indicesx))*3.14
                 %area_at_ymin = min(stdy(indicesy).*stdx(indicesy))*3.14;
                 z_xmins(qps2)=z_xmin
-                %z_ymins(qps2)=z_ymin;
+                z_ymins(qps2)=z_ymin;
 
                 %area_at_xmins(qps2)=area_at_xmin
 
@@ -274,8 +274,10 @@ for quadstrength1=1:length(quadstrengths1)
         % title(sprintf('area for quad 1 pos %.2f quad 2 pos %.2f for strength %.2f T/m and %.2f T/m', quadpos(1),quadpos(2), quadstrengths2(quadstrength2),quadstrengths1(quadstrength1)))
         % figure('Visible','on')
         figure()
-        plot(position2s, z_xmins)
-        title(sprintf('focal point difference for quad 1 pos %.2f quad 2 pos %.2f for strength %.2f T/m and %.2f T/m', quadpos(1),quadpos(2), quadstrengths2(quadstrength2),quadstrengths1(quadstrength1)))
+        %plot(position2s, z_xmins)
+        %hold on
+        plot(position2s, z_ymins)
+        title(sprintf('focal point difference for strength %.2f T/m and %.2f T/m', quadstrengths2(quadstrength2),quadstrengths1(quadstrength1)))
         hold off
     end
     hold off
