@@ -16,32 +16,32 @@ rounded = round(phioffsets,2);
 num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
-npos=4;
-position2s= linspace(0.5, 0.8,npos);
+npos=10;
+position2s= linspace(0.5, 0.7,npos);
 quadstrengths1= [25] %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(20,20,1)
+quadstrengths2= linspace(10,25,15)
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 beamonitorpos=1; %m
 tolerance = 0.005;  % Accept values within ±0.05 for the pos monitor
 beammonitorarea=zeros([npos,length(quadstrengths2)]);
 divanglesy=zeros([npos,length(quadstrengths2)]);
 divanglesx=zeros([npos,length(quadstrengths2)]);
-counter=1
-z_xmins=zeros(1,npos)
-z_ymins=zeros(1,npos)
-area_at_xmins=zeros(1,npos)
-area_at_ymins=zeros(1,npos)
-z_focaldiffs=zeros(1,npos)
+counter=1;
+z_xmins=zeros(1,npos);
+z_ymins=zeros(1,npos);
+area_at_xmins=zeros(1,npos);
+area_at_ymins=zeros(1,npos);
+z_focaldiffs=zeros(1,npos);
 
 for quadstrength1=1:length(quadstrengths1)
     for quadstrength2=1:length(quadstrengths2)
         for qps2=1:npos
                 qps2;
                 length_quad = 0.2062;
-                quadpos=[0.15,position2s(qps2)]
+                quadpos=[0.15,position2s(qps2)];
                 gq1 = -quadstrengths1(quadstrength1); %~36kG/m + focuses in x and - focuses in y 
                 %set first quad to focus~0.8m but sweeping strength
-                gq2 = quadstrengths2(quadstrength2) %add in second quad and adjust strength to look at min in x and y and minimize the diff in z between the two 
+                gq2 = quadstrengths2(quadstrength2); %add in second quad and adjust strength to look at min in x and y and minimize the diff in z between the two 
                 %pick 2 other initial magnet strengths and find 
                 %gq3 = 0.0001;
                 phioffsetE = phioffsets;
@@ -235,28 +235,27 @@ for quadstrength1=1:length(quadstrengths1)
                 % Find indices where size in x,y is min
                 %stdx(round(length(stdx)/2):length(stdx))
                 %index = find(array >= quadpos2, 1);
-                index_zpastquad=min(find(avgz>=(position2s(qps2)+length_quad/2)))
-                avgz(index_zpastquad)
-                min_stdx_past1m=min(stdx(index_zpastquad:length(stdx)))
-                min_stdy_past1m=min(stdy(index_zpastquad:length(stdy)))
+                index_zpastquad=min(find(avgz>=(position2s(qps2)+length_quad/2)));
+                avgz(index_zpastquad);
+                min_stdx_past1m=min(stdx(index_zpastquad:length(stdx)));
+                min_stdy_past1m=min(stdy(index_zpastquad:length(stdy)));
 
-                indicesx = find(stdx==min_stdx_past1m) %need to adapt for pos>1m
+                indicesx = find(stdx==min_stdx_past1m); %need to adapt for pos>1m
                 indicesy= find(stdy==min_stdy_past1m);
-                %indicesx=indicesx+round(length(stdx)/2)
-                %indicesy=indicesy+round(length(stdy)/2);
-                z_xmin=avgz(indicesx)
-                z_ymin=avgz(indicesy)
-                z_focaldiff=abs(z_xmin-z_ymin)
-                z_focaldiffs(qps2)=z_focaldiff
+                
+                z_xmin=avgz(indicesx);
+                z_ymin=avgz(indicesy);
+                z_focaldiff=abs(z_xmin-z_ymin);
+                z_focaldiffs(qps2)=z_focaldiff;
                 % Extract corresponding x values
-                %area_at_xmin = min(stdy(indicesx).*stdx(indicesx))*3.14
-                %area_at_ymin = min(stdy(indicesy).*stdx(indicesy))*3.14;
-                z_xmins(qps2)=z_xmin
+                area_at_xmin = min(stdy(indicesx).*stdx(indicesx))*3.14;
+                area_at_ymin = min(stdy(indicesy).*stdx(indicesy))*3.14;
+                z_xmins(qps2)=z_xmin;
                 z_ymins(qps2)=z_ymin;
 
-                %area_at_xmins(qps2)=area_at_xmin
+                area_at_xmins(qps2)=area_at_xmin;
 
-                %area_at_ymins(qps2)=area_at_ymin;
+                area_at_ymins(qps2)=area_at_ymin;
 
                 %beammonitorarea(qps2,quadstrength2)=area_at_xmin;
                 % divy_at_beamonitor=abs(stdy(max(indices)+1)-stdy(min(indices)-1))/(avgz(max(indices)+1)-avgz(min(indices)-1));
@@ -265,21 +264,23 @@ for quadstrength1=1:length(quadstrengths1)
                 % divanglesx(qps2,quadstrength2)=divx_at_beamonitor;
             
         end
-        % indices_zdiffmin= find(abs(min(z_focaldiffs)))
-        % sprintf('min z diff %.2f at quads strength %.2f T/m and areas ~%.2f mm^2 at x min and ~%.2f mm^2 at y min ',min(z_focaldiffs),quadstrengths2(indices_zdiffmin), area_at_ymins(indices_zdiffmin), area_at_xmins(indices_zdiffmin))
-        % figure('Visible','on')
-        % plot(position2s,area_at_xmins*1000*1000)
-        % area_at_xmins;
-        % hold on
-        % plot(position2s,area_at_ymins*1000*1000);
-        % xlabel('quad 2 position [m]')
-        % ylabel('area at x/y minima [mm^2]')
-        % title(sprintf('area for quad 1 pos %.2f quad 2 pos %.2f for strength %.2f T/m and %.2f T/m', quadpos(1),quadpos(2), quadstrengths2(quadstrength2),quadstrengths1(quadstrength1)))
-        % figure('Visible','on')
-        figure()
+        indices_zdiffmin= find(z_focaldiffs==(min(z_focaldiffs)));
+        sprintf('min z diff =%.2f m with quad 2 position %.2f m and quads strength %.2f T/m and areas ~%.2f mm^2 at x min and ~%.2f mm^2 at y min ',min(z_focaldiffs), position2s(indices_zdiffmin), quadstrengths2(indices_zdiffmin), area_at_ymins(indices_zdiffmin)*1000*1000, area_at_xmins(indices_zdiffmin)*1000*1000)
+        figure('Visible','on')
+        plot(position2s,area_at_xmins*1000*1000)
+        area_at_xmins;
+        hold on
+        plot(position2s,area_at_ymins*1000*1000);
+        xlabel('quad 2 position [m]')
+        ylabel('area at x/y minima [mm^2]')
+        title(sprintf('area for quad 1 pos %.2f quad 2 pos %.2f for strength %.2f T/m and %.2f T/m', quadpos(1),quadpos(2), quadstrengths2(quadstrength2),quadstrengths1(quadstrength1)))
+        figure('Visible','on')
+        
         %plot(position2s, z_xmins)
         %hold on
         plot(position2s, z_focaldiffs)
+        xlabel('quad 2 position [m]')
+        ylabel('difference in x and y focal point [m]')
         title(sprintf('focal point difference for strength %.2f T/m and %.2f T/m', quadstrengths2(quadstrength2),quadstrengths1(quadstrength1)))
         hold off
     end
