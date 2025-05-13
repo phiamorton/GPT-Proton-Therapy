@@ -234,8 +234,11 @@ for quadstrength1=1:length(quadstrengths1)
         
                 % Find indices where size in x,y is min
                 %stdx(round(length(stdx)/2):length(stdx))
-                min_stdx_past1m=min(stdx(round(length(stdx)/2):length(stdx)))
-                min_stdy_past1m=min(stdy(round(length(stdy)/2):length(stdy)))
+                %index = find(array >= quadpos2, 1);
+                index_zpastquad=min(find(avgz>=(position2s(qps2)+length_quad/2)))
+                avgz(index_zpastquad)
+                min_stdx_past1m=min(stdx(index_zpastquad:length(stdx)))
+                min_stdy_past1m=min(stdy(index_zpastquad:length(stdy)))
 
                 indicesx = find(stdx==min_stdx_past1m) %need to adapt for pos>1m
                 indicesy= find(stdy==min_stdy_past1m);
@@ -276,7 +279,7 @@ for quadstrength1=1:length(quadstrengths1)
         figure()
         %plot(position2s, z_xmins)
         %hold on
-        plot(position2s, z_ymins)
+        plot(position2s, z_focaldiffs)
         title(sprintf('focal point difference for strength %.2f T/m and %.2f T/m', quadstrengths2(quadstrength2),quadstrengths1(quadstrength1)))
         hold off
     end
