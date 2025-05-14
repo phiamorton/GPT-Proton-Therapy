@@ -19,7 +19,7 @@ length_quad = 0.2062;
 npos=10;
 position2s= linspace(0.4, 0.8,npos);
 quadstrengths1= [10,15,20,25]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(10,30,20);
+quadstrengths2= linspace(10,35,15);
 quadpos_forquadstrength_minarea=zeros(1,length(quadstrengths2));
 %minareaforquadstrength=zeros(1,length(quadstrengths2));
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
@@ -284,7 +284,7 @@ for quadstrength1=1:length(quadstrengths1)
                 area_at_ymins(qps2)=area_at_ymin;
 
                 if z_focaldiffs(qps2)<0.05
-                    figure;
+                    figure('Visible','off');
                     scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                     hold on
                     scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
@@ -346,20 +346,18 @@ for quadstrength1=1:length(quadstrengths1)
         
     end
     hold off
-    figure(quadstrength1)
+    figure()
     yyaxis left
     plot(quadstrengths2, quadpos_forquadstrength_minarea, 'DisplayName','Optimal quad position')
     hold on
     plot(quadstrengths2, minfocaldiffs, 'DisplayName', 'minimum focal difference')
-    title('Quad 2 position for minimum difference in focal points')
-    title(sprintf('Q2 position for strength %.2f T/m (Q1) and %.2f T/m (Q2)', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
+    title(sprintf('Q1 strength= %.2f T/m, Quad 2 minimum difference in focal points', quadstrengths2(quadstrength2)))
     xlabel('Quad Strength [T/m]')
     ylabel('Optimal Position/Focal Difference [m]')
     
     yyaxis right
     plot(quadstrengths2, minbeamareasstrengths*1000*1000,"DisplayName",'Min beam area')
-    title('Quad 2 strength vs approx area at focal point')
-    %xlabel('Quad Strength [T/m]')
+   
     ylabel('Minimum area [mm^2]')
     legend()
     saveas(gcf,sprintf('focal_difference_and_minarea_for_strength_%.2f_Tpm_Q1_and_%.2f_Tpm_Q2.png', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
