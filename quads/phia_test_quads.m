@@ -18,8 +18,8 @@ num2str(rounded);
 length_quad = 0.2062;
 npos=10;
 position2s= linspace(0.4, 0.8,npos);
-quadstrengths1= [15,20,25]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(10,25,15);
+quadstrengths1= [10,15,20,25]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
+quadstrengths2= linspace(10,30,20);
 quadpos_forquadstrength_minarea=zeros(1,length(quadstrengths2));
 %minareaforquadstrength=zeros(1,length(quadstrengths2));
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
@@ -283,7 +283,7 @@ for quadstrength1=1:length(quadstrengths1)
 
                 area_at_ymins(qps2)=area_at_ymin;
 
-                if z_focaldiffs(qps2)<0.1
+                if z_focaldiffs(qps2)<0.05
                     figure('Visible', 'on');
                     scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                     hold on
@@ -297,7 +297,7 @@ for quadstrength1=1:length(quadstrengths1)
                     ylabel('Transverse Profile Size rms [mm]');
                     title(sprintf('Transverse profile with %.0f quads',length(quadpos)), 'FontSize', 14);
                     hold off
-                    %saveas(gcf,sprintf('%sFODO.png', masterfilename)) 
+                    sprintf('transverseprof_strength_%.2f_T/m_(Q1)_and_%.2f_T/m_(Q2)_at_%.2f_m.png', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2),qps2)
                 end
 
                 %beammonitorarea(qps2,quadstrength2)=area_at_xmin;
@@ -336,11 +336,13 @@ for quadstrength1=1:length(quadstrengths1)
         %xlabel('quad 2 position [m]')
         ylabel('difference in x and y focal point [m]')
         title(sprintf('focal point difference for strength %.2f T/m (Q1) and %.2f T/m (Q2)', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
+        saveas(gcf,sprintf('focal_point_difference_for_strength_%.2f_T/m_(Q1)_and_%.2f_T/m_(Q2).png', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
         hold off
         minbeamareasstrengths(quadstrength2)=(minbeamareas(indices_zdiffmin));
         minbeamareasstrengths_table(quadstrength1,quadstrength2)=(minbeamareas(indices_zdiffmin));
         minbeamareasq2pos_table(quadstrength1,quadstrength2)=(position2s(indices_zdiffmin));
         minfocaldiffs_table(quadstrength1,quadstrength2)=min(z_focaldiffs);
+        
     end
     hold off
     figure(quadstrength1)
@@ -359,7 +361,7 @@ for quadstrength1=1:length(quadstrengths1)
     %xlabel('Quad Strength [T/m]')
     ylabel('Minimum area [mm^2]')
     legend()
-    %legend()
+    saveas(gcf,sprintf('focal_difference_and_minarea_for_strength_%.2f_T/m_(Q1)_and_%.2f_T/m_(Q2).png', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
     hold off
 
 end
@@ -374,18 +376,20 @@ h=heatmap(quadstrengths2,quadstrengths1, minbeamareasstrengths_table*1000*1000)
 h.Title = 'Min area for quad strengths';
 h.XLabel = 'Strength Q2 (T/m)';
 h.YLabel = 'Strength Q1 (T/m)';
-
+saveas(gcf,sprintf('minarea_for_strengths.png'))
+    
 h=figure()
 h=heatmap(quadstrengths2,quadstrengths1, minbeamareasq2pos_table)
 h.Title = 'Q2 position corresponding to min area';
 h.XLabel = 'Strength Q2 (T/m)';
 h.YLabel = 'Strength Q1 (T/m)';
-
+saveas(gcf,sprintf('position_for_minarea_for_strengths.png'))
 h=figure()
 h=heatmap(quadstrengths2,quadstrengths1, minfocaldiffs_table)
 h.Title = 'Minimum focal point difference [m]';
 h.XLabel = 'Strength Q2 (T/m)';
 h.YLabel = 'Strength Q1 (T/m)';
+saveas(gcf,sprintf('minfocaldiffs_for_strengths.png'))
 
 % % Flatten the matrix and get linear indices
 % [x_flat, linear_indices] = sort(beammonitorarea(:));
