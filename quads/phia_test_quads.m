@@ -244,14 +244,27 @@ for quadstrength1=1:length(quadstrengths1)
 
                 indicesx = find(stdx==min_stdx_past1m); %need to adapt for pos>1m
                 indicesy= find(stdy==min_stdy_past1m);
+                area_at_xmin = min(stdy(indicesx).*stdx(indicesx))*3.14;
+                area_at_ymin = min(stdy(indicesy).*stdx(indicesy))*3.14;
                 
+                if area_at_ymin < area_at_xmin
+                    minbeamarea=area_at_ymin
+                end
+                if area_at_xmin <= area_at_ymin
+                    minbeamarea=area_at_xmin
+                end
+                %create minbeamareas array and store min area
+                %then plot (for each strength) position vs min area
+                %for each strength find overall min and plot quad strength
+                %vs global min 
+
                 z_xmin=avgz(indicesx);
                 z_ymin=avgz(indicesy);
                 z_focaldiff=abs(z_xmin-z_ymin);
                 z_focaldiffs(qps2)=z_focaldiff;
+
                 % Extract corresponding x values
-                area_at_xmin = min(stdy(indicesx).*stdx(indicesx))*3.14;
-                area_at_ymin = min(stdy(indicesy).*stdx(indicesy))*3.14;
+                
                 z_xmins(qps2)=z_xmin;
                 z_ymins(qps2)=z_ymin;
 
