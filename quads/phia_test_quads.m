@@ -268,6 +268,9 @@ for quadstrength1=1:length(quadstrengths1)
         end
 
         indices_zdiffmin=find(z_focaldiffs==(min(z_focaldiffs)))
+        if length(indices_zdiffmin)>1
+            indices_zdiffmin=indices_zdiffmin(1)
+        end
         quadpos_forquadstrength_minarea(quadstrength2)
         position2s(indices_zdiffmin)
         quadpos_forquadstrength_minarea(quadstrength2)=position2s(indices_zdiffmin)
