@@ -17,8 +17,8 @@ num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
 npos=10;
-position2s= linspace(0.5, 0.7,npos);
-quadstrengths1= [25]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
+position2s= linspace(0.4, 0.7,npos);
+quadstrengths1= [15,20]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
 quadstrengths2= linspace(10,25,15);
 quadpos_forquadstrength_minarea=zeros(1,length(quadstrengths2));
 %minareaforquadstrength=zeros(1,length(quadstrengths2));
@@ -217,7 +217,7 @@ for quadstrength1=1:length(quadstrengths1)
                 %fig=figure(counter); 
                 %qps2+quadstrength2
                 %set(gcf, 'WindowStyle', 'docked');
-                figure('Visible', 'on');
+                figure('Visible', 'off');
                 scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                 hold on
                 scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
