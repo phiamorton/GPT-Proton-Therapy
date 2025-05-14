@@ -40,6 +40,7 @@ minbeamareasstrengths=zeros(1,length(quadstrengths2));
 minbeamareasstrengths_table=zeros(length(quadstrengths1),length(quadstrengths2));
 minbeamareasq2pos_table=zeros(length(quadstrengths1),length(quadstrengths2));
 minfocaldiffs=zeros(1,length(quadstrengths2));
+minfocaldiffs_table=zeros(length(quadstrengths1),length(quadstrengths2));
 
 for quadstrength1=1:length(quadstrengths1)
     for quadstrength2=1:length(quadstrengths2)
@@ -321,6 +322,7 @@ for quadstrength1=1:length(quadstrengths1)
         minbeamareasstrengths(quadstrength2)=(minbeamareas(indices_zdiffmin));
         minbeamareasstrengths_table(quadstrength1,quadstrength2)=(minbeamareas(indices_zdiffmin));
         minbeamareasq2pos_table(quadstrength1,quadstrength2)=(position2s(indices_zdiffmin));
+        minfocaldiffs_table(quadstrength1,quadstrength2)=min(z_focaldiffs);
     end
     hold off
     figure(quadstrength1)
@@ -344,21 +346,26 @@ for quadstrength1=1:length(quadstrengths1)
 
 end
 % 
-rowLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths1, 'UniformOutput', false);
-colLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths2, 'UniformOutput', false);
-% 
-% % Create the table
-T = array2table(minbeamareasstrengths_table*1000*1000, 'RowNames', rowLabels, 'VariableNames', colLabels)
+% rowLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths1, 'UniformOutput', false);
+% colLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths2, 'UniformOutput', false);
+% % 
+% % % Create the table
+% T = array2table(minbeamareasstrengths_table*1000*1000, 'RowNames', rowLabels, 'VariableNames', colLabels)
 h=figure()
 h=heatmap(quadstrengths1,quadstrengths2, minbeamareasstrengths_table*1000*1000)
 h.Title = 'Min area for quad strengths';
 h.XLabel = 'Strength Q1 (T/m)';
 h.YLabel = 'Strength Q2 (T/m)';
 
-T = array2table(minbeamareasstrengths_table*1000*1000, 'RowNames', rowLabels, 'VariableNames', colLabels)
 h=figure()
 h=heatmap(quadstrengths1,quadstrengths2, minbeamareasq2pos_table)
 h.Title = 'Q2 position corresponding to min area';
+h.XLabel = 'Strength Q1 (T/m)';
+h.YLabel = 'Strength Q2 (T/m)';
+
+h=figure()
+h=heatmap(quadstrengths1,quadstrengths2, minfocaldiffs_table)
+h.Title = 'Minimum focal point difference [m]';
 h.XLabel = 'Strength Q1 (T/m)';
 h.YLabel = 'Strength Q2 (T/m)';
 
