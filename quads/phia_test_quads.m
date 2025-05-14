@@ -282,6 +282,22 @@ for quadstrength1=1:length(quadstrengths1)
 
                 area_at_ymins(qps2)=area_at_ymin;
 
+                if z_focaldiffs(qps2)<0.1
+                    figure('Visible', 'on');
+                    scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
+                    hold on
+                    scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
+                    hold off
+                    fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
+                    fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
+                    ylim([0,yrms0*2*1000+2])
+                    legend();
+                    xlabel('Average Z [m]');
+                    ylabel('Transverse Profile Size rms [mm]');
+                    title(sprintf('Transverse profile with %.0f quads',length(quadpos)), 'FontSize', 14);
+                    %saveas(gcf,sprintf('%sFODO.png', masterfilename)) 
+                end
+
                 %beammonitorarea(qps2,quadstrength2)=area_at_xmin;
                 % divy_at_beamonitor=abs(stdy(max(indices)+1)-stdy(min(indices)-1))/(avgz(max(indices)+1)-avgz(min(indices)-1));
                 % divanglesy(qps2,quadstrength2)=divy_at_beamonitor;
