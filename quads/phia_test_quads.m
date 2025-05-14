@@ -41,7 +41,7 @@ minbeamareasstrengths_table=zeros([length(quadstrengths1),length(quadstrengths2)
 minbeamareasq2pos_table=zeros([length(quadstrengths1),length(quadstrengths2)]);
 minfocaldiffs=zeros(1,length(quadstrengths2));
 minfocaldiffs_table=zeros([length(quadstrengths1),length(quadstrengths2)]);
-size(minfocaldiffs_table)
+set(0,'DefaultFigureWindowStyle','docked') 
 
 for quadstrength1=1:length(quadstrengths1)
     for quadstrength2=1:length(quadstrengths2)
@@ -284,7 +284,7 @@ for quadstrength1=1:length(quadstrengths1)
                 area_at_ymins(qps2)=area_at_ymin;
 
                 if z_focaldiffs(qps2)<0.05
-                    figure('Visible', 'on');
+                    figure;
                     scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                     hold on
                     scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
@@ -297,7 +297,8 @@ for quadstrength1=1:length(quadstrengths1)
                     ylabel('Transverse Profile Size rms [mm]');
                     title(sprintf('Transverse profile with %.0f quads',length(quadpos)), 'FontSize', 14);
                     hold off
-                    sprintf('transverseprof_strength_%.2f_T/m_(Q1)_and_%.2f_T/m_(Q2)_at_%.2f_m.png', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2),qps2)
+                    filename=sprintf('transverseprof_strength_%.2f_Tpm_Q1_and_%.2f_Tpm_Q2_at_%.2f_m', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2),qps2);
+                    saveas(gcf,filename,'png')
                 end
 
                 %beammonitorarea(qps2,quadstrength2)=area_at_xmin;
@@ -336,7 +337,7 @@ for quadstrength1=1:length(quadstrengths1)
         %xlabel('quad 2 position [m]')
         ylabel('difference in x and y focal point [m]')
         title(sprintf('focal point difference for strength %.2f T/m (Q1) and %.2f T/m (Q2)', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
-        saveas(gcf,sprintf('focal_point_difference_for_strength_%.2f_T/m_(Q1)_and_%.2f_T/m_(Q2).png', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
+        saveas(gcf,sprintf('focal_point_difference_for_strength_%.2f_Tpm_Q1_and_%.2f_Tpm_Q2.png', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
         hold off
         minbeamareasstrengths(quadstrength2)=(minbeamareas(indices_zdiffmin));
         minbeamareasstrengths_table(quadstrength1,quadstrength2)=(minbeamareas(indices_zdiffmin));
@@ -361,7 +362,7 @@ for quadstrength1=1:length(quadstrengths1)
     %xlabel('Quad Strength [T/m]')
     ylabel('Minimum area [mm^2]')
     legend()
-    saveas(gcf,sprintf('focal_difference_and_minarea_for_strength_%.2f_T/m_(Q1)_and_%.2f_T/m_(Q2).png', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
+    saveas(gcf,sprintf('focal_difference_and_minarea_for_strength_%.2f_Tpm_Q1_and_%.2f_Tpm_Q2.png', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
     hold off
 
 end
