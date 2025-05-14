@@ -21,7 +21,7 @@ position2s= linspace(0.5, 0.7,npos);
 quadstrengths1= [25]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
 quadstrengths2= linspace(10,25,15);
 quadpos_forquadstrength_minarea=zeros(1,length(quadstrengths2));
-minareaforquadstrength=zeros(1,length(quadstrengths2));
+%minareaforquadstrength=zeros(1,length(quadstrengths2));
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 beamonitorpos=1; %m
 tolerance = 0.005;  % Accept values within ±0.05 for the pos monitor
@@ -31,9 +31,12 @@ divanglesx=zeros([npos,length(quadstrengths2)]);
 counter=1;
 z_xmins=zeros(1,npos);
 z_ymins=zeros(1,npos);
-area_at_xmins=zeros(1,npos);
+% area_at_xmins=zeros(1,npos);
 area_at_ymins=zeros(1,npos);
 z_focaldiffs=zeros(1,npos);
+minbeamareas=zeros(1,npos);
+minbeamareaspos=zeros(1,npos);
+minbeamareasstrengths=zeros(1,length(quadstrengths2));
 
 for quadstrength1=1:length(quadstrengths1)
     for quadstrength2=1:length(quadstrengths2)
@@ -248,11 +251,14 @@ for quadstrength1=1:length(quadstrengths1)
                 area_at_ymin = min(stdy(indicesy).*stdx(indicesy))*3.14;
                 
                 if area_at_ymin < area_at_xmin
-                    minbeamarea=area_at_ymin
+                    minbeamarea=area_at_ymin;
+                    minbeamareaspos(qps2)=avgz(indicesx);
                 end
                 if area_at_xmin <= area_at_ymin
-                    minbeamarea=area_at_xmin
+                    minbeamarea=area_at_xmin;
+                    minbeamareaspos(qps2)=avgz(indicesy);
                 end
+                minbeamareas(qps2)=minbeamarea;
                 %create minbeamareas array and store min area
                 %then plot (for each strength) position vs min area
                 %for each strength find overall min and plot quad strength
@@ -279,48 +285,57 @@ for quadstrength1=1:length(quadstrengths1)
                 % divanglesx(qps2,quadstrength2)=divx_at_beamonitor;
             
         end
+        figure()
+        plot(position2s,minbeamareas)
 
-        indices_zdiffmin=find(z_focaldiffs==(min(z_focaldiffs)))
+        indices_zdiffmin=find(z_focaldiffs==(min(z_focaldiffs)));
         if length(indices_zdiffmin)>1
             indices_zdiffmin=indices_zdiffmin(1)
         end
-        quadpos_forquadstrength_minarea(quadstrength2)
-        position2s(indices_zdiffmin)
-        quadpos_forquadstrength_minarea(quadstrength2)=position2s(indices_zdiffmin)
-        minareaforquadstrength(quadstrength2)=(area_at_ymins(indices_zdiffmin)*1000*1000+area_at_xmins(indices_zdiffmin)*1000*1000)/2
-        sprintf('min z diff =%.2f m with quad 2 position %.2f m and quads strength %.2f T/m and areas ~%.2f mm^2 at x min and ~%.2f mm^2 at y min ',min(z_focaldiffs), position2s(indices_zdiffmin), quadstrengths2(indices_zdiffmin), area_at_ymins(indices_zdiffmin)*1000*1000, area_at_xmins(indices_zdiffmin)*1000*1000)
+        %quadpos_forquadstrength_minarea(quadstrength2);
+        position2s(indices_zdiffmin);
+        quadpos_forquadstrength_minarea(quadstrength2)=position2s(indices_zdiffmin);
+        % minareaforquadstrength(quadstrength2)=(area_at_ymins(indices_zdiffmin)*1000*1000+area_at_xmins(indices_zdiffmin)*1000*1000)/2
+        sprintf('min z diff =%.2f m with quad 2 position %.2f m and quads strength %.2f T/m and minimum area ~%.2f mm^2 at position %.2f m ',min(z_focaldiffs), position2s(indices_zdiffmin), quadstrengths2(indices_zdiffmin), minbeamareas(indices_zdiffmin),minbeamareaspos(indices_zdiffmin))
         figure('Visible','on')
-        plot(position2s,area_at_xmins*1000*1000)
-        area_at_xmins;
+        yyaxis left 
+        plot(position2s,minbeamareas)
+        % area_at_xmins;
         hold on
-        plot(position2s,area_at_ymins*1000*1000);
+        % plot(position2s,area_at_ymins*1000*1000);
         xlabel('quad 2 position [m]')
-        ylabel('area at x/y minima [mm^2]')
+        ylabel('minimum area [mm^2]')
         title(sprintf('area for quad 1 pos %.2f quad 2 pos %.2f for strength %.2f T/m and %.2f T/m', quadpos(1),quadpos(2), quadstrengths2(quadstrength2),quadstrengths1(quadstrength1)))
-        figure('Visible','on')
-        
+        yyaxis right
         %plot(position2s, z_xmins)
         %hold on
         plot(position2s, z_focaldiffs)
-        xlabel('quad 2 position [m]')
+        %xlabel('quad 2 position [m]')
         ylabel('difference in x and y focal point [m]')
         title(sprintf('focal point difference for strength %.2f T/m and %.2f T/m', quadstrengths2(quadstrength2),quadstrengths1(quadstrength1)))
         hold off
+        minbeamareasstrengths(quadstrength2)=(minbeamareas(indices_zdiffmin));
     end
     hold off
+    figure()
+    yyaxis left
+    plot(quadstrengths2, quadpos_forquadstrength_minarea)
+    hold on
+    title('Quad 2 position for minimum difference in focal points')
+    xlabel('Quad Strength [T/m]')
+    ylabel('Optimal Position  to mimimze focal difference [m]')
+    
+    yyaxis right
+    plot(quadstrengths2, minbeamareasstrengths*1000*1000,"DisplayName",'min beam area')
+    title('Quad 2 strength vs approx area at focal point')
+    %xlabel('Quad Strength [T/m]')
+    ylabel('Minimum area [mm^2]')
+    %legend()
+    hold off
+
 end
 % 
-figure()
-plot(quadstrengths2, quadpos_forquadstrength_minarea)
-title('Quad 2 position for minimum difference in focal points')
-xlabel('Quad Strength [T/m]')
-ylabel('Optimal Position [m]')
 
-figure()
-plot(quadstrengths2, minareaforquadstrength)
-title('Quad 2 strength vs approx area at focal point')
-xlabel('Quad Strength [T/m]')
-ylabel('Approximate minimal area [mm^2]')
 
 % % Flatten the matrix and get linear indices
 % [x_flat, linear_indices] = sort(beammonitorarea(:));
