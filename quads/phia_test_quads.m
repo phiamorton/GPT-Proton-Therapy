@@ -37,6 +37,7 @@ z_focaldiffs=zeros(1,npos);
 minbeamareas=zeros(1,npos);
 minbeamareaspos=zeros(1,npos);
 minbeamareasstrengths=zeros(1,length(quadstrengths2));
+minbeamareasstrengths_table=zeros(length(quadstrengths1),length(quadstrengths2));
 minfocaldiffs=zeros(1,length(quadstrengths2));
 
 for quadstrength1=1:length(quadstrengths1)
@@ -298,7 +299,7 @@ for quadstrength1=1:length(quadstrengths1)
         quadpos_forquadstrength_minarea(quadstrength2)=position2s(indices_zdiffmin);
         minfocaldiffs(quadstrength2)=min(z_focaldiffs);
         % minareaforquadstrength(quadstrength2)=(area_at_ymins(indices_zdiffmin)*1000*1000+area_at_xmins(indices_zdiffmin)*1000*1000)/2
-        sprintf('min z diff =%.2f m with quad 2 position %.2f m and quads strength %.2f T/m and minimum area ~%.4f mm^2 at position %.2f m ',min(z_focaldiffs), position2s(indices_zdiffmin), quadstrengths2(indices_zdiffmin), minbeamareas(indices_zdiffmin)*1000*1000,minbeamareaspos(indices_zdiffmin))
+        sprintf('min z diff =%.2f m with quad 2 position %.2f m and quads strengths %.2f T/m (Q1) %.2f T/m (Q2) and minimum area ~%.4f mm^2 at position %.2f m ',min(z_focaldiffs), position2s(indices_zdiffmin), quadstrengths1(quadstrength1), quadstrengths2(indices_zdiffmin), minbeamareas(indices_zdiffmin)*1000*1000,minbeamareaspos(indices_zdiffmin))
         figure('Visible','on')
         yyaxis left 
         plot(position2s,minbeamareas*1000*1000)
@@ -317,6 +318,7 @@ for quadstrength1=1:length(quadstrengths1)
         title(sprintf('focal point difference for strength %.2f T/m (Q1) and %.2f T/m (Q2)', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
         hold off
         minbeamareasstrengths(quadstrength2)=(minbeamareas(indices_zdiffmin));
+        minbeamareasstrengths_table(quadstrength1,quadstrength2)=(minbeamareas(indices_zdiffmin));
     end
     hold off
     figure(quadstrength1)
@@ -340,16 +342,16 @@ for quadstrength1=1:length(quadstrengths1)
 
 end
 % 
-% rowLabels = arrayfun(@(x) sprintf('Position= %.2f m', x), position2s, 'UniformOutput', false);
-% colLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths2, 'UniformOutput', false);
+rowLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths1, 'UniformOutput', false);
+colLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths2, 'UniformOutput', false);
 % 
 % % Create the table
-% T = array2table(beammonitorarea, 'RowNames', rowLabels, 'VariableNames', colLabels)
-% % h=figure()
-% % h=heatmap(quadstrengths1,quadstrengths2, beammontotarea)
-% % h.Title = 'Min area for quad strengths';
-% % h.XLabel = 'Strength Q1 (T/m)';
-% % h.YLabel = 'Strength Q2 (m)';
+T = array2table(minbeamareasstrengths_table*1000*1000, 'RowNames', rowLabels, 'VariableNames', colLabels)
+h=figure()
+h=heatmap(quadstrengths1,quadstrengths2, minbeamareasstrengths_table*1000*1000)
+h.Title = 'Min area for quad strengths';
+h.XLabel = 'Strength Q1 (T/m)';
+h.YLabel = 'Strength Q2 (T/m)';
 
 % % Flatten the matrix and get linear indices
 % [x_flat, linear_indices] = sort(beammonitorarea(:));
