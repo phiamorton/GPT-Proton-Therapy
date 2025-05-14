@@ -37,10 +37,10 @@ z_focaldiffs=zeros(1,npos);
 minbeamareas=zeros(1,npos);
 minbeamareaspos=zeros(1,npos);
 minbeamareasstrengths=zeros(1,length(quadstrengths2));
-minbeamareasstrengths_table=zeros(length(quadstrengths1),length(quadstrengths2));
-minbeamareasq2pos_table=zeros(length(quadstrengths1),length(quadstrengths2));
+minbeamareasstrengths_table=zeros([length(quadstrengths1),length(quadstrengths2)]);
+minbeamareasq2pos_table=zeros([length(quadstrengths1),length(quadstrengths2)]);
 minfocaldiffs=zeros(1,length(quadstrengths2));
-minfocaldiffs_table=zeros(length(quadstrengths1),length(quadstrengths2));
+minfocaldiffs_table=zeros([length(quadstrengths1),length(quadstrengths2)]);
 
 for quadstrength1=1:length(quadstrengths1)
     for quadstrength2=1:length(quadstrengths2)
@@ -287,7 +287,7 @@ for quadstrength1=1:length(quadstrengths1)
                     scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                     hold on
                     scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
-                    hold off
+                    
                     fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
                     fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
                     ylim([0,yrms0*2*1000+2])
@@ -295,6 +295,7 @@ for quadstrength1=1:length(quadstrengths1)
                     xlabel('Average Z [m]');
                     ylabel('Transverse Profile Size rms [mm]');
                     title(sprintf('Transverse profile with %.0f quads',length(quadpos)), 'FontSize', 14);
+                    hold off
                     %saveas(gcf,sprintf('%sFODO.png', masterfilename)) 
                 end
 
