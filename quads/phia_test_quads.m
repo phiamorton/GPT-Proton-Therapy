@@ -274,7 +274,7 @@ for quadstrength1=1:length(quadstrengths1)
         quadpos_forquadstrength_minarea(quadstrength2)
         position2s(indices_zdiffmin)
         quadpos_forquadstrength_minarea(quadstrength2)=position2s(indices_zdiffmin)
-        minareaforquadstrength(quadstrength2)=avg(area_at_ymins(indices_zdiffmin)*1000*1000, area_at_xmins(indices_zdiffmin)*1000*1000)
+        minareaforquadstrength(quadstrength2)=(area_at_ymins(indices_zdiffmin)*1000*1000+area_at_xmins(indices_zdiffmin)*1000*1000)/2
         sprintf('min z diff =%.2f m with quad 2 position %.2f m and quads strength %.2f T/m and areas ~%.2f mm^2 at x min and ~%.2f mm^2 at y min ',min(z_focaldiffs), position2s(indices_zdiffmin), quadstrengths2(indices_zdiffmin), area_at_ymins(indices_zdiffmin)*1000*1000, area_at_xmins(indices_zdiffmin)*1000*1000)
         figure('Visible','on')
         plot(position2s,area_at_xmins*1000*1000)
