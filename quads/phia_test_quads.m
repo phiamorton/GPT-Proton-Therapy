@@ -18,8 +18,10 @@ num2str(rounded);
 length_quad = 0.2062;
 npos=10;
 position2s= linspace(0.5, 0.7,npos);
-quadstrengths1= [25] %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(10,25,15)
+quadstrengths1= [25]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
+quadstrengths2= linspace(10,25,15);
+quadpos_forquadstrength_minarea=zeros(1,length(quadstrengths2));
+minareaforquadstrength=zeros(1,length(quadstrengths2));
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 beamonitorpos=1; %m
 tolerance = 0.005;  % Accept values within ±0.05 for the pos monitor
@@ -175,7 +177,7 @@ for quadstrength1=1:length(quadstrengths1)
                 %away
                 %how it is doing length of quad (ie start and end)
                 %inputfiletext=[{ ['quadrupole( "wcs","z",' num2str(zpos) ',' num2str(length_quad) ',' num2str(gq1) ');'] }];
-                quadpos(2)
+                quadpos(2);
                 inputfiletext = [buildparticles; 
                     { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
                     { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(gq2) ');'] };
@@ -264,7 +266,12 @@ for quadstrength1=1:length(quadstrengths1)
                 % divanglesx(qps2,quadstrength2)=divx_at_beamonitor;
             
         end
-        indices_zdiffmin= find(z_focaldiffs==(min(z_focaldiffs)));
+
+        indices_zdiffmin=find(z_focaldiffs==(min(z_focaldiffs)))
+        quadpos_forquadstrength_minarea(quadstrength2)
+        position2s(indices_zdiffmin)
+        quadpos_forquadstrength_minarea(quadstrength2)=position2s(indices_zdiffmin)
+        minareaforquadstrength(quadstrength2)=avg(area_at_ymins(indices_zdiffmin)*1000*1000, area_at_xmins(indices_zdiffmin)*1000*1000)
         sprintf('min z diff =%.2f m with quad 2 position %.2f m and quads strength %.2f T/m and areas ~%.2f mm^2 at x min and ~%.2f mm^2 at y min ',min(z_focaldiffs), position2s(indices_zdiffmin), quadstrengths2(indices_zdiffmin), area_at_ymins(indices_zdiffmin)*1000*1000, area_at_xmins(indices_zdiffmin)*1000*1000)
         figure('Visible','on')
         plot(position2s,area_at_xmins*1000*1000)
@@ -287,7 +294,17 @@ for quadstrength1=1:length(quadstrengths1)
     hold off
 end
 % 
+figure()
+plot(quadstrengths2, quadpos_forquadstrength_minarea)
+title('Quad 2 position for minimum difference in focal points')
+xlabel('Quad Strength [T/m]')
+ylabel('Optimal Position [m]')
 
+figure()
+plot(quadstrengths2, minareaforquadstrength)
+title('Quad 2 strength vs approx area at focal point')
+xlabel('Quad Strength [T/m]')
+ylabel('Approximate minimal area [mm^2]')
 
 % % Flatten the matrix and get linear indices
 % [x_flat, linear_indices] = sort(beammonitorarea(:));
