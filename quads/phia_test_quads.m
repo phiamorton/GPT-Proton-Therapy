@@ -16,8 +16,8 @@ rounded = round(phioffsets,2);
 num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
-npos=15;
-position2s= linspace(0.4, 0.7,npos);
+npos=10;
+position2s= linspace(0.4, 0.8,npos);
 quadstrengths1= [15,20,25]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
 quadstrengths2= linspace(10,25,15);
 quadpos_forquadstrength_minarea=zeros(1,length(quadstrengths2));
@@ -38,6 +38,7 @@ minbeamareas=zeros(1,npos);
 minbeamareaspos=zeros(1,npos);
 minbeamareasstrengths=zeros(1,length(quadstrengths2));
 minbeamareasstrengths_table=zeros(length(quadstrengths1),length(quadstrengths2));
+minbeamareasq2pos_table=zeros(length(quadstrengths1),length(quadstrengths2));
 minfocaldiffs=zeros(1,length(quadstrengths2));
 
 for quadstrength1=1:length(quadstrengths1)
@@ -319,6 +320,7 @@ for quadstrength1=1:length(quadstrengths1)
         hold off
         minbeamareasstrengths(quadstrength2)=(minbeamareas(indices_zdiffmin));
         minbeamareasstrengths_table(quadstrength1,quadstrength2)=(minbeamareas(indices_zdiffmin));
+        minbeamareasq2pos_table(quadstrength1,quadstrength2)=(position2s(indices_zdiffmin));
     end
     hold off
     figure(quadstrength1)
@@ -350,6 +352,13 @@ T = array2table(minbeamareasstrengths_table*1000*1000, 'RowNames', rowLabels, 'V
 h=figure()
 h=heatmap(quadstrengths1,quadstrengths2, minbeamareasstrengths_table*1000*1000)
 h.Title = 'Min area for quad strengths';
+h.XLabel = 'Strength Q1 (T/m)';
+h.YLabel = 'Strength Q2 (T/m)';
+
+T = array2table(minbeamareasstrengths_table*1000*1000, 'RowNames', rowLabels, 'VariableNames', colLabels)
+h=figure()
+h=heatmap(quadstrengths1,quadstrengths2, minbeamareasq2pos_table)
+h.Title = 'Q2 position corresponding to min area';
 h.XLabel = 'Strength Q1 (T/m)';
 h.YLabel = 'Strength Q2 (T/m)';
 
