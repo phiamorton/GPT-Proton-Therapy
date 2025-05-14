@@ -16,9 +16,9 @@ rounded = round(phioffsets,2);
 num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
-npos=10;
+npos=15;
 position2s= linspace(0.4, 0.7,npos);
-quadstrengths1= [15,20]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
+quadstrengths1= [15,20,25]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
 quadstrengths2= linspace(10,25,15);
 quadpos_forquadstrength_minarea=zeros(1,length(quadstrengths2));
 %minareaforquadstrength=zeros(1,length(quadstrengths2));
@@ -37,6 +37,7 @@ z_focaldiffs=zeros(1,npos);
 minbeamareas=zeros(1,npos);
 minbeamareaspos=zeros(1,npos);
 minbeamareasstrengths=zeros(1,length(quadstrengths2));
+minfocaldiffs=zeros(1,length(quadstrengths2));
 
 for quadstrength1=1:length(quadstrengths1)
     for quadstrength2=1:length(quadstrengths2)
@@ -217,23 +218,23 @@ for quadstrength1=1:length(quadstrengths1)
                 %fig=figure(counter); 
                 %qps2+quadstrength2
                 %set(gcf, 'WindowStyle', 'docked');
-                figure('Visible', 'off');
-                scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
-                hold on
-                scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
-                %hold off
-                %xline(quadpos(1),'-','DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m * %.2f m', quadpos(1),gq1,length_quad), 'LineWidth',2)
-                %xline(quadpos(2),'-','DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m * %.2f m', quadpos(2),gq2,length_quad), 'LineWidth',2)
-                fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
-                fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
-                
-                ylim([0,yrms0*2*1000+2])
-                %xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
-                legend();
-                xlabel('Average Z [m]');
-                ylabel('Transverse Profile Size rms [mm]');
-                %hold off
-                title(sprintf('Transverse profile with %.0f quads',length(quadpos)), 'FontSize', 14);
+                % figure('Visible', 'off');
+                % scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
+                % hold on
+                % scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
+                % %hold off
+                % %xline(quadpos(1),'-','DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m * %.2f m', quadpos(1),gq1,length_quad), 'LineWidth',2)
+                % %xline(quadpos(2),'-','DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m * %.2f m', quadpos(2),gq2,length_quad), 'LineWidth',2)
+                % fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
+                % fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
+                % 
+                % ylim([0,yrms0*2*1000+2])
+                % %xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
+                % legend();
+                % xlabel('Average Z [m]');
+                % ylabel('Transverse Profile Size rms [mm]');
+                % %hold off
+                % title(sprintf('Transverse profile with %.0f quads',length(quadpos)), 'FontSize', 14);
                 %saveas(gcf,sprintf('%sFODO.png', masterfilename))
                 %hold off
         
@@ -285,8 +286,8 @@ for quadstrength1=1:length(quadstrengths1)
                 % divanglesx(qps2,quadstrength2)=divx_at_beamonitor;
             
         end
-        figure()
-        plot(position2s,minbeamareas)
+        % figure()
+        % plot(position2s,minbeamareas)
 
         indices_zdiffmin=find(z_focaldiffs==(min(z_focaldiffs)));
         if length(indices_zdiffmin)>1
@@ -295,11 +296,12 @@ for quadstrength1=1:length(quadstrengths1)
         %quadpos_forquadstrength_minarea(quadstrength2);
         position2s(indices_zdiffmin);
         quadpos_forquadstrength_minarea(quadstrength2)=position2s(indices_zdiffmin);
+        minfocaldiffs(quadstrength2)=min(z_focaldiffs);
         % minareaforquadstrength(quadstrength2)=(area_at_ymins(indices_zdiffmin)*1000*1000+area_at_xmins(indices_zdiffmin)*1000*1000)/2
-        sprintf('min z diff =%.2f m with quad 2 position %.2f m and quads strength %.2f T/m and minimum area ~%.2f mm^2 at position %.2f m ',min(z_focaldiffs), position2s(indices_zdiffmin), quadstrengths2(indices_zdiffmin), minbeamareas(indices_zdiffmin),minbeamareaspos(indices_zdiffmin))
+        sprintf('min z diff =%.2f m with quad 2 position %.2f m and quads strength %.2f T/m and minimum area ~%.4f mm^2 at position %.2f m ',min(z_focaldiffs), position2s(indices_zdiffmin), quadstrengths2(indices_zdiffmin), minbeamareas(indices_zdiffmin)*1000*1000,minbeamareaspos(indices_zdiffmin))
         figure('Visible','on')
         yyaxis left 
-        plot(position2s,minbeamareas)
+        plot(position2s,minbeamareas*1000*1000)
         % area_at_xmins;
         hold on
         % plot(position2s,area_at_ymins*1000*1000);
@@ -312,30 +314,42 @@ for quadstrength1=1:length(quadstrengths1)
         plot(position2s, z_focaldiffs)
         %xlabel('quad 2 position [m]')
         ylabel('difference in x and y focal point [m]')
-        title(sprintf('focal point difference for strength %.2f T/m and %.2f T/m', quadstrengths2(quadstrength2),quadstrengths1(quadstrength1)))
+        title(sprintf('focal point difference for strength %.2f T/m (Q1) and %.2f T/m (Q2)', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
         hold off
         minbeamareasstrengths(quadstrength2)=(minbeamareas(indices_zdiffmin));
     end
     hold off
-    figure()
+    figure(quadstrength1)
     yyaxis left
-    plot(quadstrengths2, quadpos_forquadstrength_minarea)
+    plot(quadstrengths2, quadpos_forquadstrength_minarea, 'DisplayName','Optimal quad position')
     hold on
+    plot(quadstrengths2, minfocaldiffs, 'DisplayName', 'minimum focal difference')
     title('Quad 2 position for minimum difference in focal points')
+    title(sprintf('Q2 position for strength %.2f T/m (Q1) and %.2f T/m (Q2)', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2)))
     xlabel('Quad Strength [T/m]')
-    ylabel('Optimal Position  to mimimze focal difference [m]')
+    ylabel('Optimal Position/Focal Difference [m]')
     
     yyaxis right
-    plot(quadstrengths2, minbeamareasstrengths*1000*1000,"DisplayName",'min beam area')
+    plot(quadstrengths2, minbeamareasstrengths*1000*1000,"DisplayName",'Min beam area')
     title('Quad 2 strength vs approx area at focal point')
     %xlabel('Quad Strength [T/m]')
     ylabel('Minimum area [mm^2]')
+    legend()
     %legend()
     hold off
 
 end
 % 
-
+% rowLabels = arrayfun(@(x) sprintf('Position= %.2f m', x), position2s, 'UniformOutput', false);
+% colLabels = arrayfun(@(x) sprintf('Strength= %.2f T/m', x), quadstrengths2, 'UniformOutput', false);
+% 
+% % Create the table
+% T = array2table(beammonitorarea, 'RowNames', rowLabels, 'VariableNames', colLabels)
+% % h=figure()
+% % h=heatmap(quadstrengths1,quadstrengths2, beammontotarea)
+% % h.Title = 'Min area for quad strengths';
+% % h.XLabel = 'Strength Q1 (T/m)';
+% % h.YLabel = 'Strength Q2 (m)';
 
 % % Flatten the matrix and get linear indices
 % [x_flat, linear_indices] = sort(beammonitorarea(:));
