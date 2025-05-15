@@ -18,8 +18,8 @@ num2str(rounded);
 length_quad = 0.2062;
 npos=10;
 position2s= linspace(0.4, 0.8,npos);
-quadstrengths1= [10,15,20,25]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(10,35,15);
+quadstrengths1= [15,20,25]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
+quadstrengths2= linspace(15,35,10);
 quadpos_forquadstrength_minarea=zeros(1,length(quadstrengths2));
 %minareaforquadstrength=zeros(1,length(quadstrengths2));
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
@@ -45,7 +45,7 @@ set(0,'DefaultFigureWindowStyle','docked')
 
 for quadstrength1=1:length(quadstrengths1)
     for quadstrength2=1:length(quadstrengths2)
-        for qps2=1:npos
+        for qps2=1:length(position2s)
                 qps2;
                 length_quad = 0.2062;
                 quadpos=[0.15,position2s(qps2)];
@@ -219,33 +219,11 @@ for quadstrength1=1:length(quadstrengths1)
                 stdy=avg.stdy;
                 avgz=avg.avgz;
                 counter=counter+1;
-                %fig=figure(counter); 
-                %qps2+quadstrength2
-                %set(gcf, 'WindowStyle', 'docked');
-                % figure('Visible', 'off');
-                % scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
-                % hold on
-                % scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
-                % %hold off
-                % %xline(quadpos(1),'-','DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m * %.2f m', quadpos(1),gq1,length_quad), 'LineWidth',2)
-                % %xline(quadpos(2),'-','DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m * %.2f m', quadpos(2),gq2,length_quad), 'LineWidth',2)
-                % fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
-                % fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
-                % 
-                % ylim([0,yrms0*2*1000+2])
-                % %xline(quadpos(3),'-','DisplayName', 'quad position 3', 'LineWidth',2)
-                % legend();
-                % xlabel('Average Z [m]');
-                % ylabel('Transverse Profile Size rms [mm]');
-                % %hold off
-                % title(sprintf('Transverse profile with %.0f quads',length(quadpos)), 'FontSize', 14);
-                %saveas(gcf,sprintf('%sFODO.png', masterfilename))
-                %hold off
-        
+                
                 % Find indices where size in x,y is min
                 %stdx(round(length(stdx)/2):length(stdx))
                 %index = find(array >= quadpos2, 1);
-                index_zpastquad=min(find(avgz>=(position2s(qps2)+length_quad/2)));
+                index_zpastquad=min(find(avgz>=(1))); %z focal point >1 m 
                 avgz(index_zpastquad);
                 min_stdx_past1m=min(stdx(index_zpastquad:length(stdx)));
                 min_stdy_past1m=min(stdy(index_zpastquad:length(stdy)));
@@ -257,11 +235,11 @@ for quadstrength1=1:length(quadstrengths1)
                 
                 if area_at_ymin < area_at_xmin
                     minbeamarea=area_at_ymin;
-                    minbeamareaspos(qps2)=avgz(indicesx);
+                    minbeamareaspos(qps2)=avgz(indicesy);
                 end
                 if area_at_xmin <= area_at_ymin
                     minbeamarea=area_at_xmin;
-                    minbeamareaspos(qps2)=avgz(indicesy);
+                    minbeamareaspos(qps2)=avgz(indicesx);
                 end
                 minbeamareas(qps2)=minbeamarea;
                 %create minbeamareas array and store min area
@@ -283,12 +261,12 @@ for quadstrength1=1:length(quadstrengths1)
 
                 area_at_ymins(qps2)=area_at_ymin;
 
-                if z_focaldiffs(qps2)<0.05
-                    figure('Visible','off');
+                if z_focaldiffs(qps2)<0.2
+                    figure('Visible','on');
                     scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                     hold on
                     scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
-                    
+                    xline(minbeamareaspos(qps2),'DisplayName', 'Focal Point')
                     fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
                     fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
                     ylim([0,yrms0*2*1000+2])
@@ -351,7 +329,7 @@ for quadstrength1=1:length(quadstrengths1)
     plot(quadstrengths2, quadpos_forquadstrength_minarea, 'DisplayName','Optimal quad position')
     hold on
     plot(quadstrengths2, minfocaldiffs, 'DisplayName', 'minimum focal difference')
-    title(sprintf('Q1 strength= %.2f T/m, Quad 2 minimum difference in focal points', quadstrengths2(quadstrength2)))
+    title(sprintf('Q1 strength= %.2f T/m, Quad 2 minimum difference in focal points', quadstrengths1(quadstrength1)))
     xlabel('Quad Strength [T/m]')
     ylabel('Optimal Position/Focal Difference [m]')
     
@@ -372,14 +350,14 @@ end
 % T = array2table(minbeamareasstrengths_table*1000*1000, 'RowNames', rowLabels, 'VariableNames', colLabels)
 h=figure()
 h=heatmap(quadstrengths2,quadstrengths1, minbeamareasstrengths_table*1000*1000)
-h.Title = 'Min area for quad strengths';
+h.Title = 'Min area for quad strengths [mm^2]';
 h.XLabel = 'Strength Q2 (T/m)';
 h.YLabel = 'Strength Q1 (T/m)';
 saveas(gcf,sprintf('minarea_for_strengths.png'))
     
 h=figure()
 h=heatmap(quadstrengths2,quadstrengths1, minbeamareasq2pos_table)
-h.Title = 'Q2 position corresponding to min area';
+h.Title = 'Q2 position corresponding to min area [m]';
 h.XLabel = 'Strength Q2 (T/m)';
 h.YLabel = 'Strength Q1 (T/m)';
 saveas(gcf,sprintf('position_for_minarea_for_strengths.png'))
