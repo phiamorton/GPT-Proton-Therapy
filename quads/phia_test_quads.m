@@ -16,10 +16,10 @@ rounded = round(phioffsets,2);
 num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
-npos=10;
-position2s= linspace(0.4, 0.8,npos);
-quadstrengths1= [15,20,25]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(15,35,10);
+npos=15;
+position2s= linspace(0.45, 0.8,npos);
+quadstrengths1= [20,22.5,25,27.5,30]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
+quadstrengths2= linspace(15,35,15);
 quadpos_forquadstrength_minarea=zeros(1,length(quadstrengths2));
 %minareaforquadstrength=zeros(1,length(quadstrengths2));
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
@@ -261,7 +261,7 @@ for quadstrength1=1:length(quadstrengths1)
 
                 area_at_ymins(qps2)=area_at_ymin;
 
-                if z_focaldiffs(qps2)<0.2
+                if z_focaldiffs(qps2)<0.2 && z_focaldiffs(qps2)>0.001
                     figure('Visible','on');
                     scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                     hold on
@@ -361,12 +361,15 @@ h.Title = 'Q2 position corresponding to min area [m]';
 h.XLabel = 'Strength Q2 (T/m)';
 h.YLabel = 'Strength Q1 (T/m)';
 saveas(gcf,sprintf('position_for_minarea_for_strengths.png'))
+
 h=figure()
-h=heatmap(quadstrengths2,quadstrengths1, minfocaldiffs_table)
+minfocaldiffs_table(minfocaldiffs_table==0)=nan;
+h=heatmap(quadstrengths2,quadstrengths1, minfocaldiffs_table, MissingDataLabel='no data',MissingDataColor=[0.5 0.5 0.5])
 h.Title = 'Minimum focal point difference [m]';
 h.XLabel = 'Strength Q2 (T/m)';
 h.YLabel = 'Strength Q1 (T/m)';
 saveas(gcf,sprintf('minfocaldiffs_for_strengths.png'))
+
 
 % % Flatten the matrix and get linear indices
 % [x_flat, linear_indices] = sort(beammonitorarea(:));
