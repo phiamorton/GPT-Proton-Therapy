@@ -20,8 +20,8 @@ npos=5;
 position2s= linspace(0.45, 0.8,npos);
 quadstrengths1= linspace(15,25,30); %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
 quadstrengths2= linspace(15,35,10);
-%quadstrengths3= linspace(15,35,10);
-position3s= linspace(0.75, 1.2,npos);
+quadstrengths3= linspace(15,35,10);
+%position3s= linspace(0.75, 1.2,npos);
 %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 counter=1;
 set(0,'DefaultFigureWindowStyle','docked') 
@@ -159,7 +159,6 @@ for quadstrength1=1:length(quadstrengths1)
                         linactext = cell(2*ncellsE,1);
                         zpos = zposE0;
                 
-               
                         inputfiletext = [buildparticles; 
                             { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
                             { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(gq2) ');'] };
@@ -193,7 +192,19 @@ for quadstrength1=1:length(quadstrengths1)
                         minarea=min(area);
                         indexmin=find(area==minarea);
                         z_for_min=avgz(indexmin);
-                        if minarea<10 %only show configs with small area
+
+                        %find focal diff
+                        index_zpastquad=min(find(avgz>=(1))); %z focal point >1 m 
+                        avgz(index_zpastquad);
+                        min_stdx_past1m=min(stdx(index_zpastquad:length(stdx)));
+                        min_stdy_past1m=min(stdy(index_zpastquad:length(stdy)));
+                        indicesx = find(stdx==min_stdx_past1m); %need to adapt for pos>1m
+                        indicesy= find(stdy==min_stdy_past1m);
+                        z_xmin=avgz(indicesx);
+                        z_ymin=avgz(indicesy);
+                        z_focaldiff=abs(z_xmin-z_ymin);
+
+                        if z_focaldiff<0.3 && minarea<10 %only show configs with small area
                             figure('Visible','on');
                             scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                             hold on
