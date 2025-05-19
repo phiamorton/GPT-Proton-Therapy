@@ -190,25 +190,27 @@ for quadstrength1=1:length(quadstrengths1)
                         avgz=avg.avgz;
                     
                         area=pi*stdx.*stdy*1000*1000;
-                        minarea=min(area)
-
-                        figure('Visible','on');
-                        scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
-                        hold on
-                        scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
-                        
-                        fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
-                        fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
-                        fill([quadpos(3)-length_quad/2, quadpos(3)+length_quad/2, quadpos(3)+length_quad/2, quadpos(3)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 3 at %.2f m, %.2f T/m ', quadpos(3),gq3), 'LineStyle',"none")
-                        ylim([0,yrms0*2*1000+2])
-                        legend();
-                        xlabel('Average Z [m]');
-                        ylabel('Transverse Profile Size rms [mm]');
-                        title(sprintf('Min area %.2f mm^2', minarea))
-                        hold off
-                        filename=sprintf('transverseprof_strength_%.2f_Tpm_Q1_and_%.2f_Tpm_Q2_at_%.2f_m_and_%.2f_Tpm_Q3_at_%.2f_m', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2),qps2,quadstrengths3(quadstrength3),qps3);
-                        saveas(gcf,filename,'png')
-                        
+                        minarea=min(area);
+                        indexmin=find(area==minarea);
+                        z_for_min=avgz(indexmin);
+                        if minarea<10 %only show configs with small area
+                            figure('Visible','on');
+                            scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
+                            hold on
+                            scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
+                            xline(z_for_min,'DisplayName', 'Minimum area')
+                            fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
+                            fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
+                            fill([quadpos(3)-length_quad/2, quadpos(3)+length_quad/2, quadpos(3)+length_quad/2, quadpos(3)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 3 at %.2f m, %.2f T/m ', quadpos(3),gq3), 'LineStyle',"none")
+                            ylim([0,yrms0*2*1000+2])
+                            legend();
+                            xlabel('Average Z [m]');
+                            ylabel('Transverse Profile Size rms [mm]');
+                            title(sprintf('Min area %.2f mm^2', minarea))
+                            hold off
+                            filename=sprintf('transverseprof_strength_%.2f_Tpm_Q1_and_%.2f_Tpm_Q2_at_%.2f_m_and_%.2f_Tpm_Q3_at_%.2f_m', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2),qps2,quadstrengths3(quadstrength3),qps3);
+                            saveas(gcf,filename,'png')
+                        end
                 end
             end
         end
