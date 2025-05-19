@@ -20,8 +20,8 @@ npos=5;
 position2s= linspace(0.45, 0.8,npos);
 quadstrengths1= linspace(15,25,30); %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
 quadstrengths2= linspace(15,35,10);
-quadstrengths3= linspace(15,35,10);
-position3s= linspace(0.7a5, 1.2,npos);
+%quadstrengths3= linspace(15,35,10);
+position3s= linspace(0.75, 1.2,npos);
 %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 counter=1;
 set(0,'DefaultFigureWindowStyle','docked') 
@@ -29,6 +29,7 @@ set(0,'DefaultFigureWindowStyle','docked')
 for quadstrength1=1:length(quadstrengths1)
     for quadstrength2=1:length(quadstrengths2)
         for qps2=1:length(position2s)
+            position3s= linspace(position2s(qps2)+length_quad/2, 1,npos);
             for quadstrength3=1:length(quadstrengths3)
                 for qps3=1:length(position3s)
                         length_quad = 0.2062;
@@ -37,7 +38,7 @@ for quadstrength1=1:length(quadstrengths1)
                         %set first quad to focus~0.8m but sweeping strength
                         gq2 = quadstrengths2(quadstrength2); %add in second quad and adjust strength to look at min in x and y and minimize the diff in z between the two 
                         %set 3rd quad strength
-                        gq3 = quadstrengths3(quadstrength3);
+                        gq3 = -quadstrengths3(quadstrength3);
                         phioffsetE = phioffsets;
                         inputfilepath = 'output_';
                         fieldpathname = '""';
@@ -190,7 +191,8 @@ for quadstrength1=1:length(quadstrengths1)
                     
                         area=pi*stdx.*stdy*1000*1000;
                         minarea=min(area)
-                        figure(counter);
+
+                        figure('Visible','on');
                         scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                         hold on
                         scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
