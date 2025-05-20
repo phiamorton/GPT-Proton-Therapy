@@ -40,23 +40,23 @@ for quadstrength1=1:length(quadstrengths1)
                         %set 3rd quad strength
                         gq3 = -quadstrengths3(quadstrength3);
                         phioffsetE = phioffsets;
-                        inputfilepath = 'output_';
+                        inputfilepath = 'output_3quads';
                         fieldpathname = '""';
                         GPTpathname = 'C:\bin\'; 
                         ffacE = 5.5;%*10; %5.5 ;%-482; %7.5; %5.1;
                 
                         if uniform ==true
-                            masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
+                            masterfilename = sprintf('output_3quadsEnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
                         elseif uniform==false
-                            masterfilename = sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_quads', phioffsetE, energy0, energyspreadpercent);
+                            masterfilename = sprintf('output_3quadsEnergyMod_phi%.2f_E%.2f_Esp%.2f_quads', phioffsetE, energy0, energyspreadpercent);
                         end
                 
                         if NoRF==true
-                            masterfilename= sprintf('output_noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
+                            masterfilename= sprintf('output_3quadsnoRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform_quads', phioffsetE, energy0, energyspreadpercent);
                             ffacE=0;
                         end
                         if ffac==true
-                            masterfilename= sprintf('output_EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f_quads', phioffsetE, energy0, energyspreadpercent,ffacE);
+                            masterfilename= sprintf('output_3quadsEnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f_quads', phioffsetE, energy0, energyspreadpercent,ffacE);
                         end
                 
                         load energyMod_phase_1_24_2022_40cells30MeV
@@ -177,7 +177,7 @@ for quadstrength1=1:length(quadstrengths1)
                 
                 
                         %run the GPT script
-                        system('bash "sim_auto.bat"');
+                        system('bash "sim_auto3quad.bat"');
                 
                 
                         simavg = readtable(sprintf('avgfull_%s.txt',masterfilename));

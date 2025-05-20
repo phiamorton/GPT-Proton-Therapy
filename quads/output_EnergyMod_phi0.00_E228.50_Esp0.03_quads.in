@@ -15,6 +15,6 @@ if(sc==1){
 spacecharge3dmesh(); 
 } 
 quadrupole("wcs","z",0.15,0.2062,-15); 
-quadrupole("wcs","z",0.45,0.2062,29); 
-quadrupole("wcs","z",0.98905,0.2062,-25); 
+quadrupole("wcs","z",0.5375,0.2062,29); 
+quadrupole("wcs","z",0.7437,0.2062,-25); 
 tout(0,1.1223e-08,5.6115e-11); 
