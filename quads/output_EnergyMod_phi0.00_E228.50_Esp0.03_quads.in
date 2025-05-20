@@ -3,17 +3,18 @@ npart = 2000;
 sc = 0; 
 if(npart > 1){ 
 setparticles("beam",2000,mp,-qe,4.2e-15); 
-setxdist("beam","g",0,0.004906,3,3); 
-setydist("beam","g",0,0.006039,3,3); 
+setxdist("beam","g",0,0.0043427,3,3); 
+setydist("beam","g",0,0.0056244,3,3); 
 setzdist("beam","u", 0, 0.18719); 
 setGdist("beam","g",1.2435,7.306e-05,3,3);  
 setoffset("beam",0,0,0,0,0,0); 
-addxdiv("beam",0,0.0024333); 
-addydiv("beam",0,0.0020833); 
+addxdiv("beam",0,0.48185); 
+addydiv("beam",0,0.3344); 
 } 
 if(sc==1){ 
 spacecharge3dmesh(); 
 } 
-quadrupole("wcs","z",0.15,0.2062,-8.7263); 
-quadrupole("wcs","z",0.49474,0.2062,8.7263); 
+quadrupole("wcs","z",0.15,0.2062,-15); 
+quadrupole("wcs","z",0.45,0.2062,29); 
+quadrupole("wcs","z",0.98905,0.2062,-25); 
 tout(0,1.1223e-08,5.6115e-11); 

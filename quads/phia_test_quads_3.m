@@ -18,9 +18,9 @@ num2str(rounded);
 length_quad = 0.2062;
 npos=5;
 position2s= linspace(0.45, 0.8,npos);
-quadstrengths1= linspace(15,25,30); %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(15,35,10);
-quadstrengths3= linspace(15,35,10);
+quadstrengths1= [15]%linspace(20,25,30); %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
+quadstrengths2= linspace(29,31,5);%linspace(15,35,10);
+quadstrengths3= linspace(25,27,5);%linspace(15,35,10);
 %position3s= linspace(0.75, 1.2,npos);
 %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 counter=1;
@@ -29,7 +29,7 @@ set(0,'DefaultFigureWindowStyle','docked')
 for quadstrength1=1:length(quadstrengths1)
     for quadstrength2=1:length(quadstrengths2)
         for qps2=1:length(position2s)
-            position3s= linspace(position2s(qps2)+length_quad/2, 1,npos);
+            position3s= linspace(position2s(qps2)+length_quad, 1.1,npos);
             for quadstrength3=1:length(quadstrengths3)
                 for qps3=1:length(position3s)
                         length_quad = 0.2062;
@@ -204,7 +204,7 @@ for quadstrength1=1:length(quadstrengths1)
                         z_ymin=avgz(indicesy);
                         z_focaldiff=abs(z_xmin-z_ymin);
 
-                        if z_focaldiff<0.3 && minarea<10 %only show configs with small area
+                        if z_focaldiff<0.3 && minarea<1 %only show configs with small area
                             figure('Visible','on');
                             scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                             hold on
@@ -218,6 +218,7 @@ for quadstrength1=1:length(quadstrengths1)
                             xlabel('Average Z [m]');
                             ylabel('Transverse Profile Size rms [mm]');
                             title(sprintf('Min area %.2f mm^2', minarea))
+                            fontsize(20,"points")
                             hold off
                             filename=sprintf('transverseprof_strength_%.2f_Tpm_Q1_and_%.2f_Tpm_Q2_at_%.2f_m_and_%.2f_Tpm_Q3_at_%.2f_m', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2),qps2,quadstrengths3(quadstrength3),qps3);
                             saveas(gcf,filename,'png')

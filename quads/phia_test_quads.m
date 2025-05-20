@@ -12,14 +12,14 @@ uniform=false;
 NoRF=false;
 ffac=false;
 rounded = round(phioffsets,2);
-%format bank
+%format bank   
 num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.2062;
-npos=15;
+npos=30;
 position2s= linspace(0.45, 0.8,npos);
-quadstrengths1= [20,22.5,25,27.5,30]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(15,35,15);
+quadstrengths1= linspace(15,35,10); %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
+quadstrengths2= linspace(15,35,30);
 quadpos_forquadstrength_minarea=zeros(1,length(quadstrengths2));
 %minareaforquadstrength=zeros(1,length(quadstrengths2));
      %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
@@ -262,7 +262,7 @@ for quadstrength1=1:length(quadstrengths1)
                 area_at_ymins(qps2)=area_at_ymin;
 
                 if z_focaldiffs(qps2)<0.2 && z_focaldiffs(qps2)>0.001
-                    figure('Visible','on');
+                    figure('Visible','off');
                     scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                     hold on
                     scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
@@ -299,7 +299,7 @@ for quadstrength1=1:length(quadstrengths1)
         minfocaldiffs(quadstrength2)=min(z_focaldiffs);
         % minareaforquadstrength(quadstrength2)=(area_at_ymins(indices_zdiffmin)*1000*1000+area_at_xmins(indices_zdiffmin)*1000*1000)/2
         sprintf('min z diff =%.2f m with quad 2 position %.2f m and quads strengths %.2f T/m (Q1) %.2f T/m (Q2) and minimum area ~%.4f mm^2 at position %.2f m ',min(z_focaldiffs), position2s(indices_zdiffmin), quadstrengths1(quadstrength1), quadstrengths2(indices_zdiffmin), minbeamareas(indices_zdiffmin)*1000*1000,minbeamareaspos(indices_zdiffmin))
-        figure('Visible','on')
+        figure('Visible','off')
         yyaxis left 
         plot(position2s,minbeamareas*1000*1000)
         % area_at_xmins;
@@ -324,7 +324,7 @@ for quadstrength1=1:length(quadstrengths1)
         
     end
     hold off
-    figure()
+    figure('Visible','off')
     yyaxis left
     plot(quadstrengths2, quadpos_forquadstrength_minarea, 'DisplayName','Optimal quad position')
     hold on
