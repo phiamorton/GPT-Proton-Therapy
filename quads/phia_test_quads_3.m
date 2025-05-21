@@ -15,12 +15,12 @@ rounded = round(phioffsets,2);
 %format bank   
 num2str(rounded);
 %for pp = 1:length(phioffsets)
-length_quad = 0.11; %0.2062; %m
+length_quad = 0.126; %0.2062; %m
 npos=10;
 position2s= linspace(0.2, 0.8,npos);
 quadstrengths1= [30,35]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(35,60,10);
-quadstrengths3= linspace(35,60,10);%linspace(30,35,10);
+quadstrengths2= linspace(35,70,15);
+quadstrengths3= linspace(35,70,15);%linspace(30,35,10);
 %position3s= linspace(0.75, 1.2,npos);
 %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 counter=1;
