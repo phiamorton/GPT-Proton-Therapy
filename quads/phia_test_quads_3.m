@@ -17,10 +17,10 @@ num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.126; %0.2062; %m
 npos=10;
-position2s= linspace(0.2, 0.8,npos);
-quadstrengths1= [30,35]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(35,70,15);
-quadstrengths3= linspace(35,70,15);%linspace(30,35,10);
+position2s= linspace(0.25, 0.8,npos);
+quadstrengths1= [20,30,35]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
+quadstrengths2= linspace(10,57,15);
+quadstrengths3= linspace(10,57,15);%linspace(30,35,10);
 %position3s= linspace(0.75, 1.2,npos);
 %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 counter=1;
@@ -160,9 +160,9 @@ for quadstrength1=1:length(quadstrengths1)
                         zpos = zposE0;
                 
                         inputfiletext = [buildparticles; 
-                            { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1) ');'] }; 
-                            { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(gq2) ');'] };
-                            { ['quadrupole("wcs","z",' num2str(quadpos(3)) ',' num2str(length_quad) ',' num2str(gq3) ');'] };
+                            { ['quadrupole("wcs","z",' num2str(quadpos(1)) ',' num2str(length_quad) ',' num2str(gq1/length_quad) ');'] }; 
+                            { ['quadrupole("wcs","z",' num2str(quadpos(2)) ',' num2str(length_quad) ',' num2str(gq2/length_quad) ');'] };
+                            { ['quadrupole("wcs","z",' num2str(quadpos(3)) ',' num2str(length_quad) ',' num2str(gq3/length_quad) ');'] };
                 
                             linactext; {
                             ['tout(' num2str(0/c) ',' num2str((2)/beta0/c) ',' num2str((0.01)/beta0/c)  ');']; 
@@ -204,15 +204,15 @@ for quadstrength1=1:length(quadstrengths1)
                         z_ymin=avgz(indicesy);
                         z_focaldiff=abs(z_xmin-z_ymin);
 
-                        if z_focaldiff<0.25 && minarea<10 %only show configs with small area
+                        if z_focaldiff<0.25 && minarea<10 %only show configs with small area %z_focaldiff<0.25 && 
                             figure('Visible','on');
                             scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                             hold on
                             scatter(avgz,stdy*1000, 'Color', "red", 'DisplayName', 'y')
                             xline(z_for_min,'DisplayName', 'Minimum area')
-                            fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1),'LineStyle',"none")
-                            fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2), 'LineStyle',"none")
-                            fill([quadpos(3)-length_quad/2, quadpos(3)+length_quad/2, quadpos(3)+length_quad/2, quadpos(3)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 3 at %.2f m, %.2f T/m ', quadpos(3),gq3), 'LineStyle',"none")
+                            fill([quadpos(1)-length_quad/2, quadpos(1)+length_quad/2, quadpos(1)+length_quad/2, quadpos(1)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 1 at %.2f m, %.2f T/m ', quadpos(1),gq1/length_quad),'LineStyle',"none")
+                            fill([quadpos(2)-length_quad/2, quadpos(2)+length_quad/2, quadpos(2)+length_quad/2, quadpos(2)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 2 at %.2f m, %.2f T/m ', quadpos(2),gq2/length_quad), 'LineStyle',"none")
+                            fill([quadpos(3)-length_quad/2, quadpos(3)+length_quad/2, quadpos(3)+length_quad/2, quadpos(3)-length_quad/2], [0, 0, yrms0*2*1000+2, yrms0*2*1000+2], 'b', 'FaceAlpha',0.1,'DisplayName', sprintf('quad position 3 at %.2f m, %.2f T/m ', quadpos(3),gq3/length_quad), 'LineStyle',"none")
                             ylim([0,yrms0*2*1000+2])
                             legend();
                             xlabel('Average Z [m]');
