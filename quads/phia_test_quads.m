@@ -15,7 +15,7 @@ rounded = round(phioffsets,2);
 %format bank   
 num2str(rounded);
 %for pp = 1:length(phioffsets)
-length_quad = 0.2062;
+length_quad = 0.11; %0.2062; %m
 npos=30;
 position2s= linspace(0.45, 0.8,npos);
 quadstrengths1= linspace(15,35,10); %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
