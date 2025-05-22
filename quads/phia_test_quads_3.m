@@ -17,8 +17,8 @@ num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.126; %0.2062; %m
 npos=10;
-position2s= linspace(0.62, 0.7,npos);
-quadstrengths1= [15,20,25,30,35]*.126*2; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
+position2s= linspace(0.3, 0.7,npos);
+quadstrengths1= [30]*.126*2; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
 quadstrengths2= linspace(25,57,20)*.126*2;
 quadstrengths3= linspace(25,57,20)*.126*2;%linspace(30,35,10);
 %position3s= linspace(0.75, 1.2,npos);
@@ -97,8 +97,8 @@ for quadstrength1=1:length(quadstrengths1)
                         isocenter = zposE0+dcellE/2; %m
                        
                 
-                        mevion_25nA=true;
-                        mevion_1nA=false;
+                        mevion_25nA=false;
+                        mevion_1nA=true;
                 
                         if mevion_1nA==true
                             divangx0 = (3.794-3.496)/120; %.58; %change in x [mm] over 12 cm
@@ -207,7 +207,7 @@ for quadstrength1=1:length(quadstrengths1)
                         z_focaldiff=abs(z_xmin-z_ymin);
                         
 
-                        if z_focaldiff<0.2 && minarea<1 %initialsize %/2 %only show configs with small area %z_focaldiff<0.25 && 
+                        if minarea<5 %z_focaldiff<0.2 && minarea<1 %initialsize %/2 %only show configs with small area %z_focaldiff<0.25 && 
                             figure('Visible','on');
                             scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                             hold on
