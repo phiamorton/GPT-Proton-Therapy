@@ -26,26 +26,36 @@ mevion_25nA=false;
 mevion_1nA=true;
 
 if mevion_1nA==true
-    xrms0 = 3.495/1000 ;%m 4.9mm
-    %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
-    yrms0 = 4.007/1000; %m 6mm
-    %divergence of beam
     divangx0 = (3.794-3.496)/120; %.58; %change in x [mm] over 12 cm
     divangy0 = (4.299-4.007)/120; % .67;
+    xiso=3.604/1000 ;%m 4.9mm
+    yiso = 4.129/1000; %m 6mm
+    divangx0*isocenter;
+    divangy0*isocenter;
+    xrms0 = xiso-divangx0*isocenter;
+    yrms0= yiso-divangy0*isocenter;
+    %gives y=4.15 at iso and x=3.61
+    
 end  
 if mevion_25nA==true
-    xrms0 = 4.906/1000 ;%m 4.9mm
-    %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
-    yrms0 = 6.039/1000; %m 6mm
-    %divergence of beam
     divangx0 = (5.198-4.906)/120; %.58; %change in x [mm] over 12 cm
     divangy0 = (6.289-6.039)/120; % .67;
+    xiso=5.05/1000; %m 4.9mm
+    yiso = 6.23/1000 ;%m 6mm
+    divangx0*isocenter;
+    divangy0*isocenter;
+    xrms0 = xiso-divangx0*isocenter;
+    yrms0= yiso-divangy0*isocenter;
+    %remember, div in GPT MUST be rad/m ie div/sizerms
+    %this actually gives isocenter yrms0=6.28 and xrms0=5.09
+    %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
+    
 end 
 
 yrms0=yrms0*100; %cm
 xrms0=xrms0*100; %cm
+A_beam=pi*xrms0*yrms0 %m^2
 
-A_beam=pi*xrms0*yrms0; %cm^2
 %translate simulated particles into real # of particles 
     Qtot0 = 4.2e-15; %from phia_test_Emod_spreadBragg.m, going to assume this is in C
     Qproton =1.6e-19; %C
@@ -95,7 +105,7 @@ x_values = linspace(0, material_length, numsteps); %cm
 %plotbrowser
 
 %%the no RF case
-comparison_noE = readtable(sprintf('output_noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform.txt', phioffsetE, energy0, energyspreadpercent)); %sprintf('comparison_phi0.00_E228_Esp0.03.txt'));
+comparison_noE = readtable(sprintf('output_noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f.txt', phioffsetE, energy0, energyspreadpercent)); %sprintf('comparison_phi0.00_E228_Esp0.03.txt'));
 G_comp =comparison_noE.G;
 G_comp=G_comp(~isnan(G_comp));
 meandEdX_comp=zeros(numsteps);
@@ -197,7 +207,7 @@ for pp = 1:length(phioffsets)
     dose_vals= dose_vals * 1.602e-10 ; %MeV/g to J/kg [Gy]
     %% Create a plot
     %figure(gcf)
-    figure('Visible','off')
+    figure('Visible','on')
     %scale up from sim particles to real particles
     scaled_dose_comp= dose_comp * sim_particles_scaling;  
     scaled_dose_vals= dose_vals * sim_particles_scaling; 
@@ -231,13 +241,14 @@ for pp = 1:length(phioffsets)
     ylabel('Simulated Particles');
     bincounts= hh.BinCounts;
     hold on;
-    ylim([0,max(bincounts)])
+    ylim([0,max(bincounts)*1.2])
     yyaxis right 
     ylabel('Particles')
     bincounts_scaled=bincounts*sim_particles_scaling;
-    ylim([0,max(bincounts_scaled)])
+    ylim([0,max(bincounts_scaled)*1.2])
     title(sprintf('phase offset is %.2f radians', phase));
     legend('Location','northwest')
+    fontsize(14,"points")
     saveas(gcf,sprintf('%s.png',masterfilename));
     %shg
 end

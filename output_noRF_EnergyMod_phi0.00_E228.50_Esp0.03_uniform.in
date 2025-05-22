@@ -6,24 +6,24 @@ setstartpar("beam",0,0,0,0,0,0.73917,mp,-qe,4.2e-15);
 } 
 if(npart > 1){ 
 setparticles("beam",2000,mp,-qe,4.2e-15); 
-setrxydist("beam","u",0.0025,0.005); 
-setphidist("beam","u",0,2*pi); 
-setzdist("beam","u", 0, 0.062397); 
+setxdist("beam","g",0,0.0028821,3,3); 
+setydist("beam","g",0,0.0034217,3,3); 
+setzdist("beam","u", 0, 0.18719); 
 setGBxdist("beam","g",0,1e-3,3,3); #primarily setting distribution shape, will be rescaled 
 setGBydist("beam","g",0,1e-3,3,3); 
 setGBxemittance("beam",1e-08); 
 setGByemittance("beam",1e-08); 
 setGdist("beam","g",1.2435,7.306e-05,3,3);  
 setoffset("beam",0,0,0,0,0,0); 
-addxdiv("beam",0,0); 
-addydiv("beam",0,0); 
+addxdiv("beam",0,0.0024833); 
+addydiv("beam",0,0.0024333); 
 } 
 if(sc==1){ 
 spacecharge3dmesh(); 
 } 
-map3D_remove("wcs","z",-0.15203, ""+"linac_iris.gdf", "x","y","z","R") ; 
-map3D_Hcomplex("wcs","z",0.034665, ""+"Hfield_01_13_2021.gdf", "x","y","z","HxRe","HyRe","HzRe","HxIm","HyIm","HzIm", 0, 1.9873, 17944777237.3049); 
-map3D_Ecomplex("wcs","z",0.034665, ""+"Efield_01_13_2021.gdf", "x","y","z","ExRe","EyRe","EzRe","ExIm","EyIm","EzIm", 0, 1.9873, 17944777237.3049); 
-map3D_Hcomplex("wcs","z",0.40804, ""+"Hfield_01_13_2021.gdf", "x","y","z","HxRe","HyRe","HzRe","HxIm","HyIm","HzIm", 0, 5.8667, 17944777237.3049); 
-map3D_Ecomplex("wcs","z",0.40804, ""+"Efield_01_13_2021.gdf", "x","y","z","ExRe","EyRe","EzRe","ExIm","EyIm","EzIm", 0, 5.8667, 17944777237.3049); 
+map3D_remove("wcs","z",-0.082696, ""+"linac_iris.gdf", "x","y","z","R") ; 
+map3D_Hcomplex("wcs","z",0.10399, ""+"Hfield_01_13_2021.gdf", "x","y","z","HxRe","HyRe","HzRe","HxIm","HyIm","HzIm", 0, 1.9873, 17944777237.3049); 
+map3D_Ecomplex("wcs","z",0.10399, ""+"Efield_01_13_2021.gdf", "x","y","z","ExRe","EyRe","EzRe","ExIm","EyIm","EzIm", 0, 1.9873, 17944777237.3049); 
+map3D_Hcomplex("wcs","z",0.47737, ""+"Hfield_01_13_2021.gdf", "x","y","z","HxRe","HyRe","HzRe","HxIm","HyIm","HzIm", 0, 5.8667, 17944777237.3049); 
+map3D_Ecomplex("wcs","z",0.47737, ""+"Efield_01_13_2021.gdf", "x","y","z","ExRe","EyRe","EzRe","ExIm","EyIm","EzIm", 0, 5.8667, 17944777237.3049); 
 tout(7.5194e-09); 

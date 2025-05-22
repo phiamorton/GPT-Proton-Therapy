@@ -9,8 +9,8 @@ phioffsets =  [0.00] ;%[0.00  0.33        0.66        0.99        1.32        1.
 energyspreadpercent= 0.03;
 energy0 = 228.5 ;%alter energy into cavities
 uniform=false;
-NoRF=false;
-ffac=true;
+NoRF=true;
+ffac=false;
 rounded = round(phioffsets,2);
 %format bank
 num2str(rounded);
@@ -34,7 +34,7 @@ for pp = 1:length(phioffsets)
     end
 
     if NoRF==true
-        masterfilename= sprintf('noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform.in', phioffsetE, energy0, energyspreadpercent);
+        masterfilename= sprintf('noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f.in', phioffsetE, energy0, energyspreadpercent);
         ffacE=0;
     end
     if ffac==true
