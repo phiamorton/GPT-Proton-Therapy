@@ -17,10 +17,10 @@ num2str(rounded);
 %for pp = 1:length(phioffsets)
 length_quad = 0.126; %0.2062; %m
 npos=10;
-position2s= linspace(0.25, 0.8,npos);
-quadstrengths1= [20,30,35]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(10,57,15);
-quadstrengths3= linspace(10,57,15);%linspace(30,35,10);
+position2s= linspace(0.62, 0.7,npos);
+quadstrengths1= [15*.126*2]%[25,30,35]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
+quadstrengths2= linspace(35*.126*2,57,10);
+quadstrengths3= linspace(35*.126*2,57,10);%linspace(30,35,10);
 %position3s= linspace(0.75, 1.2,npos);
 %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 counter=1;
@@ -29,10 +29,9 @@ set(0,'DefaultFigureWindowStyle','docked')
 for quadstrength1=1:length(quadstrengths1)
     for quadstrength2=1:length(quadstrengths2)
         for qps2=1:length(position2s)
-            position3s= linspace(position2s(qps2)+length_quad, 0.8,5);
+            position3s= linspace(position2s(qps2)+length_quad+0.02, 1.1,5);
             for quadstrength3=1:length(quadstrengths3)
                 for qps3=1:length(position3s)
-                       
                         quadpos=[length_quad/2+0.02,position2s(qps2),position3s(qps3)];
                         gq1 = -quadstrengths1(quadstrength1) %~36kG/m + focuses in x and - focuses in y 
                         %set first quad to focus~0.8m but sweeping strength
@@ -128,6 +127,7 @@ for quadstrength1=1:length(quadstrengths1)
                             
                         end 
                         
+                        initialsize=yrms0*xrms0*pi*1000*1000
                 
                         %% Initialize particle distribution entering treatment room
                 
@@ -188,23 +188,26 @@ for quadstrength1=1:length(quadstrengths1)
                         stdy=avg.stdy;
                         avgz=avg.avgz;
                     
-                        area=pi*stdx.*stdy*1000*1000;
-                        minarea=min(area);
-                        indexmin=find(area==minarea);
-                        z_for_min=avgz(indexmin);
+                        
 
                         %find focal diff
-                        index_zpastquad=min(find(avgz>=(1))); %z focal point >1 m 
+                        index_zpastquad=min(find(avgz>=(1))) %z >1 m 
                         avgz(index_zpastquad);
                         min_stdx_past1m=min(stdx(index_zpastquad:length(stdx)));
                         min_stdy_past1m=min(stdy(index_zpastquad:length(stdy)));
+                        area=pi*stdx(index_zpastquad:length(stdx)).*stdy(index_zpastquad:length(stdy))*1000*1000;
+                        minarea=min(area);
+                        indexmin=find(area==minarea)
+                        z_for_min=avgz(indexmin+(index_zpastquad));
+                       
                         indicesx = find(stdx==min_stdx_past1m); %need to adapt for pos>1m
                         indicesy= find(stdy==min_stdy_past1m);
                         z_xmin=avgz(indicesx);
                         z_ymin=avgz(indicesy);
                         z_focaldiff=abs(z_xmin-z_ymin);
+                        
 
-                        if z_focaldiff<0.25 && minarea<10 %only show configs with small area %z_focaldiff<0.25 && 
+                        if minarea<10000 %initialsize %/2 %only show configs with small area %z_focaldiff<0.25 && 
                             figure('Visible','on');
                             scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                             hold on
@@ -217,7 +220,7 @@ for quadstrength1=1:length(quadstrengths1)
                             legend();
                             xlabel('Average Z [m]');
                             ylabel('Transverse Profile Size rms [mm]');
-                            title(sprintf('Min area %.2f mm^2', minarea))
+                            title(sprintf('Min area %.2f mm^2 at %.2f m', minarea,z_for_min))
                             fontsize(14,"points")
                             hold off
                             filename=sprintf('transverseprof_strength_%.2f_Tpm_Q1_and_%.2f_Tpm_Q2_at_%.2f_m_and_%.2f_Tpm_Q3_at_%.2f_m.png', quadstrengths1(quadstrength1),quadstrengths2(quadstrength2),qps2,quadstrengths3(quadstrength3),qps3);
