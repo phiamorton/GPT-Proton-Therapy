@@ -204,8 +204,8 @@ for pp = 1:length(phioffsets)
     xlabel('Depth in material [cm]');
     xmin=28;
     realyrange=8.7297;
-    %xlim([xmin,xmin+11.7]); %for camera res
-    xlim([30,34])
+    xlim([xmin,xmin+11.7]); %for camera res
+    
     ylim([-realyrange/2,realyrange/2]);
     %set(gca,'XTick',[], 'YTick', [],'Visible', 'off', 'Color','none');
     fontsize(35,"points");
