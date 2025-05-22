@@ -27,20 +27,30 @@ mevion_25nA=false;
 mevion_1nA=true;
 
 if mevion_1nA==true
-    xrms0 = 3.495/1000 ;%m 4.9mm
-    %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
-    yrms0 = 4.007/1000; %m 6mm
-    %divergence of beam
     divangx0 = (3.794-3.496)/120; %.58; %change in x [mm] over 12 cm
     divangy0 = (4.299-4.007)/120; % .67;
+    xiso=3.604/1000 ;%m 4.9mm
+    yiso = 4.129/1000; %m 6mm
+    divangx0*isocenter;
+    divangy0*isocenter;
+    xrms0 = xiso-divangx0*isocenter;
+    yrms0= yiso-divangy0*isocenter;
+    %gives y=4.15 at iso and x=3.61
+    
 end  
 if mevion_25nA==true
-    xrms0 = 4.906/1000 ;%m 4.9mm
-    %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
-    yrms0 = 6.039/1000; %m 6mm
-    %divergence of beam
     divangx0 = (5.198-4.906)/120; %.58; %change in x [mm] over 12 cm
     divangy0 = (6.289-6.039)/120; % .67;
+    xiso=5.05/1000; %m 4.9mm
+    yiso = 6.23/1000 ;%m 6mm
+    divangx0*isocenter;
+    divangy0*isocenter;
+    xrms0 = xiso-divangx0*isocenter;
+    yrms0= yiso-divangy0*isocenter;
+    %remember, div in GPT MUST be rad/m ie div/sizerms
+    %this actually gives isocenter yrms0=6.28 and xrms0=5.09
+    %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
+    
 end 
 
 yrms0=yrms0*100; %cm
@@ -190,15 +200,17 @@ for pp = 1:length(phioffsets)
     D=Z .* 1/(yrms0*sqrt(2*pi)).*exp(-Y.^2/(2*yrms0^2));
     %figure(gcf)
     imagesc(x_values,y,D);
-    %ylabel('y [cm]');
-    %xlabel('depth [cm]');
+    ylabel('Transverse size [cm]');
+    xlabel('Depth in material [cm]');
     xmin=28;
     realyrange=8.7297;
-    xlim([xmin,xmin+11.7]);
+    %xlim([xmin,xmin+11.7]); %for camera res
+    xlim([30,34])
     ylim([-realyrange/2,realyrange/2]);
-    set(gca,'XTick',[], 'YTick', [],'Visible', 'off', 'Color','none');
-    %a=colorbar;
-    %a.Label.String = 'Dose [a.u.]';
+    %set(gca,'XTick',[], 'YTick', [],'Visible', 'off', 'Color','none');
+    fontsize(35,"points");
+    a=colorbar;
+    a.Label.String = 'Dose [a.u.]';
     %title(sprintf('Bragg Curve for Proton in Water, phase offset = %.2f rad', phase), 'FontSize', 14);
     saveas(gcf,sprintf('%sBraggIm.png', masterfilename))
     
