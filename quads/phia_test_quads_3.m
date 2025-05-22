@@ -207,7 +207,7 @@ for quadstrength1=1:length(quadstrengths1)
                         z_focaldiff=abs(z_xmin-z_ymin);
                         
 
-                        if minarea<2 %initialsize %/2 %only show configs with small area %z_focaldiff<0.25 && 
+                        if z_focaldiff<0.2 && minarea<1 %initialsize %/2 %only show configs with small area %z_focaldiff<0.25 && 
                             figure('Visible','on');
                             scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                             hold on
