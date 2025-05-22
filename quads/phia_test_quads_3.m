@@ -18,9 +18,9 @@ num2str(rounded);
 length_quad = 0.126; %0.2062; %m
 npos=10;
 position2s= linspace(0.62, 0.7,npos);
-quadstrengths1= [15*.126*2]%[25,30,35]; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
-quadstrengths2= linspace(35*.126*2,57,10);
-quadstrengths3= linspace(35*.126*2,57,10);%linspace(30,35,10);
+quadstrengths1= [15,20,25,30,35]*.126*2; %start with 25 to get focal length ~0.8 m %linspace(0.1,36,40);
+quadstrengths2= linspace(25,57,20)*.126*2;
+quadstrengths3= linspace(25,57,20)*.126*2;%linspace(30,35,10);
 %position3s= linspace(0.75, 1.2,npos);
 %quadrupole strength in the unit of T/m~~~ dimension is IMPORTANT
 counter=1;
@@ -127,7 +127,7 @@ for quadstrength1=1:length(quadstrengths1)
                             
                         end 
                         
-                        initialsize=yrms0*xrms0*pi*1000*1000
+                        initialsize=yrms0*xrms0*pi*1000*1000;
                 
                         %% Initialize particle distribution entering treatment room
                 
@@ -207,7 +207,7 @@ for quadstrength1=1:length(quadstrengths1)
                         z_focaldiff=abs(z_xmin-z_ymin);
                         
 
-                        if minarea<10000 %initialsize %/2 %only show configs with small area %z_focaldiff<0.25 && 
+                        if minarea<2 %initialsize %/2 %only show configs with small area %z_focaldiff<0.25 && 
                             figure('Visible','on');
                             scatter(avgz,stdx*1000, 'Color', "#0072BD", 'DisplayName', 'x')
                             hold on
