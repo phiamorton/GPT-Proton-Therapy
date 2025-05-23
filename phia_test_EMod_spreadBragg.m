@@ -9,7 +9,7 @@ phioffsets =  [0.00] ;%[0.00  0.33        0.66        0.99        1.32        1.
 energyspreadpercent= 0.03;
 energy0 = 228.5 ;%alter energy into cavities
 uniform=false;
-NoRF=true;
+NoRF=false;
 ffac=false;
 rounded = round(phioffsets,2);
 %format bank
@@ -28,17 +28,17 @@ for pp = 1:length(phioffsets)
     %average gradient of 30 MV/m
 
     if uniform ==true
-        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform.in', phioffsetE, energy0, energyspreadpercent);
+        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_uniform', phioffsetE, energy0, energyspreadpercent);
     elseif uniform==false
-        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f.in', phioffsetE, energy0, energyspreadpercent);
+        masterfilename = sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
     end
 
     if NoRF==true
-        masterfilename= sprintf('noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f.in', phioffsetE, energy0, energyspreadpercent);
+        masterfilename= sprintf('noRF_EnergyMod_phi%.2f_E%.2f_Esp%.2f', phioffsetE, energy0, energyspreadpercent);
         ffacE=0;
     end
     if ffac==true
-        masterfilename= sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f.in', phioffsetE, energy0, energyspreadpercent,ffacE);
+        masterfilename= sprintf('EnergyMod_phi%.2f_E%.2f_Esp%.2f_ffac%.2f', phioffsetE, energy0, energyspreadpercent,ffacE);
     end
 
     %masterfilename;
@@ -53,7 +53,7 @@ for pp = 1:length(phioffsets)
     
     freq = 2.856e9;
     dcellE = 14.7*0.0254; %distance between the cells, 14.7 inches, takes input as m
-    a = .005; %0.5 cm
+    a = 0.05; %5 cm, this is the iris radius in m
     ncellsE = 2; %length(philistE); %changed to 2 (only 2 cell cavities)
     phasebreakE = 2;
     subplotnum = 5;
@@ -61,7 +61,7 @@ for pp = 1:length(phioffsets)
     
     %% Define beam parameters
     
-    npart0 = 2000;
+    npart0 = 2000; %number of particles in simulation
     
     gamma0 = (energy0+938.27)/938.27; % 1.2435;
     
@@ -81,7 +81,7 @@ for pp = 1:length(phioffsets)
     Qtot0 = 4.2e-15; %in C % assumes 6 uA pulsed average current
     %current for 2us period the pulse is there
     %mevion gave average current
-    zposE0 = zlen0/1.8; %.03; %what is this doing
+    zposE0 = zlen0/1.8; %.03; %position of first cavity
     sc = 0;
     xoffset=0; %m
     yoffset= 0; %m
@@ -215,17 +215,37 @@ for pp = 1:length(phioffsets)
         end
         zpos = zpos+dcellE; 
     end
-    inputfiletext = [buildparticles; {
-        ['map3D_remove("wcs","z",' num2str(zposE0-dcellE/2) ', ' fieldpathname '+"linac_iris.gdf", "x","y","z","R") ;'];
-        }; linactext; {
-        ['tout(' num2str((2*drift)/beta0/c) ');']; 
+    inputfiletext = [buildparticles; %{
+        %['map3D_remove("wcs","z",' num2str(zposE0-dcellE/2) ', ' fieldpathname '+"linac_iris.gdf", "x","y","z","R") ;'];
+        %}; %this is the iris
+        linactext; {
+        ['tout(' num2str((.152+zposE0+dcellE)/beta0/c) ');']; 
         };];
-    
+    %tout is .152m (6in) + center position of 2nd cavity
     
     % Write input file
-    fileID = fopen([inputfilepath masterfilename],'wt');
+    fileID = fopen([inputfilepath sprintf('%s.in', masterfilename)],'wt');
     for ii = 1:length(inputfiletext)
     fprintf(fileID,'%s \n',inputfiletext{ii});
     end
     fclose(fileID); 
 end
+
+%run gpt and create .txt file output
+%system('bash "sim_auto.bat"'); %make sure filepath here matches filepath used
+system(sprintf('gpt -o output_%s.gdf output_%s.in', masterfilename, masterfilename))
+%system(sprintf('gdf2his -o output_%shist.gdf output_%s.gdf G 0.00001',masterfilename, masterfilename))
+system(sprintf('gdf2a -w 16 -o output_%s.txt output_%s.gdf', masterfilename, masterfilename))
+system(sprintf('ex -s -c "1d3|x" output_%s.txt', masterfilename))
+
+datafile=sprintf('output_%s.txt',masterfilename);
+data = readtable(datafile);
+%% Extract the columns from the table
+Gout = data.G;
+xout = data.x;
+yout = data.y;
+zout = data.z;
+Bxout = data.Bx; %velocity beta (speed as % speed of light c)
+Byout = data.By;
+Bzout = data.Bz;
+IDout = data.ID;
