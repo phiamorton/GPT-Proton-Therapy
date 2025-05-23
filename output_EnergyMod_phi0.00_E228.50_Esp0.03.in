@@ -25,4 +25,4 @@ map3D_Hcomplex("wcs","z",0.10399, ""+"Hfield_01_13_2021.gdf", "x","y","z","HxRe"
 map3D_Ecomplex("wcs","z",0.10399, ""+"Efield_01_13_2021.gdf", "x","y","z","ExRe","EyRe","EzRe","ExIm","EyIm","EzIm", 5.5, 1.9873, 17944777237.3049); 
 map3D_Hcomplex("wcs","z",0.47737, ""+"Hfield_01_13_2021.gdf", "x","y","z","HxRe","HyRe","HzRe","HxIm","HyIm","HzIm", 5.5, 5.8667, 17944777237.3049); 
 map3D_Ecomplex("wcs","z",0.47737, ""+"Efield_01_13_2021.gdf", "x","y","z","ExRe","EyRe","EzRe","ExIm","EyIm","EzIm", 5.5, 5.8667, 17944777237.3049); 
-tout(3.5317e-09); 
+tout(3.534e-09); 

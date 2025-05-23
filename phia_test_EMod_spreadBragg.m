@@ -215,11 +215,12 @@ for pp = 1:length(phioffsets)
         end
         zpos = zpos+dcellE; 
     end
+    outputlengthfrom2ndcav=6; %in
     inputfiletext = [buildparticles; %{
         %['map3D_remove("wcs","z",' num2str(zposE0-dcellE/2) ', ' fieldpathname '+"linac_iris.gdf", "x","y","z","R") ;'];
         %}; %this is the iris
         linactext; {
-        ['tout(' num2str((.152+zposE0+dcellE)/beta0/c) ');']; 
+        ['tout(' num2str((outputlengthfrom2ndcav*.0254+zposE0+dcellE)/beta0/c) ');']; 
         };];
     %tout is .152m (6in) + center position of 2nd cavity
     
@@ -249,3 +250,10 @@ Bxout = data.Bx; %velocity beta (speed as % speed of light c)
 Byout = data.By;
 Bzout = data.Bz;
 IDout = data.ID;
+
+% Assuming all variables are column vectors or can be reshaped into column vectors
+T = table(IDout(:), xout(:), yout(:), zout(:), Bxout(:), Byout(:), Bzout(:), Gout(:), ...
+    'VariableNames', {'ID', 'x position [m] ', 'y position [m]', 'z position [m]', 'Bx, speed in x [%c]', 'By, speed in y [%c]', 'Bz, speed in z [%c]', 'G, relativistic gamma factor'});
+
+% Write the table to a CSV file
+writetable(T, sprintf('output_%.2finfrom2ndcavity_%s.csv',outputlengthfrom2ndcav, masterfilename));
