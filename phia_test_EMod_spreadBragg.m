@@ -208,8 +208,8 @@ end
 %run gpt and create .txt file output
 %system('bash "sim_auto.bat"'); %make sure filepath here matches filepath used
 system(sprintf('gpt -o output_%s.gdf output_%s.in', masterfilename, masterfilename))
-%system(sprintf('gdf2his -o output_%shist.gdf output_%s.gdf G 0.00001',masterfilename, masterfilename))
-system(sprintf('gdf2a -w 16 -o output_%s.txt output_%s.gdf', masterfilename, masterfilename))
+system(sprintf('gdf2his -o output_%shist.gdf output_%s.gdf G 0.00001',masterfilename, masterfilename))
+system(sprintf('gdf2a -w 16 -o output_%s.txt output_%shist.gdf', masterfilename, masterfilename))
 system(sprintf('ex -s -c "1d3|x" output_%s.txt', masterfilename))
 
 datafile=sprintf('output_%s.txt',masterfilename);
@@ -230,3 +230,5 @@ T = table(IDout(:), xout(:), yout(:), zout(:), Bxout(:), Byout(:), Bzout(:), Gou
 
 % Write the table to a CSV file
 writetable(T, sprintf('output_%.2finfrom2ndcavity_%s.csv',outputlengthfrom2ndcav, masterfilename));
+
+masterfilename

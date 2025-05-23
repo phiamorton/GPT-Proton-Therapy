@@ -54,7 +54,7 @@ end
 
 yrms0=yrms0*100; %cm
 xrms0=xrms0*100; %cm
-A_beam=pi*xrms0*yrms0 %m^2
+A_beam=pi*xrms0*yrms0; %m^2
 
 %translate simulated particles into real # of particles 
     Qtot0 = 4.2e-15; %from phia_test_Emod_spreadBragg.m, going to assume this is in C
@@ -110,7 +110,7 @@ G_comp =comparison_noE.G;
 G_comp=G_comp(~isnan(G_comp));
 meandEdX_comp=zeros(numsteps);
 dose_comp=zeros(numsteps);
-npart_comp=length(G_comp);
+npart_comp=length(G_comp)
 %length(G_comp)
 for proton = 1:length(G_comp)
     E_0 =938.272*(G_comp(proton)-1); %MeV, starting energy
@@ -166,7 +166,7 @@ for pp = 1:length(phioffsets)
     dose_vals = zeros(numsteps);
     meandEdX=zeros(numsteps);
     size(dEdX_values);
-    npart0=length(G);
+    npart0=length(G)
     for proton = 1:length(G)
         E_0 =938.272*(G(proton)-1); %MeV, starting energy
         % Loop to calculate energy loss and stopping power
@@ -218,7 +218,6 @@ for pp = 1:length(phioffsets)
     hold on;
     %plot(x_values(1:numsteps), meandEdX_comp(1:numsteps), 'b', 'LineWidth', 2,'LineStyle',':', 'Color',"#7E2F8E",'DisplayName','No RF');
     plot(x_values(1:numsteps), scaled_dose_comp(1:numsteps), 'b', 'LineWidth', 2,'LineStyle',':', 'Color',"#7E2F8E",'DisplayName','No RF, 0.03% energy spread');
-    
     hold off;
    
     xlim([29,35]);
@@ -245,7 +244,7 @@ for pp = 1:length(phioffsets)
     yyaxis right 
     ylabel('Particles')
     bincounts_scaled=bincounts*sim_particles_scaling;
-    ylim([0,max(bincounts_scaled)*1.2])
+    ylim([0,max(bincounts)*1.2* sim_particles_scaling])
     title(sprintf('phase offset is %.2f radians', phase));
     legend('Location','northwest')
     fontsize(14,"points")
@@ -275,8 +274,8 @@ fprintf('Power calculated from max gradient %.2f MW \n', p_disp/1e6)
 fprintf('Power calculated from max gradient %.2f MW per cavity \n', p_disp/1e6/2)
 power_avg= AvgGrad^2/(2*shuntimpedance); %MV^2/m*MOhm/m = V^2/Ohm= W 
 %power loss of klystron/power into cavities ?
-fprintf('Power calculated from average gradient %.2f MW \n', power_avg/1e6)
-fprintf('Power calculated from average gradient %.2f MW per cavity \n', power_avg/1e6/2)
+%fprintf('Power calculated from average gradient %.2f MW \n', power_avg/1e6)
+%fprintf('Power calculated from average gradient %.2f MW per cavity \n', power_avg/1e6/2)
 %disp(power_avg)
 %power_max = max_E_diff^2/(2*length_cell*shuntimpedance)  %MV^2/m*MOhm/m = V^2/Ohm= W %power loss of klystron/power into cavities
 %https://cds.cern.ch/record/1005047/files/p145.pdf 
@@ -286,8 +285,8 @@ fprintf('Power calculated from average gradient %.2f MW per cavity \n', power_av
 % 
 % %Shunt_Imp = MaxGradSeen^2*length_cell/cell_Power %MeV^2/(m* MW)
 % %https://accelconf.web.cern.ch/l06/papers/TUP044.pdf
-Avg_grad_calc = 15*sqrt(power_avg/100000);  %MV/m, assumes P is in W
-fprintf('Average gradient calculated from power %.2f MV/m \n', Avg_grad_calc)
+%Avg_grad_calc = 15*sqrt(power_avg/100000);  %MV/m, assumes P is in W
+%fprintf('Average gradient calculated from power %.2f MV/m \n', Avg_grad_calc)
 %disp(AvgGrad-Avg_grad_calc)
 % MaxGradSeen/Avg_grad; %2.26
-masterfilename
+%masterfilename
