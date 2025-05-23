@@ -114,43 +114,14 @@ for pp = 1:length(phioffsets)
         yrms0= yiso-divangy0*isocenter;
         %remember, div in GPT MUST be rad/m ie div/sizerms
         %this actually gives isocenter yrms0=6.28 and xrms0=5.09
-       
         %based on mevion numbers this will be ~3-4mm at 1nA or 5-6mm at 25 nA
-        
         %divergence of beam
         
     end 
     
     
     %% Initialize particle distribution entering treatment room
-    if uniform == true
-        buildparticles = {
-        'accuracy(6);';
-        ['npart = ' num2str(npart0) ';'];
-        ['sc = ' num2str(sc) ';'];
-        'if(npart==1){';
-        ['setstartpar("beam",0,0,0,0,0,' num2str(gamma0*beta0) ',mp,-qe,' num2str(Qtot0) ');'];
-        '}';
-        'if(npart > 1){';
-        ['setparticles("beam",' num2str(npart0) ',mp,-qe,' num2str(Qtot0) ');'];
-        ['setrxydist("beam","u",' num2str(a/2) ',' num2str(a) ');'];
-        ['setphidist("beam","u",0,2*pi);'];
-        ['setzdist("beam","u", 0, ' num2str(zlen0) ');'];
-        'setGBxdist("beam","g",0,1e-3,3,3); #primarily setting distribution shape, will be rescaled';
-        'setGBydist("beam","g",0,1e-3,3,3);';
-        ['setGBxemittance("beam",' num2str(emit0) ');'];
-        ['setGByemittance("beam",' num2str(emit0) ');'];
-        ['setGdist("beam","g",' num2str(gamma0) ',' num2str(dgamma0) ',3,3); '];
-        ['setoffset("beam",' num2str(xoffset) ',' num2str(yoffset) ',0,0,0,0);'];
-        ['addxdiv("beam",0,' num2str(divangx0/xiso) ');'];
-        ['addydiv("beam",0,' num2str(divangy0/yiso) ');'];
-        '}';
-        'if(sc==1){';
-        'spacecharge3dmesh();';
-        '}';
-        };
-        
-    else 
+    if uniform==false
         buildparticles = {
         'accuracy(6);';
         ['npart = ' num2str(npart0) ';'];
@@ -194,7 +165,7 @@ for pp = 1:length(phioffsets)
     end
     fclose(fileID);
     
-    %system(['"' 'asci2gdf.exe" -o linac_iris.gdf linac_iris.txt x 1 y 1 z ' num2str(dcellE*ncellsE) ' R 1']);
+    system(['"' 'asci2gdf.exe" -o linac_iris.gdf linac_iris.txt x 1 y 1 z ' num2str(dcellE*ncellsE) ' R 1']);
     
     %% Initialize loop over cells
     tic
@@ -216,16 +187,18 @@ for pp = 1:length(phioffsets)
         zpos = zpos+dcellE; 
     end
     outputlengthfrom2ndcav=6; %in
-    inputfiletext = [buildparticles; %{
-        %['map3D_remove("wcs","z",' num2str(zposE0-dcellE/2) ', ' fieldpathname '+"linac_iris.gdf", "x","y","z","R") ;'];
-        %}; %this is the iris
+    inputfiletext = [buildparticles; {['forwardscatter("wcs","I","remove", 0) ;'];};
+        {
+        ['scatteriris("wcs","z",' num2str(zposE0+dcellE) ',' num2str(a) ',1 ) scatter="remove" ;']; %new iris, first number is position along beam, 2nd is radius in m
+        };
         linactext; {
         ['tout(' num2str((outputlengthfrom2ndcav*.0254+zposE0+dcellE)/beta0/c) ');']; 
         };];
     %tout is .152m (6in) + center position of 2nd cavity
-    
+    %{['map3D_remove("wcs","z",' num2str(zposE0+dcellE) ', ' fieldpathname '+"linac_iris.gdf", "x","y","z","R") ;'];}; %this is the iris
+
     % Write input file
-    fileID = fopen([inputfilepath sprintf('%s.in', masterfilename)],'wt');
+    fileID = fopen([inputfilepath sprintf('%s.in', masterfilename)],'wt')
     for ii = 1:length(inputfiletext)
     fprintf(fileID,'%s \n',inputfiletext{ii});
     end
