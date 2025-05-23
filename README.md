@@ -4,6 +4,7 @@ Introductory materials about proton therapy and some of the equations used: http
 
 Creating the GPT input file in phia_test_EMod_spreadBragg.m,
   relies on the E and H field and linaciris gdf files
+  Now automatically runs gpt (5/22/25) and you do not need to also execute the bash script. It also takes the output and writes it to a csv file, including particle ID, position (x,y,z), and velocity as %c, beta (speed/speed of light) in x,y,z.
   
 Using sim_auto.bat to run GPT and write output files for all the different phase offset values. "bash sim_auto.bat"
 
@@ -22,3 +23,5 @@ Gif from braggpeakgif.m to show water phantom evolution as the phase difference 
 filename construction phi# is phase between cavities, E# is energy of incoming beam, Esp is energy spread of incoming beam, uniform means uniform incoming beam distribution, assume gaussian in x,y,z otherwise, 
 
 nongaussian means taking the x,y position outputs to make the images rather than assuming the same gaussian distribution in the input (takes longer). 
+
+
